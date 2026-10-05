@@ -100,13 +100,13 @@ router.put('/tickets/:id', authenticateToken, requireRole('admin'), async (req, 
     }
 
     const db = await getDB();
-    const ticket = await db.get('SELECT * FROM support_tickets WHERE id = ?', [id]);
+    const ticket = await db.get('SELECT * FROM support_tickets WHERE id = ? OR ticket_id = ?', [id, id]);
     if (!ticket) {
       return res.status(404).json({ error: 'Support ticket not found.' });
     }
 
     const now = new Date().toISOString();
-    await db.run('UPDATE support_tickets SET status = ?, updated_at = ? WHERE id = ?', [status, now, id]);
+    await db.run('UPDATE support_tickets SET status = ?, updated_at = ? WHERE id = ? OR ticket_id = ?', [status, now, id, id]);
 
     await recordAuditLog(
       req.user.id,

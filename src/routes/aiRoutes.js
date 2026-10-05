@@ -58,12 +58,12 @@ router.post('/chat', optionalAuth, async (req, res) => {
       }
     } else if (trimmedMsg.toLowerCase().includes('cost') || trimmedMsg.toLowerCase().includes('price') || trimmedMsg.toLowerCase().includes('rate')) {
       reply = `**ShipTrack Shipping Rate Guide:**\n\n` +
-        `Our dynamic pricing model is calculated using package type base rates + $3.50 per kg:\n\n` +
-        `• **Standard Shipping**: $10.00 base + $3.50/kg (Est. 3-4 days)\n` +
-        `• **Express Freight**: $25.00 base + $3.50/kg (Est. 1-2 days priority delivery)\n` +
-        `• **Fragile Goods**: $30.00 base + $3.50/kg (Includes extra padding & high-care handling)\n` +
-        `• **Cold Storage / Perishable**: $45.00 base + $3.50/kg (Temperature-controlled transport)\n` +
-        `• **Heavy Cargo**: $60.00 base + $3.50/kg (Palletized transport)\n\n` +
+        `Our dynamic pricing model is calculated using package type base rates + ₹100 per kg:\n\n` +
+        `• **Standard Shipping**: ₹300 base + ₹100/kg (Est. 2-3 days)\n` +
+        `• **Express Freight**: ₹450 base + ₹100/kg (Est. Next-Day priority delivery)\n` +
+        `• **Fragile Goods**: ₹600 base + ₹100/kg (Includes extra padding & high-care handling)\n` +
+        `• **Cold Storage / Perishable**: ₹1,000 base + ₹100/kg (Temperature-controlled transport)\n` +
+        `• **Heavy Cargo**: ₹1,500 base + ₹100/kg (Palletized transport)\n\n` +
         `*Tip: You can use our Create Shipment form to calculate exact costs instantly!*`;
     } else if (trimmedMsg.toLowerCase().includes('my shipment') || trimmedMsg.toLowerCase().includes('my package') || trimmedMsg.toLowerCase().includes('history')) {
       if (req.user && req.user.role === 'customer') {
