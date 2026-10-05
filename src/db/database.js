@@ -119,6 +119,15 @@ async function initializeSchema(db) {
 }
 
 async function seedDefaultData(db) {
+  const demoCheck = await db.get('SELECT id FROM users WHERE email = ?', ['admin@shiptrack.demo']);
+  if (!demoCheck) {
+    const hashedPasswordAdmin = await bcrypt.hash('Admin@123', 10);
+    await db.run(
+      `INSERT INTO users (name, email, password, role, phone, created_at) VALUES (?, ?, ?, ?, ?, ?)`,
+      ['System Admin', 'admin@shiptrack.demo', hashedPasswordAdmin, 'admin', '+91 98765 43210', new Date().toISOString()]
+    );
+  }
+
   const userCount = await db.get('SELECT COUNT(*) as count FROM users');
   if (userCount.count > 0) return;
 
@@ -133,6 +142,10 @@ async function seedDefaultData(db) {
   const adminRes = await db.run(
     `INSERT INTO users (name, email, password, role, phone, created_at) VALUES (?, ?, ?, ?, ?, ?)`,
     ['System Administrator', 'admin@shiptrack.com', hashedPasswordAdmin, 'admin', '+91 98765 43210', now]
+  );
+  await db.run(
+    `INSERT INTO users (name, email, password, role, phone, created_at) VALUES (?, ?, ?, ?, ?, ?)`,
+    ['System Admin', 'admin@shiptrack.demo', hashedPasswordAdmin, 'admin', '+91 98765 43210', now]
   );
 
   // 2. Drivers (Alex River, Ravi Kumar, Priya Singh)
