@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
@@ -9,13 +10,15 @@
   <!-- FontAwesome Icons -->
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
   <!-- Google Fonts Inter & JetBrains Mono -->
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@500;700&display=swap" rel="stylesheet">
-  
+  <link
+    href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@500;700&display=swap"
+    rel="stylesheet">
+
   <script>
     tailwind.config = {
       theme: {
         extend: {
-          fontFamily: { 
+          fontFamily: {
             sans: ['Inter', 'sans-serif'],
             mono: ['JetBrains Mono', 'monospace']
           },
@@ -68,6 +71,7 @@
       color: #F5F1E8;
       font-family: 'Inter', sans-serif;
     }
+
     .glass-card {
       background: #2B352E;
       border: 1px solid rgba(232, 201, 155, 0.12);
@@ -75,75 +79,116 @@
       border-radius: 16px;
       transition: transform 0.2s ease, box-shadow 0.2s ease;
     }
+
     .glass-card-hover:hover {
       transform: translateY(-2px);
       box-shadow: 0 12px 32px 0 rgba(217, 119, 69, 0.12);
       border-color: rgba(232, 201, 155, 0.22);
     }
+
     .glass-nav {
       background: rgba(34, 43, 37, 0.95);
       backdrop-filter: blur(16px);
       border-bottom: 1px solid rgba(232, 201, 155, 0.12);
     }
+
     .pulse-dot {
       animation: pulse 2s cubic-bezier(0.4, 0, 0.6, 1) infinite;
     }
+
     @keyframes pulse {
-      0%, 100% { opacity: 1; transform: scale(1); }
-      50% { opacity: .5; transform: scale(1.25); }
+
+      0%,
+      100% {
+        opacity: 1;
+        transform: scale(1);
+      }
+
+      50% {
+        opacity: .5;
+        transform: scale(1.25);
+      }
     }
+
     .route-pattern {
       background-image: radial-gradient(rgba(145, 168, 137, 0.15) 1px, transparent 1px),
-                        linear-gradient(to right, rgba(232, 201, 155, 0.03) 1px, transparent 1px);
+        linear-gradient(to right, rgba(232, 201, 155, 0.03) 1px, transparent 1px);
       background-size: 24px 24px, 48px 48px;
     }
+
     /* Custom Scrollbar */
-    ::-webkit-scrollbar { width: 6px; height: 6px; }
-    ::-webkit-scrollbar-track { background: #17211B; }
-    ::-webkit-scrollbar-thumb { background: #36423A; border-radius: 4px; }
-    ::-webkit-scrollbar-thumb:hover { background: #4A554C; }
+    ::-webkit-scrollbar {
+      width: 6px;
+      height: 6px;
+    }
+
+    ::-webkit-scrollbar-track {
+      background: #17211B;
+    }
+
+    ::-webkit-scrollbar-thumb {
+      background: #36423A;
+      border-radius: 4px;
+    }
+
+    ::-webkit-scrollbar-thumb:hover {
+      background: #4A554C;
+    }
 
     /* Skeleton loader animation */
     .skeleton {
-      background: linear-gradient(90deg, rgba(43,53,46,0.5) 25%, rgba(54,66,58,0.5) 50%, rgba(43,53,46,0.5) 75%);
+      background: linear-gradient(90deg, rgba(43, 53, 46, 0.5) 25%, rgba(54, 66, 58, 0.5) 50%, rgba(43, 53, 46, 0.5) 75%);
       background-size: 200% 100%;
       animation: skeleton-loading 1.5s infinite;
     }
+
     @keyframes skeleton-loading {
-      0% { background-position: 200% 0; }
-      100% { background-position: -200% 0; }
+      0% {
+        background-position: 200% 0;
+      }
+
+      100% {
+        background-position: -200% 0;
+      }
     }
   </style>
 </head>
+
 <body class="min-h-screen flex flex-col selection:bg-terracotta-500 selection:text-warmwhite">
 
   <!-- Top Navigation Header -->
   <header class="sticky top-0 z-40 glass-nav px-4 lg:px-8 py-3 transition-all">
     <div class="max-w-7xl mx-auto flex items-center justify-between gap-4">
-      
+
       <!-- Brand Logo -->
       <div class="flex items-center space-x-3 cursor-pointer" onclick="switchTab('tracker')">
-        <div class="w-10 h-10 rounded-xl bg-terracotta-500 text-warmwhite flex items-center justify-center shadow-lg shadow-terracotta-500/20">
+        <div
+          class="w-10 h-10 rounded-xl bg-terracotta-500 text-warmwhite flex items-center justify-center shadow-lg shadow-terracotta-500/20">
           <i class="fa-solid fa-boxes-packing text-xl"></i>
         </div>
         <div>
-          <span class="text-xl font-extrabold tracking-tight text-warmwhite">Ship<span class="text-terracotta-500">Track</span></span>
+          <span class="text-xl font-extrabold tracking-tight text-warmwhite">Ship<span
+              class="text-terracotta-500">Track</span></span>
           <span class="block text-[10px] text-sage-400 tracking-wider font-semibold uppercase">Logistics Platform</span>
         </div>
       </div>
 
       <!-- Navigation Links -->
       <nav class="hidden md:flex items-center space-x-1 bg-forest-900 p-1.5 rounded-xl border border-forest-700">
-        <button id="nav-tracker" onclick="switchTab('tracker')" class="px-4 py-2 rounded-lg text-xs font-bold transition text-warmwhite bg-terracotta-500 shadow-md">
+        <button id="nav-tracker" onclick="switchTab('tracker')"
+          class="px-4 py-2 rounded-lg text-xs font-bold transition text-warmwhite bg-terracotta-500 shadow-md">
           <i class="fa-solid fa-magnifying-glass mr-2 text-sand-400"></i>Live Track
         </button>
-        <button id="nav-customer" onclick="switchTab('customer')" class="hidden px-4 py-2 rounded-lg text-xs font-bold transition text-warmmuted hover:text-warmwhite hover:bg-forest-700">
+        <button id="nav-customer" onclick="switchTab('customer')"
+          class="hidden px-4 py-2 rounded-lg text-xs font-bold transition text-warmmuted hover:text-warmwhite hover:bg-forest-700">
           <i class="fa-solid fa-box mr-2 text-terracotta-400"></i>Customer Hub
         </button>
-        <button id="nav-driver" onclick="switchTab('driver')" class="hidden px-4 py-2 rounded-lg text-xs font-bold transition text-warmmuted hover:text-warmwhite hover:bg-forest-700">
+        <button id="nav-driver" onclick="switchTab('driver')"
+          class="hidden px-4 py-2 rounded-lg text-xs font-bold transition text-warmmuted hover:text-warmwhite hover:bg-forest-700">
           <i class="fa-solid fa-truck-fast mr-2 text-sand-400"></i>Driver Console
         </button>
-        <button id="nav-admin" onclick="switchTab('admin')" class="hidden px-4 py-2 rounded-lg text-xs font-bold transition text-warmmuted hover:text-warmwhite hover:bg-forest-700">
+        <button id="nav-admin" onclick="switchTab('admin')"
+          class="hidden px-4 py-2 rounded-lg text-xs font-bold transition text-warmmuted hover:text-warmwhite hover:bg-forest-700">
           <i class="fa-solid fa-user-shield mr-2 text-sage-400"></i><span id="nav-admin-text">Admin Center</span>
         </button>
       </nav>
@@ -152,16 +197,21 @@
       <div class="flex items-center space-x-3">
         <!-- Notification Bell Icon -->
         <div class="relative">
-          <button onclick="toggleNotifications()" title="Notifications" class="w-10 h-10 rounded-xl bg-forest-900 border border-forest-700 text-warmmuted hover:text-warmwhite hover:border-terracotta-500 flex items-center justify-center relative transition">
+          <button onclick="toggleNotifications()" title="Notifications"
+            class="w-10 h-10 rounded-xl bg-forest-900 border border-forest-700 text-warmmuted hover:text-warmwhite hover:border-terracotta-500 flex items-center justify-center relative transition">
             <i class="fa-solid fa-bell"></i>
-            <span id="notif-badge" class="absolute -top-1 -right-1 w-5 h-5 rounded-full bg-brick-500 text-warmwhite text-[10px] font-bold flex items-center justify-center ring-2 ring-forest-950">3</span>
+            <span id="notif-badge"
+              class="absolute -top-1 -right-1 w-5 h-5 rounded-full bg-brick-500 text-warmwhite text-[10px] font-bold flex items-center justify-center ring-2 ring-forest-950">3</span>
           </button>
 
           <!-- Notification Dropdown Drawer -->
-          <div id="notif-dropdown" class="hidden absolute right-0 mt-3 w-80 lg:w-96 glass-card p-4 rounded-2xl z-50 border border-forest-700 shadow-2xl space-y-3">
+          <div id="notif-dropdown"
+            class="hidden absolute right-0 mt-3 w-80 lg:w-96 glass-card p-4 rounded-2xl z-50 border border-forest-700 shadow-2xl space-y-3">
             <div class="flex items-center justify-between border-b border-forest-700 pb-2.5">
-              <span class="text-xs font-bold text-warmwhite flex items-center"><i class="fa-solid fa-bell text-terracotta-400 mr-2"></i>Live System Notifications</span>
-              <button onclick="clearNotifications()" class="text-[10px] text-warmmuted hover:text-terracotta-400">Clear All</button>
+              <span class="text-xs font-bold text-warmwhite flex items-center"><i
+                  class="fa-solid fa-bell text-terracotta-400 mr-2"></i>Live System Notifications</span>
+              <button onclick="clearNotifications()" class="text-[10px] text-warmmuted hover:text-terracotta-400">Clear
+                All</button>
             </div>
             <div id="notif-list" class="space-y-2 max-h-72 overflow-y-auto text-xs">
               <!-- Dynamically rendered -->
@@ -171,54 +221,69 @@
 
         <!-- Role-Aware User Badge & Dropdown -->
         <div id="user-badge" class="hidden relative">
-          <button onclick="toggleUserDropdown()" class="flex items-center space-x-2.5 bg-forest-900 px-3.5 py-1.5 rounded-xl border border-forest-700 hover:border-terracotta-500 transition">
-            <div id="user-avatar" class="w-7 h-7 rounded-lg bg-terracotta-500 text-warmwhite font-extrabold text-xs flex items-center justify-center shadow">U</div>
+          <button onclick="toggleUserDropdown()"
+            class="flex items-center space-x-2.5 bg-forest-900 px-3.5 py-1.5 rounded-xl border border-forest-700 hover:border-terracotta-500 transition">
+            <div id="user-avatar"
+              class="w-7 h-7 rounded-lg bg-terracotta-500 text-warmwhite font-extrabold text-xs flex items-center justify-center shadow">
+              U</div>
             <div class="text-left hidden sm:block">
               <span id="user-name" class="block text-xs font-bold text-warmwhite leading-tight">User Name</span>
-              <span id="user-role-badge" class="block text-[10px] text-terracotta-400 uppercase font-semibold">Role</span>
+              <span id="user-role-badge"
+                class="block text-[10px] text-terracotta-400 uppercase font-semibold">Role</span>
             </div>
             <i class="fa-solid fa-chevron-down text-warmmuted text-[10px]"></i>
           </button>
 
           <!-- User Menu Dropdown -->
-          <div id="user-dropdown" class="hidden absolute right-0 mt-2 w-48 glass-card p-2 rounded-2xl z-50 border border-forest-700 shadow-2xl text-xs space-y-1">
+          <div id="user-dropdown"
+            class="hidden absolute right-0 mt-2 w-48 glass-card p-2 rounded-2xl z-50 border border-forest-700 shadow-2xl text-xs space-y-1">
             <div class="px-3 py-2 border-b border-forest-700">
               <span class="block font-bold text-warmwhite" id="dropdown-user-name">User Name</span>
-              <span class="block text-[10px] text-terracotta-400 font-semibold uppercase" id="dropdown-user-role">Role</span>
+              <span class="block text-[10px] text-terracotta-400 font-semibold uppercase"
+                id="dropdown-user-role">Role</span>
             </div>
-            <button onclick="toggleNotifications(); toggleUserDropdown()" class="w-full text-left px-3 py-2 rounded-lg hover:bg-forest-700 text-warmwhite flex items-center">
+            <button onclick="toggleNotifications(); toggleUserDropdown()"
+              class="w-full text-left px-3 py-2 rounded-lg hover:bg-forest-700 text-warmwhite flex items-center">
               <i class="fa-solid fa-bell mr-2 text-terracotta-400"></i>Notifications
             </button>
-            <button onclick="logout()" class="w-full text-left px-3 py-2 rounded-lg hover:bg-forest-700 text-brick-400 font-bold flex items-center">
+            <button onclick="logout()"
+              class="w-full text-left px-3 py-2 rounded-lg hover:bg-forest-700 text-brick-400 font-bold flex items-center">
               <i class="fa-solid fa-arrow-right-from-bracket mr-2"></i>Sign Out
             </button>
           </div>
         </div>
 
         <!-- Sign In Button (Shown when unauthenticated) -->
-        <button id="login-btn" onclick="openLoginModal()" class="px-4 py-2.5 rounded-xl text-xs font-bold bg-terracotta-500 hover:bg-terracotta-600 text-warmwhite shadow-lg transition">
+        <button id="login-btn" onclick="openLoginModal()"
+          class="px-4 py-2.5 rounded-xl text-xs font-bold bg-terracotta-500 hover:bg-terracotta-600 text-warmwhite shadow-lg transition">
           <i class="fa-solid fa-user-lock mr-1.5"></i>Sign In
         </button>
 
         <!-- Mobile Menu Toggle -->
-        <button onclick="toggleMobileMenu()" class="md:hidden w-10 h-10 rounded-xl bg-forest-900 border border-forest-700 text-warmwhite flex items-center justify-center">
+        <button onclick="toggleMobileMenu()"
+          class="md:hidden w-10 h-10 rounded-xl bg-forest-900 border border-forest-700 text-warmwhite flex items-center justify-center">
           <i class="fa-solid fa-bars text-lg"></i>
         </button>
       </div>
     </div>
 
     <!-- Mobile Dropdown Nav Menu -->
-    <div id="mobile-menu" class="hidden md:hidden mt-3 p-3 bg-forest-900/95 rounded-2xl border border-forest-700 space-y-2">
-      <button id="mob-nav-tracker" onclick="switchTab('tracker'); toggleMobileMenu()" class="w-full text-left px-4 py-2.5 rounded-xl text-xs font-bold text-warmwhite bg-terracotta-500">
+    <div id="mobile-menu"
+      class="hidden md:hidden mt-3 p-3 bg-forest-900/95 rounded-2xl border border-forest-700 space-y-2">
+      <button id="mob-nav-tracker" onclick="switchTab('tracker'); toggleMobileMenu()"
+        class="w-full text-left px-4 py-2.5 rounded-xl text-xs font-bold text-warmwhite bg-terracotta-500">
         <i class="fa-solid fa-magnifying-glass mr-2"></i>Live Track
       </button>
-      <button id="mob-nav-customer" onclick="switchTab('customer'); toggleMobileMenu()" class="hidden w-full text-left px-4 py-2.5 rounded-xl text-xs font-bold text-warmmuted hover:bg-forest-700">
+      <button id="mob-nav-customer" onclick="switchTab('customer'); toggleMobileMenu()"
+        class="hidden w-full text-left px-4 py-2.5 rounded-xl text-xs font-bold text-warmmuted hover:bg-forest-700">
         <i class="fa-solid fa-box mr-2 text-terracotta-400"></i>Customer Hub
       </button>
-      <button id="mob-nav-driver" onclick="switchTab('driver'); toggleMobileMenu()" class="hidden w-full text-left px-4 py-2.5 rounded-xl text-xs font-bold text-warmmuted hover:bg-forest-700">
+      <button id="mob-nav-driver" onclick="switchTab('driver'); toggleMobileMenu()"
+        class="hidden w-full text-left px-4 py-2.5 rounded-xl text-xs font-bold text-warmmuted hover:bg-forest-700">
         <i class="fa-solid fa-truck-fast mr-2 text-sand-400"></i>Driver Console
       </button>
-      <button id="mob-nav-admin" onclick="switchTab('admin'); toggleMobileMenu()" class="hidden w-full text-left px-4 py-2.5 rounded-xl text-xs font-bold text-warmmuted hover:bg-forest-700">
+      <button id="mob-nav-admin" onclick="switchTab('admin'); toggleMobileMenu()"
+        class="hidden w-full text-left px-4 py-2.5 rounded-xl text-xs font-bold text-warmmuted hover:bg-forest-700">
         <i class="fa-solid fa-user-shield mr-2 text-sage-400"></i>Admin Center
       </button>
     </div>
@@ -227,14 +292,18 @@
   <!-- Quick Demo Persona Switcher Header Bar -->
   <div class="bg-forest-900/90 border-b border-forest-700 py-2 px-4 text-center text-xs">
     <div class="max-w-7xl mx-auto flex flex-wrap items-center justify-center gap-2">
-      <span class="text-warmmuted font-semibold mr-1"><i class="fa-solid fa-bolt text-amber-500 mr-1.5"></i>Quick Demo Authenticated Personas:</span>
-      <button onclick="quickLogin('customer1@shiptrack.com', 'Customer@123', 'customer')" class="bg-forest-800 hover:bg-forest-700 text-warmwhite px-3 py-1 rounded-lg border border-forest-700 font-semibold transition flex items-center hover:border-terracotta-500">
+      <span class="text-warmmuted font-semibold mr-1"><i class="fa-solid fa-bolt text-amber-500 mr-1.5"></i>Quick Demo
+        Authenticated Personas:</span>
+      <button onclick="quickLogin('customer1@shiptrack.com', 'Customer@123', 'customer')"
+        class="bg-forest-800 hover:bg-forest-700 text-warmwhite px-3 py-1 rounded-lg border border-forest-700 font-semibold transition flex items-center hover:border-terracotta-500">
         <i class="fa-solid fa-user-check text-terracotta-400 mr-1.5"></i>Customer (Jane Doe)
       </button>
-      <button onclick="quickLogin('driver1@shiptrack.com', 'Driver@123', 'driver')" class="bg-forest-800 hover:bg-forest-700 text-warmwhite px-3 py-1 rounded-lg border border-forest-700 font-semibold transition flex items-center hover:border-terracotta-500">
+      <button onclick="quickLogin('driver1@shiptrack.com', 'Driver@123', 'driver')"
+        class="bg-forest-800 hover:bg-forest-700 text-warmwhite px-3 py-1 rounded-lg border border-forest-700 font-semibold transition flex items-center hover:border-terracotta-500">
         <i class="fa-solid fa-truck text-sand-400 mr-1.5"></i>Driver (Alex River)
       </button>
-      <button onclick="quickLogin('admin@shiptrack.demo', 'Admin@123', 'admin')" class="bg-forest-800 hover:bg-forest-700 text-warmwhite px-3 py-1 rounded-lg border border-forest-700 font-semibold transition flex items-center hover:border-terracotta-500">
+      <button onclick="quickLogin('admin@shiptrack.demo', 'Admin@123', 'admin')"
+        class="bg-forest-800 hover:bg-forest-700 text-warmwhite px-3 py-1 rounded-lg border border-forest-700 font-semibold transition flex items-center hover:border-terracotta-500">
         <i class="fa-solid fa-user-shield text-sage-400 mr-1.5"></i>Admin (System Admin)
       </button>
     </div>
@@ -245,31 +314,40 @@
 
     <!-- VIEW 1: PUBLIC HOME PAGE -->
     <section id="view-tracker" class="space-y-12">
-      
-      <!-- HERO / TRACK MY ORDER SECTION -->
-      <div class="relative overflow-hidden rounded-3xl glass-card route-pattern p-8 lg:p-12 text-center border border-sand-400/15">
-        <div class="absolute -top-24 -right-24 w-96 h-96 bg-terracotta-500/10 rounded-full blur-3xl pointer-events-none"></div>
-        <div class="absolute -bottom-24 -left-24 w-96 h-96 bg-sage-400/10 rounded-full blur-3xl pointer-events-none"></div>
 
-        <span class="inline-flex items-center px-3.5 py-1 rounded-full text-xs font-bold bg-terracotta-500/10 text-terracotta-400 border border-terracotta-500/20 mb-4">
-          <span class="w-2 h-2 rounded-full bg-moss-500 mr-2 pulse-dot"></span> Next-Gen Real-Time Logistics Tracking Engine
+      <!-- HERO / TRACK MY ORDER SECTION -->
+      <div
+        class="relative overflow-hidden rounded-3xl glass-card route-pattern p-8 lg:p-12 text-center border border-sand-400/15">
+        <div
+          class="absolute -top-24 -right-24 w-96 h-96 bg-terracotta-500/10 rounded-full blur-3xl pointer-events-none">
+        </div>
+        <div class="absolute -bottom-24 -left-24 w-96 h-96 bg-sage-400/10 rounded-full blur-3xl pointer-events-none">
+        </div>
+
+        <span
+          class="inline-flex items-center px-3.5 py-1 rounded-full text-xs font-bold bg-terracotta-500/10 text-terracotta-400 border border-terracotta-500/20 mb-4">
+          <span class="w-2 h-2 rounded-full bg-moss-500 mr-2 pulse-dot"></span> Next-Gen Real-Time Logistics Tracking
+          Engine
         </span>
 
         <h1 class="text-3xl lg:text-5xl font-extrabold text-warmwhite tracking-tight max-w-3xl mx-auto leading-tight">
           Track Any Shipment Across <span class="text-terracotta-500">Indian Logistics Routes</span>
         </h1>
         <p class="text-warmmuted text-sm lg:text-base max-w-2xl mx-auto mt-3">
-          Enter your tracking number to see the latest shipment status, delivery estimate, route, and delivery information.
+          Enter your tracking number to see the latest shipment status, delivery estimate, route, and delivery
+          information.
         </p>
 
         <!-- Search Bar Input -->
         <div class="mt-8 max-w-2xl mx-auto flex flex-col sm:flex-row gap-3">
           <div class="relative flex-1">
             <i class="fa-solid fa-barcode text-warmmuted absolute left-4 top-1/2 -translate-y-1/2 text-lg"></i>
-            <input type="text" id="tracking-input" placeholder="e.g. TRK-2026-894120" value="TRK-2026-894120" onkeypress="if(event.key==='Enter') trackShipment()"
+            <input type="text" id="tracking-input" placeholder="e.g. TRK-2026-894120" value="TRK-2026-894120"
+              onkeypress="if(event.key==='Enter') trackShipment()"
               class="w-full pl-12 pr-4 py-4 rounded-2xl bg-forest-900 border border-forest-700 text-warmwhite placeholder-warmmuted focus:outline-none focus:border-terracotta-500 text-base tracking-wider uppercase font-mono font-bold">
           </div>
-          <button onclick="trackShipment()" class="px-8 py-4 rounded-2xl bg-terracotta-500 hover:bg-terracotta-600 text-warmwhite font-bold text-base shadow-xl shadow-terracotta-500/20 transition transform active:scale-95 flex items-center justify-center">
+          <button onclick="trackShipment()"
+            class="px-8 py-4 rounded-2xl bg-terracotta-500 hover:bg-terracotta-600 text-warmwhite font-bold text-base shadow-xl shadow-terracotta-500/20 transition transform active:scale-95 flex items-center justify-center">
             <i class="fa-solid fa-magnifying-glass mr-2"></i> Track My Order
           </button>
         </div>
@@ -277,9 +355,12 @@
         <!-- Sample Search Chips -->
         <div class="mt-5 flex flex-wrap items-center justify-center gap-2 text-xs text-warmmuted">
           <span class="font-semibold text-warmwhite">Try Demo Tracking Codes:</span>
-          <button onclick="setAndTrack('TRK-2026-894120')" class="px-3 py-1.5 bg-forest-900 hover:bg-forest-700 text-sand-400 rounded-lg font-mono border border-forest-700 transition">TRK-2026-894120</button>
-          <button onclick="setAndTrack('TRK-2026-302194')" class="px-3 py-1.5 bg-forest-900 hover:bg-forest-700 text-sand-400 rounded-lg font-mono border border-forest-700 transition">TRK-2026-302194</button>
-          <button onclick="setAndTrack('TRK-2026-110482')" class="px-3 py-1.5 bg-forest-900 hover:bg-forest-700 text-sand-400 rounded-lg font-mono border border-forest-700 transition">TRK-2026-110482</button>
+          <button onclick="setAndTrack('TRK-2026-894120')"
+            class="px-3 py-1.5 bg-forest-900 hover:bg-forest-700 text-sand-400 rounded-lg font-mono border border-forest-700 transition">TRK-2026-894120</button>
+          <button onclick="setAndTrack('TRK-2026-302194')"
+            class="px-3 py-1.5 bg-forest-900 hover:bg-forest-700 text-sand-400 rounded-lg font-mono border border-forest-700 transition">TRK-2026-302194</button>
+          <button onclick="setAndTrack('TRK-2026-110482')"
+            class="px-3 py-1.5 bg-forest-900 hover:bg-forest-700 text-sand-400 rounded-lg font-mono border border-forest-700 transition">TRK-2026-110482</button>
         </div>
       </div>
 
@@ -291,7 +372,8 @@
       <!-- HELP DESK PUBLIC SECTION -->
       <div id="public-help-desk" class="space-y-6 pt-4 border-t border-forest-700">
         <div class="text-center max-w-2xl mx-auto space-y-2">
-          <span class="px-3.5 py-1 rounded-full text-xs font-bold bg-sage-400/10 text-sage-400 border border-sage-400/20 inline-block">
+          <span
+            class="px-3.5 py-1 rounded-full text-xs font-bold bg-sage-400/10 text-sage-400 border border-sage-400/20 inline-block">
             <i class="fa-solid fa-headset mr-1.5"></i>Support Center
           </span>
           <h2 class="text-3xl font-extrabold text-warmwhite">HELP DESK</h2>
@@ -301,85 +383,109 @@
         <!-- 6 Support Categories Grid -->
         <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5">
           <!-- 1. Late Delivery -->
-          <div class="glass-card glass-card-hover p-6 rounded-2xl flex flex-col justify-between border border-forest-700 space-y-4">
+          <div
+            class="glass-card glass-card-hover p-6 rounded-2xl flex flex-col justify-between border border-forest-700 space-y-4">
             <div class="space-y-3">
-              <div class="w-12 h-12 rounded-xl bg-amber-500/10 text-amber-500 border border-amber-500/20 flex items-center justify-center text-xl">
+              <div
+                class="w-12 h-12 rounded-xl bg-amber-500/10 text-amber-500 border border-amber-500/20 flex items-center justify-center text-xl">
                 <i class="fa-solid fa-clock"></i>
               </div>
               <h3 class="text-lg font-bold text-warmwhite">Late Delivery</h3>
-              <p class="text-xs text-warmmuted leading-relaxed">Your shipment hasn't arrived within the expected delivery time frame.</p>
+              <p class="text-xs text-warmmuted leading-relaxed">Your shipment hasn't arrived within the expected
+                delivery time frame.</p>
             </div>
-            <button onclick="openSupportModal('Late Delivery')" class="w-full py-2.5 bg-forest-900 hover:bg-terracotta-500 text-warmwhite font-bold text-xs rounded-xl border border-forest-700 hover:border-terracotta-500 transition flex items-center justify-center">
+            <button onclick="openSupportModal('Late Delivery')"
+              class="w-full py-2.5 bg-forest-900 hover:bg-terracotta-500 text-warmwhite font-bold text-xs rounded-xl border border-forest-700 hover:border-terracotta-500 transition flex items-center justify-center">
               <i class="fa-solid fa-circle-question mr-2 text-amber-400"></i>Get Help
             </button>
           </div>
 
           <!-- 2. Refund & Payment -->
-          <div class="glass-card glass-card-hover p-6 rounded-2xl flex flex-col justify-between border border-forest-700 space-y-4">
+          <div
+            class="glass-card glass-card-hover p-6 rounded-2xl flex flex-col justify-between border border-forest-700 space-y-4">
             <div class="space-y-3">
-              <div class="w-12 h-12 rounded-xl bg-sage-400/10 text-sage-400 border border-sage-400/20 flex items-center justify-center text-xl">
+              <div
+                class="w-12 h-12 rounded-xl bg-sage-400/10 text-sage-400 border border-sage-400/20 flex items-center justify-center text-xl">
                 <i class="fa-solid fa-wallet"></i>
               </div>
               <h3 class="text-lg font-bold text-warmwhite">Refund & Payment</h3>
-              <p class="text-xs text-warmmuted leading-relaxed">Get help with refunds, overcharges, or payment billing disputes.</p>
+              <p class="text-xs text-warmmuted leading-relaxed">Get help with refunds, overcharges, or payment billing
+                disputes.</p>
             </div>
-            <button onclick="openSupportModal('Refund & Payment')" class="w-full py-2.5 bg-forest-900 hover:bg-terracotta-500 text-warmwhite font-bold text-xs rounded-xl border border-forest-700 hover:border-terracotta-500 transition flex items-center justify-center">
+            <button onclick="openSupportModal('Refund & Payment')"
+              class="w-full py-2.5 bg-forest-900 hover:bg-terracotta-500 text-warmwhite font-bold text-xs rounded-xl border border-forest-700 hover:border-terracotta-500 transition flex items-center justify-center">
               <i class="fa-solid fa-circle-question mr-2 text-sage-300"></i>Get Help
             </button>
           </div>
 
           <!-- 3. Order Cancellation -->
-          <div class="glass-card glass-card-hover p-6 rounded-2xl flex flex-col justify-between border border-forest-700 space-y-4">
+          <div
+            class="glass-card glass-card-hover p-6 rounded-2xl flex flex-col justify-between border border-forest-700 space-y-4">
             <div class="space-y-3">
-              <div class="w-12 h-12 rounded-xl bg-brick-500/10 text-brick-500 border border-brick-500/20 flex items-center justify-center text-xl">
+              <div
+                class="w-12 h-12 rounded-xl bg-brick-500/10 text-brick-500 border border-brick-500/20 flex items-center justify-center text-xl">
                 <i class="fa-solid fa-circle-xmark"></i>
               </div>
               <h3 class="text-lg font-bold text-warmwhite">Order Cancellation</h3>
-              <p class="text-xs text-warmmuted leading-relaxed">Request cancellation of a package dispatch before final delivery.</p>
+              <p class="text-xs text-warmmuted leading-relaxed">Request cancellation of a package dispatch before final
+                delivery.</p>
             </div>
-            <button onclick="openSupportModal('Order Cancellation')" class="w-full py-2.5 bg-forest-900 hover:bg-terracotta-500 text-warmwhite font-bold text-xs rounded-xl border border-forest-700 hover:border-terracotta-500 transition flex items-center justify-center">
+            <button onclick="openSupportModal('Order Cancellation')"
+              class="w-full py-2.5 bg-forest-900 hover:bg-terracotta-500 text-warmwhite font-bold text-xs rounded-xl border border-forest-700 hover:border-terracotta-500 transition flex items-center justify-center">
               <i class="fa-solid fa-circle-question mr-2 text-brick-400"></i>Get Help
             </button>
           </div>
 
           <!-- 4. Damaged Package -->
-          <div class="glass-card glass-card-hover p-6 rounded-2xl flex flex-col justify-between border border-forest-700 space-y-4">
+          <div
+            class="glass-card glass-card-hover p-6 rounded-2xl flex flex-col justify-between border border-forest-700 space-y-4">
             <div class="space-y-3">
-              <div class="w-12 h-12 rounded-xl bg-terracotta-500/10 text-terracotta-500 border border-terracotta-500/20 flex items-center justify-center text-xl">
+              <div
+                class="w-12 h-12 rounded-xl bg-terracotta-500/10 text-terracotta-500 border border-terracotta-500/20 flex items-center justify-center text-xl">
                 <i class="fa-solid fa-box-open"></i>
               </div>
               <h3 class="text-lg font-bold text-warmwhite">Damaged Package</h3>
-              <p class="text-xs text-warmmuted leading-relaxed">Report a package that arrived damaged, crushed, or compromised.</p>
+              <p class="text-xs text-warmmuted leading-relaxed">Report a package that arrived damaged, crushed, or
+                compromised.</p>
             </div>
-            <button onclick="openSupportModal('Damaged Package')" class="w-full py-2.5 bg-forest-900 hover:bg-terracotta-500 text-warmwhite font-bold text-xs rounded-xl border border-forest-700 hover:border-terracotta-500 transition flex items-center justify-center">
+            <button onclick="openSupportModal('Damaged Package')"
+              class="w-full py-2.5 bg-forest-900 hover:bg-terracotta-500 text-warmwhite font-bold text-xs rounded-xl border border-forest-700 hover:border-terracotta-500 transition flex items-center justify-center">
               <i class="fa-solid fa-circle-question mr-2 text-terracotta-400"></i>Get Help
             </button>
           </div>
 
           <!-- 5. Missing / Incorrect Item -->
-          <div class="glass-card glass-card-hover p-6 rounded-2xl flex flex-col justify-between border border-forest-700 space-y-4">
+          <div
+            class="glass-card glass-card-hover p-6 rounded-2xl flex flex-col justify-between border border-forest-700 space-y-4">
             <div class="space-y-3">
-              <div class="w-12 h-12 rounded-xl bg-sand-400/10 text-sand-400 border border-sand-400/20 flex items-center justify-center text-xl">
+              <div
+                class="w-12 h-12 rounded-xl bg-sand-400/10 text-sand-400 border border-sand-400/20 flex items-center justify-center text-xl">
                 <i class="fa-solid fa-magnifying-glass-box"></i>
               </div>
               <h3 class="text-lg font-bold text-warmwhite">Missing / Incorrect Item</h3>
-              <p class="text-xs text-warmmuted leading-relaxed">Report missing items or contents that do not match your order.</p>
+              <p class="text-xs text-warmmuted leading-relaxed">Report missing items or contents that do not match your
+                order.</p>
             </div>
-            <button onclick="openSupportModal('Missing / Incorrect Item')" class="w-full py-2.5 bg-forest-900 hover:bg-terracotta-500 text-warmwhite font-bold text-xs rounded-xl border border-forest-700 hover:border-terracotta-500 transition flex items-center justify-center">
+            <button onclick="openSupportModal('Missing / Incorrect Item')"
+              class="w-full py-2.5 bg-forest-900 hover:bg-terracotta-500 text-warmwhite font-bold text-xs rounded-xl border border-forest-700 hover:border-terracotta-500 transition flex items-center justify-center">
               <i class="fa-solid fa-circle-question mr-2 text-sand-300"></i>Get Help
             </button>
           </div>
 
           <!-- 6. Tracking Problem -->
-          <div class="glass-card glass-card-hover p-6 rounded-2xl flex flex-col justify-between border border-forest-700 space-y-4">
+          <div
+            class="glass-card glass-card-hover p-6 rounded-2xl flex flex-col justify-between border border-forest-700 space-y-4">
             <div class="space-y-3">
-              <div class="w-12 h-12 rounded-xl bg-sage-400/10 text-sage-400 border border-sage-400/20 flex items-center justify-center text-xl">
+              <div
+                class="w-12 h-12 rounded-xl bg-sage-400/10 text-sage-400 border border-sage-400/20 flex items-center justify-center text-xl">
                 <i class="fa-solid fa-location-crosshairs"></i>
               </div>
               <h3 class="text-lg font-bold text-warmwhite">Tracking Problem</h3>
-              <p class="text-xs text-warmmuted leading-relaxed">Your tracking information is stuck, missing, or displaying invalid states.</p>
+              <p class="text-xs text-warmmuted leading-relaxed">Your tracking information is stuck, missing, or
+                displaying invalid states.</p>
             </div>
-            <button onclick="openSupportModal('Tracking Problem')" class="w-full py-2.5 bg-forest-900 hover:bg-terracotta-500 text-warmwhite font-bold text-xs rounded-xl border border-forest-700 hover:border-terracotta-500 transition flex items-center justify-center">
+            <button onclick="openSupportModal('Tracking Problem')"
+              class="w-full py-2.5 bg-forest-900 hover:bg-terracotta-500 text-warmwhite font-bold text-xs rounded-xl border border-forest-700 hover:border-terracotta-500 transition flex items-center justify-center">
               <i class="fa-solid fa-circle-question mr-2 text-sage-300"></i>Get Help
             </button>
           </div>
@@ -396,13 +502,18 @@
             <span class="font-bold text-warmwhite">ShipTrack Platform Quick Links:</span>
           </div>
           <div class="flex flex-wrap items-center gap-4 text-warmmuted">
-            <button onclick="window.scrollTo({top: 0, behavior: 'smooth'}); document.getElementById('tracking-input').focus()" class="hover:text-terracotta-400 transition flex items-center">
+            <button
+              onclick="window.scrollTo({top: 0, behavior: 'smooth'}); document.getElementById('tracking-input').focus()"
+              class="hover:text-terracotta-400 transition flex items-center">
               <i class="fa-solid fa-magnifying-glass mr-1.5 text-sand-400"></i>Track My Order
             </button>
-            <button onclick="openSupportModal('General Support')" class="hover:text-terracotta-400 transition flex items-center">
+            <button onclick="openSupportModal('General Support')"
+              class="hover:text-terracotta-400 transition flex items-center">
               <i class="fa-solid fa-headset mr-1.5 text-terracotta-400"></i>Contact Support
             </button>
-            <button onclick="alert('ShipTrack FAQs:\n\n1. How do I track my order? Enter your tracking number (e.g. TRK-2026-894120) above.\n2. Do I need to log in to track? No, order tracking is free and public.\n3. How to report a problem? Click Get Help under any category in the Help Desk section.')" class="hover:text-terracotta-400 transition flex items-center">
+            <button
+              onclick="alert('ShipTrack FAQs:\n\n1. How do I track my order? Enter your tracking number (e.g. TRK-2026-894120) above.\n2. Do I need to log in to track? No, order tracking is free and public.\n3. How to report a problem? Click Get Help under any category in the Help Desk section.')"
+              class="hover:text-terracotta-400 transition flex items-center">
               <i class="fa-solid fa-circle-question mr-1.5 text-sage-400"></i>FAQs
             </button>
           </div>
@@ -436,145 +547,186 @@
 
   <!-- Floating AI Assistant Button -->
   <div class="fixed bottom-6 right-6 z-50">
-    <button onclick="toggleAIChatModal()" class="w-14 h-14 rounded-full bg-terracotta-500 hover:bg-terracotta-600 text-warmwhite shadow-2xl shadow-terracotta-500/30 flex items-center justify-center text-2xl hover:scale-105 transition transform active:scale-95">
+    <button onclick="toggleAIChatModal()"
+      class="w-14 h-14 rounded-full bg-terracotta-500 hover:bg-terracotta-600 text-warmwhite shadow-2xl shadow-terracotta-500/30 flex items-center justify-center text-2xl hover:scale-105 transition transform active:scale-95">
       <i class="fa-solid fa-robot"></i>
     </button>
   </div>
 
   <!-- AI Assistant Chat Modal Drawer -->
-  <div id="ai-chat-modal" class="hidden fixed bottom-24 right-6 w-96 max-w-[calc(100vw-3rem)] h-[540px] z-50 glass-card rounded-3xl flex flex-col overflow-hidden shadow-2xl border border-sand-400/15">
+  <div id="ai-chat-modal"
+    class="hidden fixed bottom-24 right-6 w-96 max-w-[calc(100vw-3rem)] h-[540px] z-50 glass-card rounded-3xl flex flex-col overflow-hidden shadow-2xl border border-sand-400/15">
     <!-- Header -->
     <div class="bg-forest-950 p-4 border-b border-forest-700 flex items-center justify-between">
       <div class="flex items-center space-x-3">
-        <div class="w-9 h-9 rounded-xl bg-terracotta-500 text-warmwhite flex items-center justify-center text-lg shadow">
+        <div
+          class="w-9 h-9 rounded-xl bg-terracotta-500 text-warmwhite flex items-center justify-center text-lg shadow">
           <i class="fa-solid fa-robot"></i>
         </div>
         <div>
           <h4 class="text-xs font-bold text-warmwhite">ShipBot AI Logistics Assistant</h4>
-          <span class="block text-[10px] text-moss-400 font-semibold"><span class="w-1.5 h-1.5 rounded-full bg-moss-400 inline-block mr-1"></span>Connected to Live DB</span>
+          <span class="block text-[10px] text-moss-400 font-semibold"><span
+              class="w-1.5 h-1.5 rounded-full bg-moss-400 inline-block mr-1"></span>Connected to Live DB</span>
         </div>
       </div>
-      <button onclick="toggleAIChatModal()" class="text-warmmuted hover:text-warmwhite text-lg"><i class="fa-solid fa-xmark"></i></button>
+      <button onclick="toggleAIChatModal()" class="text-warmmuted hover:text-warmwhite text-lg"><i
+          class="fa-solid fa-xmark"></i></button>
     </div>
 
     <!-- Messages List -->
     <div id="ai-messages" class="flex-1 p-4 overflow-y-auto space-y-3 text-xs">
-      <div class="bg-forest-900 text-warmwhite p-3 rounded-2xl rounded-tl-none border border-forest-700 max-w-[88%] leading-relaxed">
-        Hello! I'm <strong>ShipBot AI</strong>. Ask me to track any parcel (e.g. <code>TRK-2026-894120</code>), calculate shipping rates, or check delivery estimates!
+      <div
+        class="bg-forest-900 text-warmwhite p-3 rounded-2xl rounded-tl-none border border-forest-700 max-w-[88%] leading-relaxed">
+        Hello! I'm <strong>ShipBot AI</strong>. Ask me to track any parcel (e.g. <code>TRK-2026-894120</code>),
+        calculate shipping rates, or check delivery estimates!
       </div>
     </div>
 
     <!-- Quick Prompt Chips -->
     <div class="px-3 py-2 bg-forest-950 border-t border-forest-700 flex gap-1.5 overflow-x-auto text-[11px]">
-      <button onclick="sendAIQuick('Where is TRK-2026-894120?')" class="whitespace-nowrap px-2.5 py-1 bg-forest-900 text-sand-300 rounded-lg hover:bg-forest-800 border border-forest-700 transition">Where is TRK-894120?</button>
-      <button onclick="sendAIQuick('How much does shipping cost?')" class="whitespace-nowrap px-2.5 py-1 bg-forest-900 text-sand-300 rounded-lg hover:bg-forest-800 border border-forest-700 transition">Shipping Rates</button>
+      <button onclick="sendAIQuick('Where is TRK-2026-894120?')"
+        class="whitespace-nowrap px-2.5 py-1 bg-forest-900 text-sand-300 rounded-lg hover:bg-forest-800 border border-forest-700 transition">Where
+        is TRK-894120?</button>
+      <button onclick="sendAIQuick('How much does shipping cost?')"
+        class="whitespace-nowrap px-2.5 py-1 bg-forest-900 text-sand-300 rounded-lg hover:bg-forest-800 border border-forest-700 transition">Shipping
+        Rates</button>
     </div>
 
     <!-- Input Form -->
     <form onsubmit="handleAISubmit(event)" class="p-3 bg-forest-950 border-t border-forest-700 flex gap-2">
-      <input type="text" id="ai-input" placeholder="Ask ShipBot anything..." class="flex-1 px-3.5 py-2.5 bg-forest-900 border border-forest-700 rounded-xl text-xs text-warmwhite placeholder-warmmuted focus:outline-none focus:border-terracotta-500">
-      <button type="submit" class="px-3.5 py-2.5 bg-terracotta-500 hover:bg-terracotta-600 text-warmwhite rounded-xl text-xs font-bold transition">
+      <input type="text" id="ai-input" placeholder="Ask ShipBot anything..."
+        class="flex-1 px-3.5 py-2.5 bg-forest-900 border border-forest-700 rounded-xl text-xs text-warmwhite placeholder-warmmuted focus:outline-none focus:border-terracotta-500">
+      <button type="submit"
+        class="px-3.5 py-2.5 bg-terracotta-500 hover:bg-terracotta-600 text-warmwhite rounded-xl text-xs font-bold transition">
         <i class="fa-solid fa-paper-plane"></i>
       </button>
     </form>
   </div>
 
   <!-- MODAL: LOGIN / REGISTER -->
-  <div id="auth-modal" class="hidden fixed inset-0 z-50 bg-forest-950/80 backdrop-blur-sm flex items-center justify-center p-4">
+  <div id="auth-modal"
+    class="hidden fixed inset-0 z-50 bg-forest-950/80 backdrop-blur-sm flex items-center justify-center p-4">
     <div class="glass-card w-full max-w-md rounded-3xl p-6 relative border border-sand-400/15">
-      <button onclick="closeAuthModal()" class="absolute top-5 right-5 text-warmmuted hover:text-warmwhite"><i class="fa-solid fa-xmark text-lg"></i></button>
+      <button onclick="closeAuthModal()" class="absolute top-5 right-5 text-warmmuted hover:text-warmwhite"><i
+          class="fa-solid fa-xmark text-lg"></i></button>
 
       <div class="flex border-b border-forest-700 mb-6">
-        <button id="auth-tab-login" onclick="switchAuthTab('login')" class="flex-1 pb-3 text-xs font-bold text-terracotta-400 border-b-2 border-terracotta-500">Sign In</button>
-        <button id="auth-tab-register" onclick="switchAuthTab('register')" class="flex-1 pb-3 text-xs font-bold text-warmmuted border-b-2 border-transparent">Register</button>
+        <button id="auth-tab-login" onclick="switchAuthTab('login')"
+          class="flex-1 pb-3 text-xs font-bold text-terracotta-400 border-b-2 border-terracotta-500">Sign In</button>
+        <button id="auth-tab-register" onclick="switchAuthTab('register')"
+          class="flex-1 pb-3 text-xs font-bold text-warmmuted border-b-2 border-transparent">Register</button>
       </div>
 
       <!-- Login Form -->
       <form id="login-form" onsubmit="handleLoginSubmit(event)" class="space-y-4">
         <div>
           <label class="block text-xs font-semibold text-warmwhite mb-1">Email Address</label>
-          <input type="email" id="login-email" required placeholder="name@domain.com" class="w-full px-3.5 py-2.5 bg-forest-950 border border-forest-700 rounded-xl text-xs text-warmwhite placeholder-warmmuted focus:outline-none focus:border-terracotta-500">
+          <input type="email" id="login-email" required placeholder="name@domain.com"
+            class="w-full px-3.5 py-2.5 bg-forest-950 border border-forest-700 rounded-xl text-xs text-warmwhite placeholder-warmmuted focus:outline-none focus:border-terracotta-500">
         </div>
         <div>
           <label class="block text-xs font-semibold text-warmwhite mb-1">Password</label>
-          <input type="password" id="login-password" required placeholder="••••••••" class="w-full px-3.5 py-2.5 bg-forest-950 border border-forest-700 rounded-xl text-xs text-warmwhite focus:outline-none focus:border-terracotta-500">
+          <input type="password" id="login-password" required placeholder="••••••••"
+            class="w-full px-3.5 py-2.5 bg-forest-950 border border-forest-700 rounded-xl text-xs text-warmwhite focus:outline-none focus:border-terracotta-500">
         </div>
-        <button type="submit" class="w-full py-3 bg-terracotta-500 hover:bg-terracotta-600 text-warmwhite font-bold text-xs rounded-xl transition shadow-lg shadow-terracotta-500/20">Sign In</button>
+        <button type="submit"
+          class="w-full py-3 bg-terracotta-500 hover:bg-terracotta-600 text-warmwhite font-bold text-xs rounded-xl transition shadow-lg shadow-terracotta-500/20">Sign
+          In</button>
       </form>
 
       <!-- Register Form -->
       <form id="register-form" onsubmit="handleRegisterSubmit(event)" class="hidden space-y-4">
         <div>
           <label class="block text-xs font-semibold text-warmwhite mb-1">Full Name</label>
-          <input type="text" id="reg-name" required placeholder="Jane Doe" class="w-full px-3.5 py-2.5 bg-forest-950 border border-forest-700 rounded-xl text-xs text-warmwhite placeholder-warmmuted focus:outline-none focus:border-terracotta-500">
+          <input type="text" id="reg-name" required placeholder="Jane Doe"
+            class="w-full px-3.5 py-2.5 bg-forest-950 border border-forest-700 rounded-xl text-xs text-warmwhite placeholder-warmmuted focus:outline-none focus:border-terracotta-500">
         </div>
         <div>
           <label class="block text-xs font-semibold text-warmwhite mb-1">Email Address</label>
-          <input type="email" id="reg-email" required placeholder="jane@example.com" class="w-full px-3.5 py-2.5 bg-forest-950 border border-forest-700 rounded-xl text-xs text-warmwhite placeholder-warmmuted focus:outline-none focus:border-terracotta-500">
+          <input type="email" id="reg-email" required placeholder="jane@example.com"
+            class="w-full px-3.5 py-2.5 bg-forest-950 border border-forest-700 rounded-xl text-xs text-warmwhite placeholder-warmmuted focus:outline-none focus:border-terracotta-500">
         </div>
         <div>
           <label class="block text-xs font-semibold text-warmwhite mb-1">Password</label>
-          <input type="password" id="reg-password" required placeholder="Min 6 characters" class="w-full px-3.5 py-2.5 bg-forest-950 border border-forest-700 rounded-xl text-xs text-warmwhite placeholder-warmmuted focus:outline-none focus:border-terracotta-500">
+          <input type="password" id="reg-password" required placeholder="Min 6 characters"
+            class="w-full px-3.5 py-2.5 bg-forest-950 border border-forest-700 rounded-xl text-xs text-warmwhite placeholder-warmmuted focus:outline-none focus:border-terracotta-500">
         </div>
         <div>
           <label class="block text-xs font-semibold text-warmwhite mb-1">Account Role</label>
-          <select id="reg-role" class="w-full px-3.5 py-2.5 bg-forest-950 border border-forest-700 rounded-xl text-xs text-warmwhite focus:outline-none focus:border-terracotta-500">
+          <select id="reg-role"
+            class="w-full px-3.5 py-2.5 bg-forest-950 border border-forest-700 rounded-xl text-xs text-warmwhite focus:outline-none focus:border-terracotta-500">
             <option value="customer">Customer (Shipment Sender)</option>
             <option value="driver">Delivery Driver</option>
           </select>
         </div>
-        <button type="submit" class="w-full py-3 bg-terracotta-500 hover:bg-terracotta-600 text-warmwhite font-bold text-xs rounded-xl transition shadow-lg shadow-terracotta-500/20">Create Account</button>
+        <button type="submit"
+          class="w-full py-3 bg-terracotta-500 hover:bg-terracotta-600 text-warmwhite font-bold text-xs rounded-xl transition shadow-lg shadow-terracotta-500/20">Create
+          Account</button>
       </form>
     </div>
   </div>
 
   <!-- MODAL: SUPPORT TICKET SUBMISSION -->
-  <div id="support-ticket-modal" class="hidden fixed inset-0 z-50 bg-forest-950/80 backdrop-blur-sm flex items-center justify-center p-4">
+  <div id="support-ticket-modal"
+    class="hidden fixed inset-0 z-50 bg-forest-950/80 backdrop-blur-sm flex items-center justify-center p-4">
     <div class="glass-card w-full max-w-lg rounded-3xl p-6 relative border border-sand-400/15">
-      <button onclick="closeSupportModal()" class="absolute top-5 right-5 text-warmmuted hover:text-warmwhite"><i class="fa-solid fa-xmark text-lg"></i></button>
+      <button onclick="closeSupportModal()" class="absolute top-5 right-5 text-warmmuted hover:text-warmwhite"><i
+          class="fa-solid fa-xmark text-lg"></i></button>
 
       <h3 id="stm-category-title" class="text-xl font-bold text-warmwhite mb-1">Report a Delivery Issue</h3>
-      <p class="text-xs text-warmmuted mb-4">Enter your tracking code and issue details to create a priority support ticket.</p>
+      <p class="text-xs text-warmmuted mb-4">Enter your tracking code and issue details to create a priority support
+        ticket.</p>
 
       <form onsubmit="handleSupportSubmit(event)" class="space-y-4">
         <input type="hidden" id="stm-category-value">
 
         <div>
           <label class="block text-xs font-semibold text-warmwhite mb-1">Tracking Number (Validated)</label>
-          <input type="text" id="stm-tracking" oninput="validateSupportTracking()" placeholder="e.g. TRK-2026-894120" class="w-full px-3.5 py-2.5 bg-forest-950 border border-forest-700 rounded-xl text-xs text-warmwhite uppercase font-mono font-bold placeholder-warmmuted focus:outline-none focus:border-terracotta-500">
+          <input type="text" id="stm-tracking" oninput="validateSupportTracking()" placeholder="e.g. TRK-2026-894120"
+            class="w-full px-3.5 py-2.5 bg-forest-950 border border-forest-700 rounded-xl text-xs text-warmwhite uppercase font-mono font-bold placeholder-warmmuted focus:outline-none focus:border-terracotta-500">
           <div id="stm-tracking-feedback" class="mt-1.5 text-[11px] hidden"></div>
         </div>
 
         <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
           <div>
             <label class="block text-xs font-semibold text-warmwhite mb-1">Your Full Name</label>
-            <input type="text" id="stm-name" required placeholder="Jane Doe" class="w-full px-3 py-2 bg-forest-950 border border-forest-700 rounded-xl text-xs text-warmwhite">
+            <input type="text" id="stm-name" required placeholder="Jane Doe"
+              class="w-full px-3 py-2 bg-forest-950 border border-forest-700 rounded-xl text-xs text-warmwhite">
           </div>
           <div>
             <label class="block text-xs font-semibold text-warmwhite mb-1">Email Address</label>
-            <input type="email" id="stm-email" required placeholder="jane@example.com" class="w-full px-3 py-2 bg-forest-950 border border-forest-700 rounded-xl text-xs text-warmwhite">
+            <input type="email" id="stm-email" required placeholder="jane@example.com"
+              class="w-full px-3 py-2 bg-forest-950 border border-forest-700 rounded-xl text-xs text-warmwhite">
           </div>
         </div>
 
         <div>
           <label class="block text-xs font-semibold text-warmwhite mb-1">Issue Description & Details</label>
-          <textarea id="stm-description" rows="3" required placeholder="Provide specific details about the issue..." class="w-full px-3.5 py-2 bg-forest-950 border border-forest-700 rounded-xl text-xs text-warmwhite focus:outline-none focus:border-terracotta-500"></textarea>
+          <textarea id="stm-description" rows="3" required placeholder="Provide specific details about the issue..."
+            class="w-full px-3.5 py-2 bg-forest-950 border border-forest-700 rounded-xl text-xs text-warmwhite focus:outline-none focus:border-terracotta-500"></textarea>
         </div>
 
         <div class="flex justify-end space-x-2 pt-2">
-          <button type="button" onclick="closeSupportModal()" class="px-4 py-2.5 bg-forest-900 hover:bg-forest-800 text-warmmuted rounded-xl text-xs font-semibold">Cancel</button>
-          <button type="submit" class="px-6 py-2.5 bg-terracotta-500 hover:bg-terracotta-600 text-warmwhite font-bold text-xs rounded-xl shadow-lg transition">Submit Request</button>
+          <button type="button" onclick="closeSupportModal()"
+            class="px-4 py-2.5 bg-forest-900 hover:bg-forest-800 text-warmmuted rounded-xl text-xs font-semibold">Cancel</button>
+          <button type="submit"
+            class="px-6 py-2.5 bg-terracotta-500 hover:bg-terracotta-600 text-warmwhite font-bold text-xs rounded-xl shadow-lg transition">Submit
+            Request</button>
         </div>
       </form>
     </div>
   </div>
 
   <!-- MODAL: CREATE SHIPMENT -->
-  <div id="create-shipment-modal" class="hidden fixed inset-0 z-50 bg-forest-950/80 backdrop-blur-sm flex items-center justify-center p-4">
-    <div class="glass-card w-full max-w-2xl rounded-3xl p-6 relative border border-sand-400/15 max-h-[90vh] overflow-y-auto">
-      <button onclick="closeCreateShipmentModal()" class="absolute top-5 right-5 text-warmmuted hover:text-warmwhite"><i class="fa-solid fa-xmark text-lg"></i></button>
+  <div id="create-shipment-modal"
+    class="hidden fixed inset-0 z-50 bg-forest-950/80 backdrop-blur-sm flex items-center justify-center p-4">
+    <div
+      class="glass-card w-full max-w-2xl rounded-3xl p-6 relative border border-sand-400/15 max-h-[90vh] overflow-y-auto">
+      <button onclick="closeCreateShipmentModal()" class="absolute top-5 right-5 text-warmmuted hover:text-warmwhite"><i
+          class="fa-solid fa-xmark text-lg"></i></button>
 
-      <h3 class="text-xl font-bold text-warmwhite mb-1"><i class="fa-solid fa-box-open text-terracotta-400 mr-2"></i>Create New Shipment</h3>
+      <h3 class="text-xl font-bold text-warmwhite mb-1"><i
+          class="fa-solid fa-box-open text-terracotta-400 mr-2"></i>Create New Shipment</h3>
       <p class="text-xs text-warmmuted mb-6">Enter sender, recipient, package weight, and delivery priority details.</p>
 
       <form onsubmit="handleCreateShipmentSubmit(event)" class="space-y-4">
@@ -583,17 +735,23 @@
           <div>
             <h4 class="text-xs font-bold text-terracotta-400 uppercase mb-2">Sender Details</h4>
             <div class="space-y-2">
-              <input type="text" id="cs-sender-name" required placeholder="Sender Full Name" class="w-full px-3 py-2 bg-forest-900 border border-forest-700 rounded-lg text-xs text-warmwhite">
-              <input type="text" id="cs-sender-address" required placeholder="Street Address" class="w-full px-3 py-2 bg-forest-900 border border-forest-700 rounded-lg text-xs text-warmwhite">
-              <input type="text" id="cs-sender-city" required placeholder="Origin City (e.g. Hyderabad)" class="w-full px-3 py-2 bg-forest-900 border border-forest-700 rounded-lg text-xs text-warmwhite">
+              <input type="text" id="cs-sender-name" required placeholder="Sender Full Name"
+                class="w-full px-3 py-2 bg-forest-900 border border-forest-700 rounded-lg text-xs text-warmwhite">
+              <input type="text" id="cs-sender-address" required placeholder="Street Address"
+                class="w-full px-3 py-2 bg-forest-900 border border-forest-700 rounded-lg text-xs text-warmwhite">
+              <input type="text" id="cs-sender-city" required placeholder="Origin City (e.g. Hyderabad)"
+                class="w-full px-3 py-2 bg-forest-900 border border-forest-700 rounded-lg text-xs text-warmwhite">
             </div>
           </div>
           <div>
             <h4 class="text-xs font-bold text-sand-400 uppercase mb-2">Recipient Details</h4>
             <div class="space-y-2">
-              <input type="text" id="cs-recipient-name" required placeholder="Recipient Full Name" class="w-full px-3 py-2 bg-forest-900 border border-forest-700 rounded-lg text-xs text-warmwhite">
-              <input type="text" id="cs-recipient-address" required placeholder="Destination Address" class="w-full px-3 py-2 bg-forest-900 border border-forest-700 rounded-lg text-xs text-warmwhite">
-              <input type="text" id="cs-recipient-city" required placeholder="Destination City (e.g. Bengaluru)" class="w-full px-3 py-2 bg-forest-900 border border-forest-700 rounded-lg text-xs text-warmwhite">
+              <input type="text" id="cs-recipient-name" required placeholder="Recipient Full Name"
+                class="w-full px-3 py-2 bg-forest-900 border border-forest-700 rounded-lg text-xs text-warmwhite">
+              <input type="text" id="cs-recipient-address" required placeholder="Destination Address"
+                class="w-full px-3 py-2 bg-forest-900 border border-forest-700 rounded-lg text-xs text-warmwhite">
+              <input type="text" id="cs-recipient-city" required placeholder="Destination City (e.g. Bengaluru)"
+                class="w-full px-3 py-2 bg-forest-900 border border-forest-700 rounded-lg text-xs text-warmwhite">
             </div>
           </div>
         </div>
@@ -602,7 +760,8 @@
         <div class="grid grid-cols-1 sm:grid-cols-3 gap-3">
           <div>
             <label class="block text-[11px] font-semibold text-warmwhite mb-1">Package Type</label>
-            <select id="cs-package-type" onchange="recalculateEstCost()" class="w-full px-3 py-2 bg-forest-950 border border-forest-700 rounded-xl text-xs text-warmwhite">
+            <select id="cs-package-type" onchange="recalculateEstCost()"
+              class="w-full px-3 py-2 bg-forest-950 border border-forest-700 rounded-xl text-xs text-warmwhite">
               <option value="Standard">Standard Electronics</option>
               <option value="Documents">Legal Documents</option>
               <option value="Clothing">Apparel & Textiles</option>
@@ -613,42 +772,53 @@
           </div>
           <div>
             <label class="block text-[11px] font-semibold text-warmwhite mb-1">Package Weight (kg)</label>
-            <input type="number" step="0.1" id="cs-weight" oninput="recalculateEstCost()" value="2.5" required class="w-full px-3 py-2 bg-forest-950 border border-forest-700 rounded-xl text-xs text-warmwhite">
+            <input type="number" step="0.1" id="cs-weight" oninput="recalculateEstCost()" value="2.5" required
+              class="w-full px-3 py-2 bg-forest-950 border border-forest-700 rounded-xl text-xs text-warmwhite">
           </div>
           <div>
             <label class="block text-[11px] font-semibold text-warmwhite mb-1">Estimated Cost (₹)</label>
-            <div id="cs-cost-display" class="w-full px-3 py-2 bg-forest-950 border border-terracotta-500/40 rounded-xl text-xs font-bold text-terracotta-400 flex items-center justify-between">
-              <span>Cost:</span> <span id="cs-cost-val" class="text-sm text-sand-300 font-mono font-extrabold">₹650</span>
+            <div id="cs-cost-display"
+              class="w-full px-3 py-2 bg-forest-950 border border-terracotta-500/40 rounded-xl text-xs font-bold text-terracotta-400 flex items-center justify-between">
+              <span>Cost:</span> <span id="cs-cost-val"
+                class="text-sm text-sand-300 font-mono font-extrabold">₹650</span>
             </div>
           </div>
         </div>
 
         <div>
           <label class="block text-[11px] font-semibold text-warmwhite mb-1">Special Delivery Instructions</label>
-          <textarea id="cs-instructions" rows="2" placeholder="e.g. Handle with care, requires recipient signature..." class="w-full px-3 py-2 bg-forest-950 border border-forest-700 rounded-xl text-xs text-warmwhite"></textarea>
+          <textarea id="cs-instructions" rows="2" placeholder="e.g. Handle with care, requires recipient signature..."
+            class="w-full px-3 py-2 bg-forest-950 border border-forest-700 rounded-xl text-xs text-warmwhite"></textarea>
         </div>
 
         <div class="flex justify-end space-x-2 pt-2">
-          <button type="button" onclick="closeCreateShipmentModal()" class="px-4 py-2.5 bg-forest-900 hover:bg-forest-800 text-warmmuted rounded-xl text-xs font-semibold">Cancel</button>
-          <button type="submit" class="px-6 py-2.5 bg-terracotta-500 hover:bg-terracotta-600 text-warmwhite font-bold text-xs rounded-xl shadow-lg transition">Create Shipment</button>
+          <button type="button" onclick="closeCreateShipmentModal()"
+            class="px-4 py-2.5 bg-forest-900 hover:bg-forest-800 text-warmmuted rounded-xl text-xs font-semibold">Cancel</button>
+          <button type="submit"
+            class="px-6 py-2.5 bg-terracotta-500 hover:bg-terracotta-600 text-warmwhite font-bold text-xs rounded-xl shadow-lg transition">Create
+            Shipment</button>
         </div>
       </form>
     </div>
   </div>
 
   <!-- MODAL: DRIVER CHECKPOINT UPDATE -->
-  <div id="driver-update-modal" class="hidden fixed inset-0 z-50 bg-forest-950/80 backdrop-blur-sm flex items-center justify-center p-4">
+  <div id="driver-update-modal"
+    class="hidden fixed inset-0 z-50 bg-forest-950/80 backdrop-blur-sm flex items-center justify-center p-4">
     <div class="glass-card w-full max-w-md rounded-3xl p-6 relative border border-sand-400/15">
-      <button onclick="closeDriverUpdateModal()" class="absolute top-5 right-5 text-warmmuted hover:text-warmwhite"><i class="fa-solid fa-xmark text-lg"></i></button>
+      <button onclick="closeDriverUpdateModal()" class="absolute top-5 right-5 text-warmmuted hover:text-warmwhite"><i
+          class="fa-solid fa-xmark text-lg"></i></button>
 
-      <h3 class="text-lg font-bold text-warmwhite mb-1"><i class="fa-solid fa-location-dot text-terracotta-400 mr-2"></i>Log Status Checkpoint</h3>
+      <h3 class="text-lg font-bold text-warmwhite mb-1"><i
+          class="fa-solid fa-location-dot text-terracotta-400 mr-2"></i>Log Status Checkpoint</h3>
       <p id="dum-tracking-display" class="text-xs text-warmmuted font-mono mb-4">Shipment: TRK-XXXX</p>
 
       <form onsubmit="handleDriverUpdateSubmit(event)" class="space-y-4">
         <input type="hidden" id="dum-shipment-id">
         <div>
           <label class="block text-xs font-semibold text-warmwhite mb-1">New Delivery Status</label>
-          <select id="dum-status" class="w-full px-3.5 py-2.5 bg-forest-950 border border-forest-700 rounded-xl text-xs text-warmwhite">
+          <select id="dum-status"
+            class="w-full px-3.5 py-2.5 bg-forest-950 border border-forest-700 rounded-xl text-xs text-warmwhite">
             <option value="PICKED_UP">PICKED_UP — Package Received from Sender</option>
             <option value="IN_TRANSIT">IN_TRANSIT — In Movement between Sorting Centers</option>
             <option value="OUT_FOR_DELIVERY">OUT_FOR_DELIVERY — Driver on Delivery Route</option>
@@ -658,13 +828,16 @@
         </div>
         <div>
           <label class="block text-xs font-semibold text-warmwhite mb-1">Current GPS Hub / City</label>
-          <input type="text" id="dum-location" required placeholder="e.g. Hyderabad Central Hub" class="w-full px-3.5 py-2.5 bg-forest-950 border border-forest-700 rounded-xl text-xs text-warmwhite">
+          <input type="text" id="dum-location" required placeholder="e.g. Hyderabad Central Hub"
+            class="w-full px-3.5 py-2.5 bg-forest-950 border border-forest-700 rounded-xl text-xs text-warmwhite">
         </div>
         <div>
           <label class="block text-xs font-semibold text-warmwhite mb-1">Notes / Proof Details</label>
-          <textarea id="dum-notes" rows="2" placeholder="e.g. Delivered to reception, signed by Rahul Sharma..." class="w-full px-3.5 py-2.5 bg-forest-950 border border-forest-700 rounded-xl text-xs text-warmwhite"></textarea>
+          <textarea id="dum-notes" rows="2" placeholder="e.g. Delivered to reception, signed by Rahul Sharma..."
+            class="w-full px-3.5 py-2.5 bg-forest-950 border border-forest-700 rounded-xl text-xs text-warmwhite"></textarea>
         </div>
-        <button type="submit" class="w-full py-3 bg-terracotta-500 hover:bg-terracotta-600 text-warmwhite font-bold text-xs rounded-xl shadow-lg transition">
+        <button type="submit"
+          class="w-full py-3 bg-terracotta-500 hover:bg-terracotta-600 text-warmwhite font-bold text-xs rounded-xl shadow-lg transition">
           Post Status Update
         </button>
       </form>
@@ -672,31 +845,39 @@
   </div>
 
   <!-- MODAL: ADD DRIVER (Admin) -->
-  <div id="add-driver-modal" class="hidden fixed inset-0 z-50 bg-forest-950/80 backdrop-blur-sm flex items-center justify-center p-4">
+  <div id="add-driver-modal"
+    class="hidden fixed inset-0 z-50 bg-forest-950/80 backdrop-blur-sm flex items-center justify-center p-4">
     <div class="glass-card w-full max-w-md rounded-3xl p-6 relative border border-sand-400/15">
-      <button onclick="closeAddDriverModal()" class="absolute top-5 right-5 text-warmmuted hover:text-warmwhite"><i class="fa-solid fa-xmark text-lg"></i></button>
+      <button onclick="closeAddDriverModal()" class="absolute top-5 right-5 text-warmmuted hover:text-warmwhite"><i
+          class="fa-solid fa-xmark text-lg"></i></button>
 
-      <h3 class="text-lg font-bold text-warmwhite mb-1"><i class="fa-solid fa-user-plus text-sage-400 mr-2"></i>Register New Driver</h3>
+      <h3 class="text-lg font-bold text-warmwhite mb-1"><i class="fa-solid fa-user-plus text-sage-400 mr-2"></i>Register
+        New Driver</h3>
       <p class="text-xs text-warmmuted mb-4">Add a new courier personnel account into the logistics network.</p>
 
       <form onsubmit="handleAddDriverSubmit(event)" class="space-y-4">
         <div>
           <label class="block text-xs font-semibold text-warmwhite mb-1">Driver Name</label>
-          <input type="text" id="ad-name" required placeholder="Ravi Kumar" class="w-full px-3.5 py-2.5 bg-forest-950 border border-forest-700 rounded-xl text-xs text-warmwhite">
+          <input type="text" id="ad-name" required placeholder="Ravi Kumar"
+            class="w-full px-3.5 py-2.5 bg-forest-950 border border-forest-700 rounded-xl text-xs text-warmwhite">
         </div>
         <div>
           <label class="block text-xs font-semibold text-warmwhite mb-1">Email Address</label>
-          <input type="email" id="ad-email" required placeholder="ravi@shiptrack.com" class="w-full px-3.5 py-2.5 bg-forest-950 border border-forest-700 rounded-xl text-xs text-warmwhite">
+          <input type="email" id="ad-email" required placeholder="ravi@shiptrack.com"
+            class="w-full px-3.5 py-2.5 bg-forest-950 border border-forest-700 rounded-xl text-xs text-warmwhite">
         </div>
         <div>
           <label class="block text-xs font-semibold text-warmwhite mb-1">Password</label>
-          <input type="password" id="ad-password" required placeholder="Driver@123" class="w-full px-3.5 py-2.5 bg-forest-950 border border-forest-700 rounded-xl text-xs text-warmwhite">
+          <input type="password" id="ad-password" required placeholder="Driver@123"
+            class="w-full px-3.5 py-2.5 bg-forest-950 border border-forest-700 rounded-xl text-xs text-warmwhite">
         </div>
         <div>
           <label class="block text-xs font-semibold text-warmwhite mb-1">Vehicle Assignment</label>
-          <input type="text" id="ad-vehicle" placeholder="Cargo Truck" class="w-full px-3.5 py-2.5 bg-forest-950 border border-forest-700 rounded-xl text-xs text-warmwhite">
+          <input type="text" id="ad-vehicle" placeholder="Cargo Truck"
+            class="w-full px-3.5 py-2.5 bg-forest-950 border border-forest-700 rounded-xl text-xs text-warmwhite">
         </div>
-        <button type="submit" class="w-full py-3 bg-terracotta-500 hover:bg-terracotta-600 text-warmwhite font-bold text-xs rounded-xl shadow-lg transition">
+        <button type="submit"
+          class="w-full py-3 bg-terracotta-500 hover:bg-terracotta-600 text-warmwhite font-bold text-xs rounded-xl shadow-lg transition">
           Create Driver Profile
         </button>
       </form>
@@ -782,7 +963,7 @@
     function updateUserUI() {
       const badge = document.getElementById('user-badge');
       const loginBtn = document.getElementById('login-btn');
-      
+
       const navCustomer = document.getElementById('nav-customer');
       const navDriver = document.getElementById('nav-driver');
       const navAdmin = document.getElementById('nav-admin');
@@ -1082,6 +1263,7 @@
         return;
       }
 
+
       resultDiv.classList.remove('hidden');
       resultDiv.innerHTML = `
         <div class="glass-card rounded-3xl p-8 space-y-4">
@@ -1160,17 +1342,17 @@
 
         const statusBadgeClass = s.status === 'DELIVERED' ? 'bg-moss-500/20 text-moss-400 border border-moss-500/30' :
           s.status === 'OUT_FOR_DELIVERY' ? 'bg-sand-500/20 text-sand-300 border border-sand-500/30' :
-          s.status === 'IN_TRANSIT' ? 'bg-terracotta-500/20 text-terracotta-400 border border-terracotta-500/30' :
-          s.status === 'DELAYED' ? 'bg-amber-500/20 text-amber-400 border border-amber-500/30' :
-          s.status === 'CANCELLED' ? 'bg-brick-500/20 text-brick-400 border border-brick-500/30' :
-          'bg-sage-500/20 text-sage-300 border border-sage-500/30';
+            s.status === 'IN_TRANSIT' ? 'bg-terracotta-500/20 text-terracotta-400 border border-terracotta-500/30' :
+              s.status === 'DELAYED' ? 'bg-amber-500/20 text-amber-400 border border-amber-500/30' :
+                s.status === 'CANCELLED' ? 'bg-brick-500/20 text-brick-400 border border-brick-500/30' :
+                  'bg-sage-500/20 text-sage-300 border border-sage-500/30';
 
         const statusDotClass = s.status === 'DELIVERED' ? 'bg-moss-400' :
           s.status === 'OUT_FOR_DELIVERY' ? 'bg-sand-400 pulse-dot' :
-          s.status === 'IN_TRANSIT' ? 'bg-terracotta-400 pulse-dot' :
-          s.status === 'DELAYED' ? 'bg-amber-400 pulse-dot' :
-          s.status === 'CANCELLED' ? 'bg-brick-400' :
-          'bg-sage-400';
+            s.status === 'IN_TRANSIT' ? 'bg-terracotta-400 pulse-dot' :
+              s.status === 'DELAYED' ? 'bg-amber-400 pulse-dot' :
+                s.status === 'CANCELLED' ? 'bg-brick-400' :
+                  'bg-sage-400';
 
         resultDiv.innerHTML = `
           <!-- Main Shipment Tracking Panel -->
@@ -1208,15 +1390,14 @@
                   <!-- 5 Equal Milestone Columns -->
                   <div class="grid grid-cols-5 relative z-10">
                     ${stages.map((st, idx) => {
-                      const isDone = idx < currentIdx;
-                      const isCurrent = idx === currentIdx;
-                      return `
+          const isDone = idx < currentIdx;
+          const isCurrent = idx === currentIdx;
+          return `
                         <div class="flex flex-col items-center text-center px-1">
-                          <div class="w-12 h-12 rounded-full flex items-center justify-center font-extrabold text-sm transition-all duration-300 ${
-                            isDone ? 'bg-moss-600 text-warmwhite shadow-lg shadow-moss-600/30 ring-2 ring-moss-500/30' :
-                            isCurrent ? 'bg-terracotta-500 text-warmwhite shadow-xl shadow-terracotta-500/40 ring-4 ring-terracotta-500/30 scale-110' :
-                            'bg-forest-950 border-2 border-forest-700 text-warmmuted'
-                          }">
+                          <div class="w-12 h-12 rounded-full flex items-center justify-center font-extrabold text-sm transition-all duration-300 ${isDone ? 'bg-moss-600 text-warmwhite shadow-lg shadow-moss-600/30 ring-2 ring-moss-500/30' :
+              isCurrent ? 'bg-terracotta-500 text-warmwhite shadow-xl shadow-terracotta-500/40 ring-4 ring-terracotta-500/30 scale-110' :
+                'bg-forest-950 border-2 border-forest-700 text-warmmuted'
+            }">
                             ${isDone ? '<i class="fa-solid fa-check"></i>' : isCurrent ? '●' : '○'}
                           </div>
 
@@ -1228,7 +1409,7 @@
                           </div>
                         </div>
                       `;
-                    }).join('')}
+        }).join('')}
                   </div>
                 </div>
               </div>
@@ -1316,7 +1497,7 @@
             </h4>
             <div class="relative border-l-2 border-forest-700 pl-6 space-y-6 ml-3">
               ${timeline.length === 0 ? '<p class="text-warmmuted text-xs">No activity updates recorded yet.</p>' :
-              timeline.map(t => `
+            timeline.map(t => `
                 <div class="relative">
                   <div class="absolute -left-[31px] top-0 w-4 h-4 rounded-full bg-terracotta-500 border-4 border-forest-950 shadow"></div>
                   <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-1">
@@ -1506,7 +1687,7 @@
             });
           }
         }
-      } catch (e) {}
+      } catch (e) { }
 
       const searchInput = document.getElementById('cust-search-input');
       const statusFilter = document.getElementById('cust-status-filter');
@@ -1517,7 +1698,7 @@
       const sort = sortFilter ? sortFilter.value : 'newest';
 
       if (search) {
-        shipments = shipments.filter(s => 
+        shipments = shipments.filter(s =>
           (s.tracking_number && s.tracking_number.toLowerCase().includes(search)) ||
           (s.recipient_name && s.recipient_name.toLowerCase().includes(search)) ||
           (s.recipient_city && s.recipient_city.toLowerCase().includes(search))
@@ -1562,11 +1743,10 @@
           <td class="py-3.5 px-4 text-xs">${s.package_type} (${s.weight_kg}kg)</td>
           <td class="py-3.5 px-4 text-xs text-warmmuted">${s.estimated_delivery}</td>
           <td class="py-3.5 px-4">
-            <span class="px-2.5 py-1 rounded-full text-[10px] font-bold ${
-              s.status === 'DELIVERED' ? 'bg-moss-500/20 text-moss-400 border border-moss-500/30' :
-              s.status === 'OUT_FOR_DELIVERY' ? 'bg-sand-500/20 text-sand-300 border border-sand-500/30' :
-              'bg-terracotta-500/20 text-terracotta-400 border border-terracotta-500/30'
-            }">${s.status.replace(/_/g, ' ')}</span>
+            <span class="px-2.5 py-1 rounded-full text-[10px] font-bold ${s.status === 'DELIVERED' ? 'bg-moss-500/20 text-moss-400 border border-moss-500/30' :
+          s.status === 'OUT_FOR_DELIVERY' ? 'bg-sand-500/20 text-sand-300 border border-sand-500/30' :
+            'bg-terracotta-500/20 text-terracotta-400 border border-terracotta-500/30'
+        }">${s.status.replace(/_/g, ' ')}</span>
           </td>
           <td class="py-3.5 px-4 font-mono font-bold text-sand-300">₹${(s.shipping_cost || 0).toLocaleString('en-IN')}</td>
           <td class="py-3.5 px-4 text-right space-x-1">
@@ -1620,7 +1800,7 @@
             shipments = data.shipments;
           }
         }
-      } catch (e) {}
+      } catch (e) { }
 
       const completed = shipments.filter(s => s.status === 'DELIVERED').length;
       const inTransit = shipments.filter(s => s.status === 'IN_TRANSIT').length;
@@ -1667,7 +1847,7 @@
             </h3>
             <div class="grid grid-cols-1 gap-4">
               ${shipments.length === 0 ? '<p class="py-8 text-center text-warmmuted">No active delivery assignments queued.</p>' :
-              shipments.map(s => `
+          shipments.map(s => `
                 <div class="glass-card p-5 border border-forest-700 flex flex-col md:flex-row md:items-center justify-between gap-4">
                   <div class="space-y-1">
                     <div class="flex items-center space-x-2">
@@ -1697,7 +1877,7 @@
     function renderAdminView() {
       const container = document.getElementById('admin-view-container');
       if (!container) return;
-      
+
       if (!currentUser || currentUser.role !== 'admin') {
         container.innerHTML = `
           <div class="max-w-xl mx-auto py-12">
@@ -1825,11 +2005,10 @@
           <div class="flex flex-wrap items-center justify-between gap-2 border-b border-forest-700 pb-3">
             <div>
               <span class="font-mono font-extrabold text-terracotta-400 text-base mr-2">${s.tracking_number}</span>
-              <span class="px-2.5 py-0.5 rounded-full text-[10px] font-bold ${
-                s.status === 'DELIVERED' ? 'bg-moss-500/20 text-moss-400' :
-                s.status === 'OUT_FOR_DELIVERY' ? 'bg-sand-500/20 text-sand-300' :
-                'bg-terracotta-500/20 text-terracotta-400'
-              }">${s.status.replace(/_/g, ' ')}</span>
+              <span class="px-2.5 py-0.5 rounded-full text-[10px] font-bold ${s.status === 'DELIVERED' ? 'bg-moss-500/20 text-moss-400' :
+          s.status === 'OUT_FOR_DELIVERY' ? 'bg-sand-500/20 text-sand-300' :
+            'bg-terracotta-500/20 text-terracotta-400'
+        }">${s.status.replace(/_/g, ' ')}</span>
             </div>
             <button onclick="setAndTrack('${s.tracking_number}'); switchTab('tracker')" class="px-3 py-1 bg-terracotta-500 hover:bg-terracotta-600 text-warmwhite rounded-lg text-xs font-bold transition">
               Full Simulation View
@@ -1867,7 +2046,7 @@
           if (document.getElementById('admin-stat-drivers')) document.getElementById('admin-stat-drivers').innerText = st.total_drivers;
           if (document.getElementById('admin-stat-revenue')) document.getElementById('admin-stat-revenue').innerText = '₹' + st.total_revenue.toLocaleString('en-IN');
         }
-      } catch (e) {}
+      } catch (e) { }
 
       switchAdminSubTab(currentAdminSubTab);
     }
@@ -1892,7 +2071,7 @@
             const data = await res.json();
             if (data.shipments) shipments = data.shipments;
           }
-        } catch (e) {}
+        } catch (e) { }
 
         let drivers = [];
         try {
@@ -1901,7 +2080,7 @@
             const driversData = await driversRes.json();
             drivers = driversData.users || [];
           }
-        } catch (e) {}
+        } catch (e) { }
 
         container.innerHTML = `
           <div class="overflow-x-auto">
@@ -1944,7 +2123,7 @@
             const data = await res.json();
             users = data.users || [];
           }
-        } catch (e) {}
+        } catch (e) { }
 
         if (users.length === 0) {
           users = [
@@ -1996,7 +2175,7 @@
               });
             }
           }
-        } catch (e) {}
+        } catch (e) { }
 
         container.innerHTML = `
           <div class="overflow-x-auto">
@@ -2014,8 +2193,8 @@
                 </tr>
               </thead>
               <tbody>
-                ${tickets.length === 0 ? '<tr><td colspan="8" class="py-8 text-center text-warmmuted">No support requests currently filed.</td></tr>' : 
-                tickets.map(t => `
+                ${tickets.length === 0 ? '<tr><td colspan="8" class="py-8 text-center text-warmmuted">No support requests currently filed.</td></tr>' :
+            tickets.map(t => `
                   <tr class="border-b border-forest-700 hover:bg-forest-900/40">
                     <td class="py-3 px-3 font-mono text-sand-300 font-bold">${t.ticket_id}</td>
                     <td class="py-3 px-3 font-semibold text-warmwhite">${t.category}</td>
@@ -2027,12 +2206,11 @@
                     <td class="py-3 px-3 text-warmmuted text-[10px] font-mono">${new Date(t.created_at).toLocaleString()}</td>
                     <td class="py-3 px-3"><span class="px-2 py-0.5 rounded text-[10px] font-bold bg-brick-500/20 text-brick-300">${t.priority || 'High'}</span></td>
                     <td class="py-3 px-3">
-                      <span class="px-2 py-0.5 rounded text-[10px] font-bold ${
-                        t.status === 'Resolved' ? 'bg-moss-500/20 text-moss-400' :
-                        t.status === 'In Review' ? 'bg-terracotta-500/20 text-terracotta-300' :
-                        t.status === 'Closed' ? 'bg-forest-900 text-warmmuted' :
-                        'bg-amber-500/20 text-amber-300'
-                      }">${t.status}</span>
+                      <span class="px-2 py-0.5 rounded text-[10px] font-bold ${t.status === 'Resolved' ? 'bg-moss-500/20 text-moss-400' :
+                t.status === 'In Review' ? 'bg-terracotta-500/20 text-terracotta-300' :
+                  t.status === 'Closed' ? 'bg-forest-900 text-warmmuted' :
+                    'bg-amber-500/20 text-amber-300'
+              }">${t.status}</span>
                     </td>
                     <td class="py-3 px-3 text-right space-x-1">
                       <button onclick="viewTicketDetails('${t.ticket_id}')" class="px-2.5 py-1 rounded-lg bg-forest-900 border border-forest-700 hover:bg-forest-800 text-warmwhite text-[11px] font-semibold">View</button>
@@ -2057,7 +2235,7 @@
             const data = await res.json();
             logs = data.logs || [];
           }
-        } catch (e) {}
+        } catch (e) { }
 
         if (logs.length === 0) {
           logs = [
@@ -2101,7 +2279,7 @@
           headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${authToken}` },
           body: JSON.stringify({ status: newStatus })
         });
-      } catch (e) {}
+      } catch (e) { }
 
       pushNotification('Support Ticket Updated', `Ticket ${ticketId} status changed to ${newStatus}`);
       switchAdminSubTab('tickets');
@@ -2206,7 +2384,7 @@
             description
           })
         });
-      } catch (err) {}
+      } catch (err) { }
 
       closeSupportModal();
       pushNotification('Support Ticket Created', `Ticket ${ticketId} created for ${category}`);
@@ -2508,4 +2686,5 @@
     }
   </script>
 </body>
+
 </html>
