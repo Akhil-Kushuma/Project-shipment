@@ -263,6 +263,33 @@ Actions Taken:
 * Added 4th Admin tab for Support Requests management
 * Committed changes with SHA 5dabbad
 
+================================================================================
+[2026-10-06T00:33:20+05:30] Navigation Tab Rename to Help & Support
+================================================================================
+User Prompt (verbatim):
+Remove the name admin centre and rename it some relasted Help name
+
+Agent Response:
+Updated top navigation header and mobile menu tab labels from "Admin Center" to "Help & Support". Updated dynamic JavaScript title logic to render "Help & Support" for guests and customers, and "Help & Admin (Admin)" for logged-in administrators.
+
+Agent Response Summary:
+Renamed Admin Center navigation tab to Help & Support to accurately reflect public customer support access and role-restricted admin functionality.
+
+Commit SHA:
+03117a1
+
+Files Modified / Created:
+* docs/logs.txt (Modified)
+* metadata/submission.yaml (Modified)
+* src/public/index.html (Modified)
+
+Actions Taken:
+* Renamed navigation tab to Help & Support with headset icon
+* Updated responsive mobile navigation dropdown label
+* Updated dynamic user profile navbar logic
+* Committed changes with SHA 03117a1
+
+
 
 
 
