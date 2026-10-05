@@ -115,9 +115,10 @@
           <i class="fa-solid fa-truck-fast mr-2 text-cyan-400"></i>Driver Console
         </button>
         <button id="nav-admin" onclick="switchTab('admin')" class="px-4 py-2 rounded-lg text-xs font-bold transition text-slate-300 hover:text-white hover:bg-slate-800">
-          <i class="fa-solid fa-shield-halved mr-2 text-emerald-400"></i><span id="nav-admin-text">Admin Center</span>
+          <i class="fa-solid fa-headset mr-2 text-emerald-400"></i><span id="nav-admin-text">Help & Support</span>
         </button>
       </nav>
+
 
       <!-- Right Action Items: Notifications & User Profile -->
       <div class="flex items-center space-x-3">
@@ -190,8 +191,9 @@
         <i class="fa-solid fa-truck-fast mr-2 text-cyan-400"></i>Driver Console
       </button>
       <button onclick="switchTab('admin'); toggleMobileMenu()" class="w-full text-left px-4 py-2.5 rounded-xl text-xs font-bold text-slate-300 hover:bg-slate-800">
-        <i class="fa-solid fa-shield-halved mr-2 text-emerald-400"></i>Admin Center
+        <i class="fa-solid fa-headset mr-2 text-emerald-400"></i>Help & Support
       </button>
+
     </div>
   </header>
 
@@ -777,14 +779,15 @@
         // Update nav text if admin
         const navAdminText = document.getElementById('nav-admin-text');
         if (navAdminText) {
-          navAdminText.innerText = currentUser.role === 'admin' ? 'Admin Center (Admin)' : 'Admin Center';
+          navAdminText.innerText = currentUser.role === 'admin' ? 'Help & Admin (Admin)' : 'Help & Support';
         }
       } else {
         badge.classList.add('hidden');
         loginBtn.classList.remove('hidden');
         const navAdminText = document.getElementById('nav-admin-text');
-        if (navAdminText) navAdminText.innerText = 'Admin Center';
+        if (navAdminText) navAdminText.innerText = 'Help & Support';
       }
+
     }
 
     function toggleUserDropdown() {
