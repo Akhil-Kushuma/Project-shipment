@@ -108,13 +108,13 @@
         <button id="nav-tracker" onclick="switchTab('tracker')" class="px-4 py-2 rounded-lg text-xs font-bold transition text-white bg-indigo-600 shadow-md">
           <i class="fa-solid fa-magnifying-glass mr-2 text-cyan-300"></i>Live Track
         </button>
-        <button id="nav-customer" onclick="switchTab('customer')" class="px-4 py-2 rounded-lg text-xs font-bold transition text-slate-300 hover:text-white hover:bg-slate-800">
+        <button id="nav-customer" onclick="switchTab('customer')" class="hidden px-4 py-2 rounded-lg text-xs font-bold transition text-slate-300 hover:text-white hover:bg-slate-800">
           <i class="fa-solid fa-box mr-2 text-indigo-400"></i>Customer Hub
         </button>
-        <button id="nav-driver" onclick="switchTab('driver')" class="px-4 py-2 rounded-lg text-xs font-bold transition text-slate-300 hover:text-white hover:bg-slate-800">
+        <button id="nav-driver" onclick="switchTab('driver')" class="hidden px-4 py-2 rounded-lg text-xs font-bold transition text-slate-300 hover:text-white hover:bg-slate-800">
           <i class="fa-solid fa-truck-fast mr-2 text-cyan-400"></i>Driver Console
         </button>
-        <button id="nav-admin" onclick="switchTab('admin')" class="px-4 py-2 rounded-lg text-xs font-bold transition text-slate-300 hover:text-white hover:bg-slate-800">
+        <button id="nav-admin" onclick="switchTab('admin')" class="hidden px-4 py-2 rounded-lg text-xs font-bold transition text-slate-300 hover:text-white hover:bg-slate-800">
           <i class="fa-solid fa-user-shield mr-2 text-emerald-400"></i><span id="nav-admin-text">Admin Center</span>
         </button>
       </nav>
@@ -181,19 +181,18 @@
 
     <!-- Mobile Dropdown Nav Menu -->
     <div id="mobile-menu" class="hidden md:hidden mt-3 p-3 bg-slate-900/95 rounded-2xl border border-slate-800 space-y-2">
-      <button onclick="switchTab('tracker'); toggleMobileMenu()" class="w-full text-left px-4 py-2.5 rounded-xl text-xs font-bold text-white bg-indigo-600">
+      <button id="mob-nav-tracker" onclick="switchTab('tracker'); toggleMobileMenu()" class="w-full text-left px-4 py-2.5 rounded-xl text-xs font-bold text-white bg-indigo-600">
         <i class="fa-solid fa-magnifying-glass mr-2"></i>Live Track
       </button>
-      <button onclick="switchTab('customer'); toggleMobileMenu()" class="w-full text-left px-4 py-2.5 rounded-xl text-xs font-bold text-slate-300 hover:bg-slate-800">
+      <button id="mob-nav-customer" onclick="switchTab('customer'); toggleMobileMenu()" class="hidden w-full text-left px-4 py-2.5 rounded-xl text-xs font-bold text-slate-300 hover:bg-slate-800">
         <i class="fa-solid fa-box mr-2 text-indigo-400"></i>Customer Hub
       </button>
-      <button onclick="switchTab('driver'); toggleMobileMenu()" class="w-full text-left px-4 py-2.5 rounded-xl text-xs font-bold text-slate-300 hover:bg-slate-800">
+      <button id="mob-nav-driver" onclick="switchTab('driver'); toggleMobileMenu()" class="hidden w-full text-left px-4 py-2.5 rounded-xl text-xs font-bold text-slate-300 hover:bg-slate-800">
         <i class="fa-solid fa-truck-fast mr-2 text-cyan-400"></i>Driver Console
       </button>
-      <button onclick="switchTab('admin'); toggleMobileMenu()" class="w-full text-left px-4 py-2.5 rounded-xl text-xs font-bold text-slate-300 hover:bg-slate-800">
+      <button id="mob-nav-admin" onclick="switchTab('admin'); toggleMobileMenu()" class="hidden w-full text-left px-4 py-2.5 rounded-xl text-xs font-bold text-slate-300 hover:bg-slate-800">
         <i class="fa-solid fa-user-shield mr-2 text-emerald-400"></i>Admin Center
       </button>
-
     </div>
   </header>
 
@@ -714,18 +713,24 @@
         const nav = document.getElementById(`nav-${t}`);
         if (view) view.classList.add('hidden');
         if (nav) {
-          nav.className = 'px-4 py-2 rounded-lg text-xs font-bold transition text-slate-300 hover:text-white hover:bg-slate-800';
+          nav.classList.remove('bg-indigo-600', 'text-white', 'shadow-md');
+          nav.classList.add('text-slate-300', 'hover:text-white', 'hover:bg-slate-800');
         }
       });
 
       const activeView = document.getElementById(`view-${tab}`);
       const activeNav = document.getElementById(`nav-${tab}`);
       if (activeView) activeView.classList.remove('hidden');
-      if (activeNav) activeNav.className = 'px-4 py-2 rounded-lg text-xs font-bold transition text-white bg-indigo-600 shadow-md';
+      if (activeNav) {
+        activeNav.classList.remove('text-slate-300', 'hover:bg-slate-800');
+        activeNav.classList.add('text-white', 'bg-indigo-600', 'shadow-md');
+      }
 
       if (tab === 'customer') loadCustomerShipments();
       if (tab === 'driver') loadDriverDeliveries();
       if (tab === 'admin') renderAdminView();
+
+      updateUserUI();
     }
 
     // Fetch Current User
@@ -750,6 +755,14 @@
       const badge = document.getElementById('user-badge');
       const loginBtn = document.getElementById('login-btn');
       
+      const navCustomer = document.getElementById('nav-customer');
+      const navDriver = document.getElementById('nav-driver');
+      const navAdmin = document.getElementById('nav-admin');
+
+      const mobCustomer = document.getElementById('mob-nav-customer');
+      const mobDriver = document.getElementById('mob-nav-driver');
+      const mobAdmin = document.getElementById('mob-nav-admin');
+
       if (currentUser) {
         badge.classList.remove('hidden');
         loginBtn.classList.add('hidden');
@@ -759,15 +772,28 @@
         document.getElementById('dropdown-user-name').innerText = currentUser.name;
         document.getElementById('dropdown-user-role').innerText = currentUser.role;
 
-        const navAdminText = document.getElementById('nav-admin-text');
-        if (navAdminText) {
-          navAdminText.innerText = 'Admin Center';
-        }
+        const isCustomer = currentUser.role === 'customer';
+        const isDriver = currentUser.role === 'driver';
+        const isAdmin = currentUser.role === 'admin';
+
+        if (navCustomer) navCustomer.classList.toggle('hidden', !isCustomer && !isAdmin);
+        if (navDriver) navDriver.classList.toggle('hidden', !isDriver && !isAdmin);
+        if (navAdmin) navAdmin.classList.toggle('hidden', !isAdmin);
+
+        if (mobCustomer) mobCustomer.classList.toggle('hidden', !isCustomer && !isAdmin);
+        if (mobDriver) mobDriver.classList.toggle('hidden', !isDriver && !isAdmin);
+        if (mobAdmin) mobAdmin.classList.toggle('hidden', !isAdmin);
       } else {
         badge.classList.add('hidden');
         loginBtn.classList.remove('hidden');
-        const navAdminText = document.getElementById('nav-admin-text');
-        if (navAdminText) navAdminText.innerText = 'Admin Center';
+
+        if (navCustomer) navCustomer.classList.add('hidden');
+        if (navDriver) navDriver.classList.add('hidden');
+        if (navAdmin) navAdmin.classList.add('hidden');
+
+        if (mobCustomer) mobCustomer.classList.add('hidden');
+        if (mobDriver) mobDriver.classList.add('hidden');
+        if (mobAdmin) mobAdmin.classList.add('hidden');
       }
     }
 
