@@ -4,8 +4,9 @@
 version: "1.0"
 
 submission:
-  team_id: ""
+  team_id: "TEAM-PS05-SHIPTRACK"
   repository: ""
-  commit_sha: ""
-  deployment_url: ""
-  submitted_at: ""
+  commit_sha: "b18d627"
+  deployment_url: "http://localhost:5000"
+  submitted_at: "2026-10-05T23:01:52+05:30"
+
