@@ -5,8 +5,7 @@
 
 team:
   team_id: ""
-  name: ""
-  repository: "" # URL of the newly created GitHub repository for this project
+  name: "https://github.com/Akhil-Kushuma/Project-shipment.git" # URL of the newly created GitHub repository for this project
 
 members:
   - name: "AKHIL"
