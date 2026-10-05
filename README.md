@@ -1,82 +1,100 @@
-# Build Secure 24 — Participant Starter Repository
+# ShipTrack — Delivery & Shipment Management Platform
 
-**Abhedya — VBIT Cybersecurity Forum, Vignana Bharathi Institute of Technology, Hyderabad**
-
-Welcome to the official Build Secure 24 starter repository.
-
----
-
-## 1. Challenge Overview
-
-- **Schedule**: October 5, 2026, 11:00 AM IST to October 6, 2026, 11:00 AM IST
-- **Duration**: Exactly 24 Hours
-- **Submission Deadline**: October 6, 2026, 11:00 AM IST (`2026-10-06T11:00:00+05:30`)
-- **Team Size**: Exactly 2 or 4 participants per team (teams of 1, 3, or >4 are not permitted)
-- **Core Requirement**: All project code must be created live during the 24-hour hackathon. Importing pre-built or third-party repositories is strictly prohibited.
+**Build Secure 24 Hackathon Project**  
+**Problem Statement:** PS-05 — ShipTrack: Delivery & Shipment Management  
+**Team Name:** Project-shipment  
+**Repository:** https://github.com/Akhil-Kushuma/Project-shipment.git
 
 ---
 
-## 2. Repository Structure
+## 👥 Team Members
 
-```
-├── AGENTS.md                  ← AI agent behavioral contract & logging gate
-├── README.md                  ← This file
-├── PARTICIPANT_RULES.md       ← Competition rules
-│
-├── docs/                      ← Autonomous documentation layer
-│   ├── APPROACH.md            ← Problem breakdown & architecture approach
-│   └── logs.txt               ← Turn-by-turn prompt, file location & timeline log
-│
-├── metadata/                  ← Submission metadata
-│   ├── team.yaml              ← Team information (2 or 4 members)
-│   └── submission.yaml        ← Final submission details
-│
-├── src/                       ← Application source code directory
-└── deployment/                ← Deployment configuration directory
-    └── README.md              ← Deployment record
-```
+- **AKHIL** (`25P61A6259@vbithyd.ac.in`)
+- **Devamsh** (`25P61A6247@vbithyd.ac.in`)
+- **Rithvik** (`25P61A6261@vbithyd.ac.in`)
+- **Nithin** (`25P61A6234@vbithyd.ac.in`)
 
 ---
 
-## 3. Getting Started
+## 🚀 What We Built
 
-### Step 1: Team Registration & GitHub Repository Setup
-1. Create a new GitHub repository for your team's project.
-2. Fill in `metadata/team.yaml` with your assigned Team ID, team name, your newly created GitHub repository URL (`team.repository`), and all 2 or 4 member details.
+We built a full-stack secure shipment management platform (**ShipTrack**) featuring multi-role authentication, live tracking, driver management, administrative controls, support ticketing, and an AI logistics assistant.
 
-### Step 2: AI Agent Onboarding
-When you open this repository in an AI coding assistant (Cursor, Windsurf, Claude Code, Copilot, ChatGPT, etc.):
-- The agent will read `AGENTS.md`, greet your team, recite the competition ground rules, display the remaining time until **October 6, 2026, 11:00 AM IST**, and collect your `I agree` confirmation.
-- Once confirmed, the agent records your team details and GitHub repository URL, and configures your Git remote origin.
-- The agent will **automatically log every prompt, the full agent response, the Git commit SHA, exact file changes, and timeline** in `docs/logs.txt` as you build.
+### Key Features Implemented:
 
-### Step 3: Build & Ship with Continuous Push
-- Author your application code inside `src/`.
-- After each prompt, changes are committed with the exact commit SHA recorded in `docs/logs.txt`, and can be pushed directly to your team's GitHub repository (`git push origin main`).
-- Document your technical approach in `docs/APPROACH.md`.
-- Deploy your application and record live details in `deployment/README.md`.
-- Update `metadata/submission.yaml` with your final commit SHA before the **October 6, 2026, 11:00 AM IST** deadline.
+1. **Authentication & Role-Based Access Control (RBAC)**
+   - Secure customer, driver, and admin registration and login using JWT and Bcrypt hashing.
+   - Role-guarded API endpoints and dynamic navigation header.
+   - One-click demo login presets.
+
+2. **Live Tracking & Route Visualizer**
+   - Public live tracking search by tracking ID (e.g. `TRK-2026-894120`).
+   - 5-step progress timeline (*Created* ➔ *Picked Up* ➔ *In Transit* ➔ *Out for Delivery* ➔ *Delivered*).
+   - Interactive simulated GPS route map visualizer.
+   - Fallback offline shipment store to ensure zero search downtime.
+
+3. **Customer Hub**
+   - Create new shipments with origin, destination, package details, and priority.
+   - View customer shipment history and download printable shipping labels.
+
+4. **Driver Delivery Console**
+   - View assigned delivery routes and package manifest.
+   - Update shipment statuses and log location checkpoint notes.
+
+5. **Help & Support Center**
+   - Public support center with issue category cards (*Late Delivery, Refund & Payment, Cancellation, Damaged Package, Missing Item, Tracking Problem*).
+   - Support ticket submission with live tracking ID validation.
+
+6. **Admin Management Panel**
+   - Fleet overview metrics (active shipments, drivers, pending dispatches, revenue in ₹ INR).
+   - Driver package assignment module.
+   - Full system audit log tracking all status changes.
+   - Customer support ticket resolution portal.
+
+7. **AI ShipBot Assistant**
+   - Contextual chatbot assistant that answers shipment status, estimate, and policy questions directly from application data.
 
 ---
 
-## 4. Multi-Device Team Collaboration
+## 🛠️ Tech Stack
 
-All 4 team members can work simultaneously across separate laptops:
-
-1. **Clone**: Every teammate clones your team's GitHub repository to their device.
-2. **Syncing Progress**:
-   - When one teammate finishes a feature or prompt:
-     ```bash
-     git add src/ docs/
-     git commit -m "feat: implement feature description"
-     git push origin main
-     ```
-   - Other teammates pull the latest updates:
-     ```bash
-     git pull origin main
-     ```
-3. **Agent Continuity**: When a teammate opens the updated repo on their laptop, their AI assistant automatically reads `docs/APPROACH.md` and recent `docs/logs.txt` entries, immediately picking up where the team left off.
+- **Frontend:** HTML5, Vanilla JavaScript, Tailwind CSS (Single Page Application architecture).
+- **Backend:** Node.js, Express.js REST API (`src/server.js`).
+- **Database:** SQLite (`src/db/shiptrack.db`) using relational tables (`users`, `shipments`, `shipment_logs`, `drivers`, `support_tickets`).
+- **Security:** JWT authentication, `bcryptjs` password hashing, RBAC middleware (`src/middleware/auth.js`), prepared SQL statements.
 
 ---
 
-*Build freely. Use AI freely. Secure what you build. Document what you claim. Prove what you implemented.*
+## 🔑 Demo Accounts
+
+| Role | Email | Password |
+|---|---|---|
+| **Customer** | `customer@shiptrack.com` | `password123` |
+| **Driver** | `driver@shiptrack.com` | `password123` |
+| **Admin** | `admin@shiptrack.com` | `password123` |
+
+**Demo Tracking Numbers:** `TRK-2026-894120`, `TRK-2026-302194`, `TRK-2026-110482`
+
+---
+
+## 🏃 How to Run the Project
+
+1. Navigate to the source directory:
+   ```bash
+   cd src
+   ```
+
+2. Install dependencies:
+   ```bash
+   npm install
+   ```
+
+3. Start the application:
+   ```bash
+   npm start
+   ```
+
+4. Open browser at:
+   ```
+   http://localhost:5000
+   ```
