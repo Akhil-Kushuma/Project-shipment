@@ -9,11 +9,11 @@ team:
   repository: "" # URL of the newly created GitHub repository for this project
 
 members:
-  - name: ""
-    email: ""
-  - name: ""
-    email: ""
-  - name: ""
-    email: ""
-  - name: ""
-    email: ""
+  - name: "AKHIL"
+    email: "25P61A6259@vbithyd.ac.in"
+  - name: "Devamsh"
+    email: "25P61A6247@vbithyd.ac.in"
+  - name: "Rithvik"
+    email: "25P61A6261@vbithyd.ac.in"
+  - name: "Nithin"
+    email: "25P61A6234"
