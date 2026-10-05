@@ -2,6 +2,7 @@ const sqlite3 = require('sqlite3').verbose();
 const { open } = require('sqlite');
 const bcrypt = require('bcryptjs');
 const path = require('path');
+const fs = require('fs');
 
 let dbInstance = null;
 
@@ -9,14 +10,13 @@ async function getDB() {
   if (dbInstance) return dbInstance;
 
   const dbPath = path.join(__dirname, 'shiptrack.db');
+
   dbInstance = await open({
     filename: dbPath,
     driver: sqlite3.Database
   });
 
-  // Enable foreign keys
   await dbInstance.run('PRAGMA foreign_keys = ON;');
-  
   await initializeSchema(dbInstance);
   return dbInstance;
 }
@@ -97,7 +97,6 @@ async function initializeSchema(db) {
     );
   `);
 
-  // Seed default users and sample data if database is empty
   await seedDefaultData(db);
 }
 
@@ -105,51 +104,57 @@ async function seedDefaultData(db) {
   const userCount = await db.get('SELECT COUNT(*) as count FROM users');
   if (userCount.count > 0) return;
 
-  console.log('[DB] Seeding default users and shipments...');
+  console.log('[DB] Seeding Indian Logistics demo dataset...');
   
   const now = new Date().toISOString();
   const hashedPasswordAdmin = await bcrypt.hash('Admin@123', 10);
   const hashedPasswordDriver = await bcrypt.hash('Driver@123', 10);
   const hashedPasswordCustomer = await bcrypt.hash('Customer@123', 10);
 
-  // Insert Admin
+  // 1. Admin
   const adminRes = await db.run(
     `INSERT INTO users (name, email, password, role, phone, created_at) VALUES (?, ?, ?, ?, ?, ?)`,
-    ['System Administrator', 'admin@shiptrack.com', hashedPasswordAdmin, 'admin', '+1 (555) 019-2831', now]
+    ['System Administrator', 'admin@shiptrack.com', hashedPasswordAdmin, 'admin', '+91 98765 43210', now]
   );
 
-  // Insert Drivers
-  const driver1Res = await db.run(
+  // 2. Drivers (Alex River, Ravi Kumar, Priya Singh)
+  const d1Res = await db.run(
     `INSERT INTO users (name, email, password, role, phone, vehicle_type, created_at) VALUES (?, ?, ?, ?, ?, ?, ?)`,
-    ['Alex River', 'driver1@shiptrack.com', hashedPasswordDriver, 'driver', '+1 (555) 014-9922', 'Express Cargo Van', now]
+    ['Alex River', 'driver1@shiptrack.com', hashedPasswordDriver, 'driver', '+91 98765 11111', 'Express Van', now]
   );
-  const driver2Res = await db.run(
+  const d2Res = await db.run(
     `INSERT INTO users (name, email, password, role, phone, vehicle_type, created_at) VALUES (?, ?, ?, ?, ?, ?, ?)`,
-    ['Sam Morgan', 'driver2@shiptrack.com', hashedPasswordDriver, 'driver', '+1 (555) 018-3344', 'Electric Scooter', now]
+    ['Ravi Kumar', 'driver2@shiptrack.com', hashedPasswordDriver, 'driver', '+91 98765 22222', 'Cargo Truck', now]
+  );
+  const d3Res = await db.run(
+    `INSERT INTO users (name, email, password, role, phone, vehicle_type, created_at) VALUES (?, ?, ?, ?, ?, ?, ?)`,
+    ['Priya Singh', 'driver3@shiptrack.com', hashedPasswordDriver, 'driver', '+91 98765 33333', 'Delivery Van', now]
   );
 
-  // Insert Customers
-  const customer1Res = await db.run(
+  // 3. Customers (Jane Doe, Robert Smith)
+  const c1Res = await db.run(
     `INSERT INTO users (name, email, password, role, phone, created_at) VALUES (?, ?, ?, ?, ?, ?)`,
-    ['Jane Doe', 'customer1@shiptrack.com', hashedPasswordCustomer, 'customer', '+1 (555) 012-3456', now]
+    ['Jane Doe', 'customer1@shiptrack.com', hashedPasswordCustomer, 'customer', '+91 98765 44444', now]
   );
-  const customer2Res = await db.run(
+  const c2Res = await db.run(
     `INSERT INTO users (name, email, password, role, phone, created_at) VALUES (?, ?, ?, ?, ?, ?)`,
-    ['Robert Smith', 'customer2@shiptrack.com', hashedPasswordCustomer, 'customer', '+1 (555) 017-8899', now]
+    ['Robert Smith', 'customer2@shiptrack.com', hashedPasswordCustomer, 'customer', '+91 98765 55555', now]
   );
 
-  const customer1Id = customer1Res.lastID;
-  const customer2Id = customer2Res.lastID;
-  const driver1Id = driver1Res.lastID;
-  const driver2Id = driver2Res.lastID;
   const adminId = adminRes.lastID;
+  const d1 = d1Res.lastID; // Alex River
+  const d2 = d2Res.lastID; // Ravi Kumar
+  const d3 = d3Res.lastID; // Priya Singh
+  const c1 = c1Res.lastID; // Jane Doe
+  const c2 = c2Res.lastID; // Robert Smith
 
-  // Sample Shipments
-  const estDelivery1 = new Date(Date.now() + 86400000 * 2).toISOString();
-  const estDelivery2 = new Date(Date.now() + 86400000 * 1).toISOString();
-  const estDelivery3 = new Date(Date.now() - 86400000 * 1).toISOString();
+  const estOct7 = '2026-10-07T18:00:00.000Z';
+  const estToday = new Date().toISOString();
+  const estOct3 = '2026-10-03T14:30:00.000Z';
+  const estOct8 = '2026-10-08T11:00:00.000Z';
+  const estOct9 = '2026-10-09T16:00:00.000Z';
 
-  // Shipment 1: In Transit
+  // Shipment 1: TRK-2026-894120
   const s1 = await db.run(`
     INSERT INTO shipments (
       tracking_number, customer_id, driver_id, sender_name, sender_phone, sender_address, sender_city,
@@ -158,13 +163,13 @@ async function seedDefaultData(db) {
       special_instructions, created_at, updated_at
     ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
   `, [
-    'TRK-2026-894120', customer1Id, driver1Id, 'Jane Doe', '+1 (555) 012-3456', '742 Evergreen Terrace', 'Springfield',
-    'Tech Supplies Inc.', '+1 (555) 998-1122', '100 Silicon Way', 'San Jose', 'Express', 3.5,
-    '30x20x15 cm', 450.00, 24.50, 'IN_TRANSIT', 'Sorting Hub Central, Denver, CO', estDelivery1,
-    'Handle with care - contains fragile electronics.', now, now
+    'TRK-2026-894120', c1, d1, 'Jane Doe', '+91 98765 44444', 'HITEC City, Phase 2', 'Hyderabad',
+    'Rahul Sharma', '+91 91234 56789', '100 Silicon Highway', 'Hyderabad', 'Electronics', 3.5,
+    '30x20x15 cm', 12500, 850, 'IN_TRANSIT', 'Hyderabad Distribution Center Hub', estOct7,
+    'Fragile handle with care. Contains high precision sensors.', now, now
   ]);
 
-  // Shipment 2: Out for Delivery
+  // Shipment 2: TRK-2026-302194
   const s2 = await db.run(`
     INSERT INTO shipments (
       tracking_number, customer_id, driver_id, sender_name, sender_phone, sender_address, sender_city,
@@ -173,13 +178,13 @@ async function seedDefaultData(db) {
       special_instructions, created_at, updated_at
     ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
   `, [
-    'TRK-2026-302194', customer1Id, driver2Id, 'Jane Doe', '+1 (555) 012-3456', '742 Evergreen Terrace', 'Springfield',
-    'Michael Scott', '+1 (555) 321-7654', '1725 Slough Avenue', 'Scranton', 'Standard', 1.2,
-    '20x15x10 cm', 85.00, 12.00, 'OUT_FOR_DELIVERY', 'Scranton Local Delivery Van #4', estDelivery2,
-    'Leave at front porch if no answer.', now, now
+    'TRK-2026-302194', c1, d2, 'Jane Doe', '+91 98765 44444', 'Banjara Hills, Road #12', 'Hyderabad',
+    'Priya Reddy', '+91 98111 22233', 'Koramangala 4th Block', 'Bengaluru', 'Documents', 0.8,
+    '25x15x5 cm', 2000, 420, 'OUT_FOR_DELIVERY', 'Bengaluru South Delivery Route #4', estToday,
+    'Urgent legal documents. Deliver to reception desk.', now, now
   ]);
 
-  // Shipment 3: Delivered
+  // Shipment 3: TRK-2026-110482
   const s3 = await db.run(`
     INSERT INTO shipments (
       tracking_number, customer_id, driver_id, sender_name, sender_phone, sender_address, sender_city,
@@ -188,33 +193,71 @@ async function seedDefaultData(db) {
       special_instructions, proof_of_delivery, created_at, updated_at
     ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
   `, [
-    'TRK-2026-110482', customer2Id, driver1Id, 'Robert Smith', '+1 (555) 017-8899', '124 Conch Street', 'Bikini Bottom',
-    'Sarah Connor', '+1 (555) 443-2211', '455 SkyNet Plaza', 'Los Angeles', 'Fragile', 5.0,
-    '40x30x20 cm', 1200.00, 48.00, 'DELIVERED', 'Destination Address - Front Reception', estDelivery3,
-    'Signature required upon receipt.', 'Signed by S. Connor at 14:32 PM', now, now
+    'TRK-2026-110482', c1, d1, 'Jane Doe', '+91 98765 44444', 'Andheri East', 'Mumbai',
+    'Arjun Kumar', '+91 97777 88888', 'Connaught Place', 'Delhi', 'Clothing', 2.2,
+    '35x25x10 cm', 4500, 650, 'DELIVERED', 'Delhi Hub Destination Address', estOct3,
+    'Standard apparel package.', 'Handed to Arjun Kumar at 14:32 IST', now, now
   ]);
 
-  // Status Updates Seed
+  // Shipment 4: TRK-2026-554109
+  const s4 = await db.run(`
+    INSERT INTO shipments (
+      tracking_number, customer_id, driver_id, sender_name, sender_phone, sender_address, sender_city,
+      recipient_name, recipient_phone, recipient_address, recipient_city, package_type, weight_kg,
+      dimensions, declared_value, shipping_cost, status, current_location, estimated_delivery,
+      special_instructions, created_at, updated_at
+    ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+  `, [
+    'TRK-2026-554109', c1, d3, 'Jane Doe', '+91 98765 44444', 'FC Road', 'Pune',
+    'Sneha Patel', '+91 93333 44444', 'T Nagar', 'Chennai', 'Cold Storage', 4.0,
+    '30x30x20 cm', 25000, 1200, 'PICKED_UP', 'Pune Regional Logistics Facility', estOct8,
+    'Keep under 4 degrees Celsius at all times.', now, now
+  ]);
+
+  // Shipment 5: TRK-2026-778231
+  const s5 = await db.run(`
+    INSERT INTO shipments (
+      tracking_number, customer_id, driver_id, sender_name, sender_phone, sender_address, sender_city,
+      recipient_name, recipient_phone, recipient_address, recipient_city, package_type, weight_kg,
+      dimensions, declared_value, shipping_cost, status, current_location, estimated_delivery,
+      special_instructions, created_at, updated_at
+    ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+  `, [
+    'TRK-2026-778231', c2, null, 'Robert Smith', '+91 98765 55555', 'Nehru Place', 'Delhi',
+    'Vikram Malhotra', '+91 94444 55555', 'Gachibowli', 'Hyderabad', 'Heavy Cargo', 15.0,
+    '80x60x50 cm', 35000, 1950, 'CREATED', 'Delhi Origin Warehouse Dispatch', estOct9,
+    'Palletized equipment. Heavy lift gear needed.', now, now
+  ]);
+
+  // Timeline Logs Seed
   await db.run(`INSERT INTO status_updates (shipment_id, updated_by_user_id, status, location, notes, timestamp) VALUES (?, ?, ?, ?, ?, ?)`,
-    [s1.lastID, customer1Id, 'CREATED', 'Origin Dispatch, Springfield', 'Shipment registered by customer.', now]);
+    [s1.lastID, c1, 'CREATED', 'HITEC City Dispatch, Hyderabad', 'Shipment created by sender Jane Doe.', '2026-10-05T10:00:00.000Z']);
   await db.run(`INSERT INTO status_updates (shipment_id, updated_by_user_id, status, location, notes, timestamp) VALUES (?, ?, ?, ?, ?, ?)`,
-    [s1.lastID, driver1Id, 'PICKED_UP', 'Origin Logistics Hub', 'Package received from sender.', now]);
+    [s1.lastID, d1, 'PICKED_UP', 'Hyderabad Central Hub', 'Picked up by Courier Alex River (Express Van).', '2026-10-05T14:20:00.000Z']);
   await db.run(`INSERT INTO status_updates (shipment_id, updated_by_user_id, status, location, notes, timestamp) VALUES (?, ?, ?, ?, ?, ?)`,
-    [s1.lastID, driver1Id, 'IN_TRANSIT', 'Sorting Hub Central, Denver, CO', 'Scanned at regional sorting facility.', now]);
+    [s1.lastID, d1, 'IN_TRANSIT', 'Hyderabad Distribution Center Hub', 'Scanned at regional sorting facility.', '2026-10-05T18:45:00.000Z']);
 
   await db.run(`INSERT INTO status_updates (shipment_id, updated_by_user_id, status, location, notes, timestamp) VALUES (?, ?, ?, ?, ?, ?)`,
-    [s2.lastID, customer1Id, 'CREATED', 'Origin Dispatch, Springfield', 'Shipment registered by customer.', now]);
+    [s2.lastID, c1, 'CREATED', 'Banjara Hills, Hyderabad', 'Registered express document shipment.', '2026-10-05T09:15:00.000Z']);
   await db.run(`INSERT INTO status_updates (shipment_id, updated_by_user_id, status, location, notes, timestamp) VALUES (?, ?, ?, ?, ?, ?)`,
-    [s2.lastID, driver2Id, 'OUT_FOR_DELIVERY', 'Scranton Local Delivery Van #4', 'Driver out for final mile delivery.', now]);
+    [s2.lastID, d2, 'IN_TRANSIT', 'NH44 Highway Hub', 'Transit scan completed.', '2026-10-05T15:30:00.000Z']);
+  await db.run(`INSERT INTO status_updates (shipment_id, updated_by_user_id, status, location, notes, timestamp) VALUES (?, ?, ?, ?, ?, ?)`,
+    [s2.lastID, d2, 'OUT_FOR_DELIVERY', 'Bengaluru South Delivery Route #4', 'Driver Ravi Kumar out for delivery.', '2026-10-05T21:10:00.000Z']);
 
   await db.run(`INSERT INTO status_updates (shipment_id, updated_by_user_id, status, location, notes, timestamp) VALUES (?, ?, ?, ?, ?, ?)`,
-    [s3.lastID, customer2Id, 'CREATED', 'Origin Dispatch', 'Shipment registered.', now]);
+    [s3.lastID, c1, 'CREATED', 'Andheri Warehouse, Mumbai', 'Shipment created.', '2026-10-02T08:00:00.000Z']);
   await db.run(`INSERT INTO status_updates (shipment_id, updated_by_user_id, status, location, notes, timestamp) VALUES (?, ?, ?, ?, ?, ?)`,
-    [s3.lastID, driver1Id, 'DELIVERED', 'Destination Address', 'Delivered successfully and signed for.', now]);
+    [s3.lastID, d1, 'DELIVERED', 'Connaught Place, Delhi', 'Delivered & signed by Arjun Kumar.', '2026-10-03T14:30:00.000Z']);
 
-  // Audit log seed
+  // Audit Logs Seed
   await db.run(`INSERT INTO audit_logs (user_id, action, details, ip_address, timestamp) VALUES (?, ?, ?, ?, ?)`,
-    [adminId, 'SYSTEM_INITIALIZATION', 'Seeded initial users, drivers, and sample logistics data.', '127.0.0.1', now]);
+    [adminId, 'SYSTEM_INITIALIZATION', 'Seeded Indian Logistics demo dataset.', '127.0.0.1', now]);
+  await db.run(`INSERT INTO audit_logs (user_id, action, details, ip_address, timestamp) VALUES (?, ?, ?, ?, ?)`,
+    [c1, 'SHIPMENT_CREATED', 'Jane Doe created shipment TRK-2026-894120', '127.0.0.1', '2026-10-05T10:00:00.000Z']);
+  await db.run(`INSERT INTO audit_logs (user_id, action, details, ip_address, timestamp) VALUES (?, ?, ?, ?, ?)`,
+    [d1, 'STATUS_UPDATED', 'Alex River updated TRK-2026-894120 to IN_TRANSIT', '127.0.0.1', '2026-10-05T18:45:00.000Z']);
+  await db.run(`INSERT INTO audit_logs (user_id, action, details, ip_address, timestamp) VALUES (?, ?, ?, ?, ?)`,
+    [adminId, 'SHIPMENT_ASSIGNED', 'Admin assigned TRK-2026-894120 to Alex River', '127.0.0.1', '2026-10-05T11:00:00.000Z']);
 
   console.log('[DB] Seeding completed successfully!');
 }
