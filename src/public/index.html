@@ -1,0 +1,1322 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>ShipTrack — Smart Logistics & Delivery Platform</title>
+  <!-- Tailwind CSS -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  <!-- FontAwesome Icons -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <!-- Google Fonts Inter -->
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+  
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          fontFamily: { sans: ['Inter', 'sans-serif'] },
+          colors: {
+            brand: {
+              50: '#eef2ff',
+              100: '#e0e7ff',
+              500: '#6366f1',
+              600: '#4f46e5',
+              700: '#4338ca',
+              900: '#312e81',
+            }
+          }
+        }
+      }
+    }
+  </script>
+  <style>
+    body {
+      background: #090d16;
+      color: #f1f5f9;
+      font-family: 'Inter', sans-serif;
+    }
+    .glass-card {
+      background: rgba(30, 41, 59, 0.7);
+      backdrop-filter: blur(16px);
+      border: 1px solid rgba(255, 255, 255, 0.08);
+      box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.37);
+    }
+    .glass-nav {
+      background: rgba(15, 23, 42, 0.85);
+      backdrop-filter: blur(16px);
+      border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+    }
+    .pulse-dot {
+      animation: pulse 2s cubic-bezier(0.4, 0, 0.6, 1) infinite;
+    }
+    @keyframes pulse {
+      0%, 100% { opacity: 1; transform: scale(1); }
+      50% { opacity: .5; transform: scale(1.2); }
+    }
+    .gradient-text {
+      background: linear-gradient(135deg, #38bdf8 0%, #818cf8 50%, #c084fc 100%);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+    }
+    .step-line {
+      height: 3px;
+      background: rgba(255, 255, 255, 0.1);
+    }
+    .step-line-active {
+      background: linear-gradient(90deg, #6366f1, #38bdf8);
+    }
+    /* Custom Scrollbar */
+    ::-webkit-scrollbar { width: 6px; }
+    ::-webkit-scrollbar-track { background: #0f172a; }
+    ::-webkit-scrollbar-thumb { background: #334155; border-radius: 4px; }
+    ::-webkit-scrollbar-thumb:hover { background: #475569; }
+  </style>
+</head>
+<body class="min-h-screen flex flex-col">
+
+  <!-- Top Glass Navigation Bar -->
+  <header class="sticky top-0 z-40 glass-nav px-4 lg:px-8 py-3.5 transition-all">
+    <div class="max-w-7xl mx-auto flex items-center justify-between">
+      
+      <!-- Brand Logo -->
+      <div class="flex items-center space-x-3 cursor-pointer" onclick="switchTab('tracker')">
+        <div class="w-10 h-10 rounded-xl bg-gradient-to-tr from-indigo-600 via-blue-500 to-cyan-400 flex items-center justify-center shadow-lg shadow-indigo-500/30">
+          <i class="fa-solid fa-boxes-packing text-white text-xl"></i>
+        </div>
+        <div>
+          <span class="text-xl font-bold tracking-tight text-white">Ship<span class="gradient-text">Track</span></span>
+          <span class="block text-[10px] text-indigo-300 tracking-wider font-semibold uppercase">Logistics Platform</span>
+        </div>
+      </div>
+
+      <!-- Navigation Links -->
+      <nav class="hidden md:flex items-center space-x-1 bg-slate-900/80 p-1.5 rounded-xl border border-slate-800">
+        <button id="nav-tracker" onclick="switchTab('tracker')" class="px-4 py-2 rounded-lg text-sm font-medium transition text-white bg-indigo-600/90 shadow">
+          <i class="fa-solid fa-magnifying-glass mr-2"></i>Live Track
+        </button>
+        <button id="nav-customer" onclick="switchTab('customer')" class="px-4 py-2 rounded-lg text-sm font-medium transition text-slate-300 hover:text-white hover:bg-slate-800">
+          <i class="fa-solid fa-box mr-2"></i>Customer Hub
+        </button>
+        <button id="nav-driver" onclick="switchTab('driver')" class="px-4 py-2 rounded-lg text-sm font-medium transition text-slate-300 hover:text-white hover:bg-slate-800">
+          <i class="fa-solid fa-truck-fast mr-2"></i>Driver Console
+        </button>
+        <button id="nav-admin" onclick="switchTab('admin')" class="px-4 py-2 rounded-lg text-sm font-medium transition text-slate-300 hover:text-white hover:bg-slate-800">
+          <i class="fa-solid fa-chart-line mr-2"></i>Admin Center
+        </button>
+      </nav>
+
+      <!-- User Auth Section & Quick Demo Logins -->
+      <div class="flex items-center space-x-3">
+        <div id="user-badge" class="hidden items-center space-x-2 bg-slate-800/90 px-3.5 py-1.5 rounded-xl border border-slate-700">
+          <div id="user-avatar" class="w-7 h-7 rounded-full bg-indigo-500 text-white font-bold text-xs flex items-center justify-center">U</div>
+          <div class="text-left">
+            <span id="user-name" class="block text-xs font-semibold text-slate-200">User Name</span>
+            <span id="user-role-badge" class="block text-[10px] text-indigo-400 uppercase font-bold">Role</span>
+          </div>
+          <button onclick="logout()" title="Logout" class="ml-2 text-slate-400 hover:text-rose-400 text-xs">
+            <i class="fa-solid fa-arrow-right-from-bracket"></i>
+          </button>
+        </div>
+
+        <button id="login-btn" onclick="openLoginModal()" class="px-4 py-2 rounded-xl text-sm font-semibold bg-gradient-to-r from-indigo-600 to-blue-600 hover:from-indigo-500 hover:to-blue-500 text-white shadow-lg shadow-indigo-600/20 transition">
+          <i class="fa-solid fa-user-lock mr-2"></i>Sign In
+        </button>
+      </div>
+    </div>
+  </header>
+
+  <!-- Quick Demo Role Switcher Header Bar -->
+  <div class="bg-indigo-950/60 border-b border-indigo-900/40 py-1.5 px-4 text-center text-xs">
+    <span class="text-indigo-300 mr-2"><i class="fa-solid fa-bolt text-amber-400 mr-1"></i>Quick Demo Persona Logins:</span>
+    <button onclick="quickLogin('customer1@shiptrack.com', 'Customer@123', 'customer')" class="bg-indigo-900/80 hover:bg-indigo-800 text-indigo-200 px-2.5 py-0.5 rounded border border-indigo-700 mr-2 transition">
+      <i class="fa-solid fa-user text-indigo-400 mr-1"></i>Customer (Jane)
+    </button>
+    <button onclick="quickLogin('driver1@shiptrack.com', 'Driver@123', 'driver')" class="bg-indigo-900/80 hover:bg-indigo-800 text-indigo-200 px-2.5 py-0.5 rounded border border-indigo-700 mr-2 transition">
+      <i class="fa-solid fa-truck text-cyan-400 mr-1"></i>Driver (Alex)
+    </button>
+    <button onclick="quickLogin('admin@shiptrack.com', 'Admin@123', 'admin')" class="bg-indigo-900/80 hover:bg-indigo-800 text-indigo-200 px-2.5 py-0.5 rounded border border-indigo-700 transition">
+      <i class="fa-solid fa-shield-halved text-emerald-400 mr-1"></i>Admin
+    </button>
+  </div>
+
+  <!-- Main Dynamic View Container -->
+  <main class="flex-1 max-w-7xl w-full mx-auto p-4 lg:p-8">
+
+    <!-- VIEW 1: LIVE TRACKER (Default Public View) -->
+    <section id="view-tracker" class="space-y-8">
+      
+      <!-- Hero Banner & Tracking Form -->
+      <div class="relative overflow-hidden rounded-3xl glass-card p-8 lg:p-12 text-center border border-slate-700/50">
+        <div class="absolute -top-24 -right-24 w-96 h-96 bg-indigo-600/20 rounded-full blur-3xl pointer-events-none"></div>
+        <div class="absolute -bottom-24 -left-24 w-96 h-96 bg-blue-600/20 rounded-full blur-3xl pointer-events-none"></div>
+
+        <span class="inline-flex items-center px-3 py-1 rounded-full text-xs font-semibold bg-indigo-500/10 text-indigo-400 border border-indigo-500/20 mb-4">
+          <span class="w-2 h-2 rounded-full bg-emerald-400 mr-2 pulse-dot"></span> Next-Gen Real-Time Logistics Tracking
+        </span>
+
+        <h1 class="text-3xl lg:text-5xl font-extrabold text-white tracking-tight max-w-3xl mx-auto leading-tight">
+          Track Any Shipment Across <span class="gradient-text">Global Routes</span>
+        </h1>
+        <p class="text-slate-400 text-sm lg:text-base max-w-2xl mx-auto mt-3">
+          Enter your unique tracking code below for live GPS status updates, delivery estimates, driver details, and complete route audit history.
+        </p>
+
+        <!-- Search Bar Input -->
+        <div class="mt-8 max-w-2xl mx-auto flex flex-col sm:flex-row gap-3">
+          <div class="relative flex-1">
+            <i class="fa-solid fa-barcode text-slate-500 absolute left-4 top-1/2 -translate-y-1/2 text-lg"></i>
+            <input type="text" id="tracking-input" placeholder="e.g. TRK-2026-894120" value="TRK-2026-894120"
+              class="w-full pl-12 pr-4 py-4 rounded-2xl bg-slate-900/90 border border-slate-700 text-white placeholder-slate-500 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-transparent text-base tracking-wider uppercase font-mono">
+          </div>
+          <button onclick="trackShipment()" class="px-8 py-4 rounded-2xl bg-gradient-to-r from-indigo-600 via-blue-600 to-cyan-500 hover:from-indigo-500 hover:to-cyan-400 text-white font-bold text-base shadow-xl shadow-indigo-600/25 transition transform active:scale-95 flex items-center justify-center">
+            <i class="fa-solid fa-paper-plane mr-2"></i> Track Now
+          </button>
+        </div>
+
+        <!-- Sample Search Chips -->
+        <div class="mt-4 flex flex-wrap items-center justify-center gap-2 text-xs text-slate-400">
+          <span>Try Demo IDs:</span>
+          <button onclick="setAndTrack('TRK-2026-894120')" class="hover:text-indigo-300 underline font-mono">TRK-2026-894120 (In Transit)</button>
+          <span>•</span>
+          <button onclick="setAndTrack('TRK-2026-302194')" class="hover:text-indigo-300 underline font-mono">TRK-2026-302194 (Out for Delivery)</button>
+          <span>•</span>
+          <button onclick="setAndTrack('TRK-2026-110482')" class="hover:text-indigo-300 underline font-mono">TRK-2026-110482 (Delivered)</button>
+        </div>
+      </div>
+
+      <!-- Tracking Results Card Container -->
+      <div id="tracking-result" class="hidden space-y-6">
+        <!-- Rendered dynamically by JavaScript -->
+      </div>
+    </section>
+
+    <!-- VIEW 2: CUSTOMER PORTAL -->
+    <section id="view-customer" class="hidden space-y-6">
+      <div class="flex flex-col md:flex-row md:items-center justify-between gap-4">
+        <div>
+          <h2 class="text-2xl font-bold text-white flex items-center">
+            <i class="fa-solid fa-boxes-stacked text-indigo-400 mr-3"></i>Customer Shipment Hub
+          </h2>
+          <p class="text-slate-400 text-sm">Create new package dispatches and review your shipment history.</p>
+        </div>
+        <button onclick="openCreateShipmentModal()" class="px-5 py-2.5 rounded-xl bg-indigo-600 hover:bg-indigo-500 text-white font-semibold shadow-lg shadow-indigo-600/30 transition flex items-center">
+          <i class="fa-solid fa-plus-circle mr-2"></i>Create New Shipment
+        </button>
+      </div>
+
+      <!-- Customer Summary Stats -->
+      <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+        <div class="glass-card p-5 rounded-2xl flex items-center justify-between">
+          <div>
+            <span class="text-xs text-slate-400 font-medium uppercase">Active Shipments</span>
+            <span id="cust-stat-active" class="block text-2xl font-extrabold text-white mt-1">0</span>
+          </div>
+          <div class="w-12 h-12 rounded-xl bg-indigo-500/10 border border-indigo-500/20 text-indigo-400 flex items-center justify-center text-xl">
+            <i class="fa-solid fa-truck-ramp-box"></i>
+          </div>
+        </div>
+        <div class="glass-card p-5 rounded-2xl flex items-center justify-between">
+          <div>
+            <span class="text-xs text-slate-400 font-medium uppercase">Total Delivered</span>
+            <span id="cust-stat-delivered" class="block text-2xl font-extrabold text-emerald-400 mt-1">0</span>
+          </div>
+          <div class="w-12 h-12 rounded-xl bg-emerald-500/10 border border-emerald-500/20 text-emerald-400 flex items-center justify-center text-xl">
+            <i class="fa-solid fa-circle-check"></i>
+          </div>
+        </div>
+        <div class="glass-card p-5 rounded-2xl flex items-center justify-between">
+          <div>
+            <span class="text-xs text-slate-400 font-medium uppercase">Total Spent</span>
+            <span id="cust-stat-spent" class="block text-2xl font-extrabold text-cyan-400 mt-1">$0.00</span>
+          </div>
+          <div class="w-12 h-12 rounded-xl bg-cyan-500/10 border border-cyan-500/20 text-cyan-400 flex items-center justify-center text-xl">
+            <i class="fa-solid fa-file-invoice-dollar"></i>
+          </div>
+        </div>
+      </div>
+
+      <!-- Customer History Table Card -->
+      <div class="glass-card rounded-2xl p-6 overflow-hidden">
+        <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-3 mb-6">
+          <h3 class="text-lg font-bold text-white">Your Shipment History</h3>
+          <div class="flex items-center space-x-2">
+            <input type="text" id="cust-search-input" onkeyup="loadCustomerShipments()" placeholder="Search recipient/tracking..." class="px-3.5 py-1.5 rounded-lg bg-slate-900 border border-slate-700 text-xs text-white placeholder-slate-500 focus:outline-none focus:border-indigo-500">
+            <select id="cust-status-filter" onchange="loadCustomerShipments()" class="px-3.5 py-1.5 rounded-lg bg-slate-900 border border-slate-700 text-xs text-white focus:outline-none focus:border-indigo-500">
+              <option value="">All Statuses</option>
+              <option value="CREATED">Created</option>
+              <option value="IN_TRANSIT">In Transit</option>
+              <option value="OUT_FOR_DELIVERY">Out for Delivery</option>
+              <option value="DELIVERED">Delivered</option>
+            </select>
+          </div>
+        </div>
+
+        <div class="overflow-x-auto">
+          <table class="w-full text-left text-sm text-slate-300">
+            <thead class="bg-slate-900/60 text-slate-400 text-xs uppercase font-semibold border-b border-slate-800">
+              <tr>
+                <th class="py-3 px-4">Tracking Code</th>
+                <th class="py-3 px-4">Recipient & City</th>
+                <th class="py-3 px-4">Package</th>
+                <th class="py-3 px-4">Est. Delivery</th>
+                <th class="py-3 px-4">Status</th>
+                <th class="py-3 px-4">Cost</th>
+                <th class="py-3 px-4 text-right">Actions</th>
+              </tr>
+            </thead>
+            <tbody id="customer-shipments-body">
+              <tr>
+                <td colspan="7" class="py-8 text-center text-slate-500">Please sign in as a customer to view your shipment history.</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </section>
+
+    <!-- VIEW 3: DRIVER CONSOLE -->
+    <section id="view-driver" class="hidden space-y-6">
+      <div class="flex flex-col md:flex-row md:items-center justify-between gap-4">
+        <div>
+          <h2 class="text-2xl font-bold text-white flex items-center">
+            <i class="fa-solid fa-truck-fast text-cyan-400 mr-3"></i>Driver Delivery Console
+          </h2>
+          <p class="text-slate-400 text-sm">Manage assigned routes and dispatch status checkpoints.</p>
+        </div>
+        <div id="driver-info-badge" class="text-xs bg-slate-800 px-4 py-2 rounded-xl border border-slate-700 text-slate-300">
+          <span class="text-indigo-400 font-bold">Active Courier:</span> <span id="driver-name-display">Alex River</span> (<span id="driver-vehicle-display">Express Van</span>)
+        </div>
+      </div>
+
+      <!-- Assigned Deliveries List -->
+      <div class="glass-card rounded-2xl p-6">
+        <h3 class="text-lg font-bold text-white mb-4">Assigned Delivery Queue</h3>
+        <div id="driver-deliveries-list" class="grid grid-cols-1 gap-4">
+          <p class="text-slate-500 py-8 text-center">Please sign in with a driver account to view your assigned delivery queue.</p>
+        </div>
+      </div>
+    </section>
+
+    <!-- VIEW 4: ADMIN CENTER -->
+    <section id="view-admin" class="hidden space-y-6">
+      <div class="flex flex-col md:flex-row md:items-center justify-between gap-4">
+        <div>
+          <h2 class="text-2xl font-bold text-white flex items-center">
+            <i class="fa-solid fa-shield-halved text-emerald-400 mr-3"></i>Administrative Management Center
+          </h2>
+          <p class="text-slate-400 text-sm">Global system metrics, driver assignment, user management, and security audit logs.</p>
+        </div>
+        <button onclick="openAddDriverModal()" class="px-4 py-2 rounded-xl bg-emerald-600 hover:bg-emerald-500 text-white text-xs font-bold shadow-lg transition">
+          <i class="fa-solid fa-user-plus mr-1.5"></i>Add New Driver
+        </button>
+      </div>
+
+      <!-- Admin Stat Grid -->
+      <div class="grid grid-cols-2 lg:grid-cols-4 gap-4">
+        <div class="glass-card p-5 rounded-2xl border-l-4 border-indigo-500">
+          <span class="text-xs text-slate-400 uppercase font-semibold">Total Shipments</span>
+          <span id="admin-stat-total" class="block text-2xl font-extrabold text-white mt-1">0</span>
+        </div>
+        <div class="glass-card p-5 rounded-2xl border-l-4 border-amber-500">
+          <span class="text-xs text-slate-400 uppercase font-semibold">Unassigned Queue</span>
+          <span id="admin-stat-unassigned" class="block text-2xl font-extrabold text-amber-400 mt-1">0</span>
+        </div>
+        <div class="glass-card p-5 rounded-2xl border-l-4 border-cyan-500">
+          <span class="text-xs text-slate-400 uppercase font-semibold">Active Drivers</span>
+          <span id="admin-stat-drivers" class="block text-2xl font-extrabold text-cyan-400 mt-1">0</span>
+        </div>
+        <div class="glass-card p-5 rounded-2xl border-l-4 border-emerald-500">
+          <span class="text-xs text-slate-400 uppercase font-semibold">Total Revenue</span>
+          <span id="admin-stat-revenue" class="block text-2xl font-extrabold text-emerald-400 mt-1">$0.00</span>
+        </div>
+      </div>
+
+      <!-- Admin Tabs: All Shipments / Drivers / Audit Logs -->
+      <div class="glass-card rounded-2xl p-6">
+        <div class="flex items-center space-x-3 border-b border-slate-800 pb-4 mb-4">
+          <button onclick="switchAdminSubTab('shipments')" id="admin-tab-shipments" class="px-4 py-2 rounded-lg text-xs font-bold bg-indigo-600 text-white">All Shipments & Assignments</button>
+          <button onclick="switchAdminSubTab('users')" id="admin-tab-users" class="px-4 py-2 rounded-lg text-xs font-bold text-slate-400 hover:text-white hover:bg-slate-800">Users & Drivers Directory</button>
+          <button onclick="switchAdminSubTab('audit')" id="admin-tab-audit" class="px-4 py-2 rounded-lg text-xs font-bold text-slate-400 hover:text-white hover:bg-slate-800">Security Audit Logs</button>
+        </div>
+
+        <div id="admin-subcontent">
+          <!-- Rendered dynamically -->
+        </div>
+      </div>
+    </section>
+
+  </main>
+
+  <!-- Floating AI Assistant Button & Modal -->
+  <div class="fixed bottom-6 right-6 z-50">
+    <button onclick="toggleAIChatModal()" class="w-14 h-14 rounded-full bg-gradient-to-tr from-indigo-600 to-cyan-400 text-white shadow-2xl shadow-indigo-500/50 flex items-center justify-center text-2xl hover:scale-105 transition transform active:scale-95">
+      <i class="fa-solid fa-robot"></i>
+    </button>
+  </div>
+
+  <!-- AI Assistant Chat Modal Drawer -->
+  <div id="ai-chat-modal" class="hidden fixed bottom-24 right-6 w-96 max-w-[calc(100vw-3rem)] h-[520px] z-50 glass-card rounded-3xl flex flex-col overflow-hidden shadow-2xl border border-indigo-500/30">
+    <!-- Chat Header -->
+    <div class="bg-gradient-to-r from-slate-900 via-indigo-950 to-slate-900 p-4 border-b border-slate-800 flex items-center justify-between">
+      <div class="flex items-center space-x-3">
+        <div class="w-9 h-9 rounded-xl bg-indigo-600 text-white flex items-center justify-center text-lg shadow">
+          <i class="fa-solid fa-robot"></i>
+        </div>
+        <div>
+          <h4 class="text-sm font-bold text-white">ShipBot AI Assistant</h4>
+          <span class="block text-[10px] text-emerald-400 font-semibold"><span class="w-1.5 h-1.5 rounded-full bg-emerald-400 inline-block mr-1"></span>Online • Connected to Live DB</span>
+        </div>
+      </div>
+      <button onclick="toggleAIChatModal()" class="text-slate-400 hover:text-white text-lg"><i class="fa-solid fa-xmark"></i></button>
+    </div>
+
+    <!-- Messages Container -->
+    <div id="ai-messages" class="flex-1 p-4 overflow-y-auto space-y-3 text-xs">
+      <div class="bg-slate-800/90 text-slate-200 p-3 rounded-2xl rounded-tl-none border border-slate-700 max-w-[85%]">
+        Hello! I'm <strong>ShipBot AI</strong>. How can I help you track your shipment or answer logistics questions today?
+      </div>
+    </div>
+
+    <!-- Quick Chips -->
+    <div class="px-3 py-2 bg-slate-950/80 border-t border-slate-800/50 flex gap-1.5 overflow-x-auto text-[11px] text-indigo-300">
+      <button onclick="sendAIQuick('Where is TRK-2026-894120?')" class="whitespace-nowrap px-2 py-1 bg-slate-800 rounded-lg hover:bg-indigo-900/60 border border-slate-700 transition">Track TRK-894120</button>
+      <button onclick="sendAIQuick('How much does shipping cost?')" class="whitespace-nowrap px-2 py-1 bg-slate-800 rounded-lg hover:bg-indigo-900/60 border border-slate-700 transition">Shipping Rates</button>
+    </div>
+
+    <!-- Chat Input Bar -->
+    <form onsubmit="handleAISubmit(event)" class="p-3 bg-slate-900 border-t border-slate-800 flex gap-2">
+      <input type="text" id="ai-input" placeholder="Ask ShipBot anything..." class="flex-1 px-3.5 py-2 bg-slate-950 border border-slate-700 rounded-xl text-xs text-white placeholder-slate-500 focus:outline-none focus:border-indigo-500">
+      <button type="submit" class="px-3 py-2 bg-indigo-600 hover:bg-indigo-500 text-white rounded-xl text-xs font-bold transition flex items-center justify-center">
+        <i class="fa-solid fa-paper-plane"></i>
+      </button>
+    </form>
+  </div>
+
+  <!-- MODAL: LOGIN / REGISTER -->
+  <div id="auth-modal" class="hidden fixed inset-0 z-50 bg-slate-950/80 backdrop-blur-sm flex items-center justify-center p-4">
+    <div class="glass-card w-full max-w-md rounded-3xl p-6 relative border border-slate-700">
+      <button onclick="closeAuthModal()" class="absolute top-5 right-5 text-slate-400 hover:text-white"><i class="fa-solid fa-xmark text-lg"></i></button>
+
+      <div class="flex border-b border-slate-800 mb-6">
+        <button id="auth-tab-login" onclick="switchAuthTab('login')" class="flex-1 pb-3 text-sm font-bold text-indigo-400 border-b-2 border-indigo-500">Sign In</button>
+        <button id="auth-tab-register" onclick="switchAuthTab('register')" class="flex-1 pb-3 text-sm font-bold text-slate-400 border-b-2 border-transparent">Register</button>
+      </div>
+
+      <!-- Login Form -->
+      <form id="login-form" onsubmit="handleLoginSubmit(event)" class="space-y-4">
+        <div>
+          <label class="block text-xs font-semibold text-slate-300 mb-1">Email Address</label>
+          <input type="email" id="login-email" required placeholder="name@domain.com" class="w-full px-3.5 py-2.5 bg-slate-900 border border-slate-700 rounded-xl text-sm text-white placeholder-slate-500 focus:outline-none focus:ring-2 focus:ring-indigo-500">
+        </div>
+        <div>
+          <label class="block text-xs font-semibold text-slate-300 mb-1">Password</label>
+          <input type="password" id="login-password" required placeholder="••••••••" class="w-full px-3.5 py-2.5 bg-slate-900 border border-slate-700 rounded-xl text-sm text-white focus:outline-none focus:ring-2 focus:ring-indigo-500">
+        </div>
+        <button type="submit" class="w-full py-3 bg-indigo-600 hover:bg-indigo-500 text-white font-bold text-sm rounded-xl transition shadow-lg shadow-indigo-600/30">Sign In</button>
+      </form>
+
+      <!-- Register Form -->
+      <form id="register-form" onsubmit="handleRegisterSubmit(event)" class="hidden space-y-4">
+        <div>
+          <label class="block text-xs font-semibold text-slate-300 mb-1">Full Name</label>
+          <input type="text" id="reg-name" required placeholder="John Doe" class="w-full px-3.5 py-2 bg-slate-900 border border-slate-700 rounded-xl text-xs text-white">
+        </div>
+        <div>
+          <label class="block text-xs font-semibold text-slate-300 mb-1">Email</label>
+          <input type="email" id="reg-email" required placeholder="john@example.com" class="w-full px-3.5 py-2 bg-slate-900 border border-slate-700 rounded-xl text-xs text-white">
+        </div>
+        <div>
+          <label class="block text-xs font-semibold text-slate-300 mb-1">Password</label>
+          <input type="password" id="reg-password" required placeholder="Min 6 characters" class="w-full px-3.5 py-2 bg-slate-900 border border-slate-700 rounded-xl text-xs text-white">
+        </div>
+        <div>
+          <label class="block text-xs font-semibold text-slate-300 mb-1">Account Role</label>
+          <select id="reg-role" class="w-full px-3.5 py-2 bg-slate-900 border border-slate-700 rounded-xl text-xs text-white">
+            <option value="customer">Customer (Shipment Sender)</option>
+            <option value="driver">Delivery Driver</option>
+          </select>
+        </div>
+        <button type="submit" class="w-full py-3 bg-emerald-600 hover:bg-emerald-500 text-white font-bold text-sm rounded-xl transition shadow-lg shadow-emerald-600/30">Create Account</button>
+      </form>
+    </div>
+  </div>
+
+  <!-- MODAL: CREATE SHIPMENT -->
+  <div id="create-shipment-modal" class="hidden fixed inset-0 z-50 bg-slate-950/80 backdrop-blur-sm flex items-center justify-center p-4">
+    <div class="glass-card w-full max-w-2xl rounded-3xl p-6 relative border border-slate-700 max-h-[90vh] overflow-y-auto">
+      <button onclick="closeCreateShipmentModal()" class="absolute top-5 right-5 text-slate-400 hover:text-white"><i class="fa-solid fa-xmark text-lg"></i></button>
+
+      <h3 class="text-xl font-bold text-white mb-1"><i class="fa-solid fa-box-open text-indigo-400 mr-2"></i>Create New Shipment</h3>
+      <p class="text-xs text-slate-400 mb-6">Enter sender, recipient, and package specifications to generate a tracking code.</p>
+
+      <form onsubmit="handleCreateShipmentSubmit(event)" class="space-y-4">
+        <!-- Sender & Recipient Grid -->
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-4 bg-slate-900/60 p-4 rounded-2xl border border-slate-800">
+          <div>
+            <h4 class="text-xs font-bold text-indigo-400 uppercase mb-2">Sender Details</h4>
+            <div class="space-y-2">
+              <input type="text" id="cs-sender-name" required placeholder="Sender Full Name" class="w-full px-3 py-1.5 bg-slate-950 border border-slate-800 rounded-lg text-xs text-white">
+              <input type="text" id="cs-sender-phone" placeholder="Sender Phone" class="w-full px-3 py-1.5 bg-slate-950 border border-slate-800 rounded-lg text-xs text-white">
+              <input type="text" id="cs-sender-address" required placeholder="Street Address" class="w-full px-3 py-1.5 bg-slate-950 border border-slate-800 rounded-lg text-xs text-white">
+              <input type="text" id="cs-sender-city" required placeholder="City & Zip Code" class="w-full px-3 py-1.5 bg-slate-950 border border-slate-800 rounded-lg text-xs text-white">
+            </div>
+          </div>
+          <div>
+            <h4 class="text-xs font-bold text-cyan-400 uppercase mb-2">Recipient Details</h4>
+            <div class="space-y-2">
+              <input type="text" id="cs-recipient-name" required placeholder="Recipient Full Name" class="w-full px-3 py-1.5 bg-slate-950 border border-slate-800 rounded-lg text-xs text-white">
+              <input type="text" id="cs-recipient-phone" placeholder="Recipient Phone" class="w-full px-3 py-1.5 bg-slate-950 border border-slate-800 rounded-lg text-xs text-white">
+              <input type="text" id="cs-recipient-address" required placeholder="Destination Address" class="w-full px-3 py-1.5 bg-slate-950 border border-slate-800 rounded-lg text-xs text-white">
+              <input type="text" id="cs-recipient-city" required placeholder="Destination City" class="w-full px-3 py-1.5 bg-slate-950 border border-slate-800 rounded-lg text-xs text-white">
+            </div>
+          </div>
+        </div>
+
+        <!-- Package Specs -->
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-3">
+          <div>
+            <label class="block text-[11px] font-semibold text-slate-300 mb-1">Package Type</label>
+            <select id="cs-package-type" onchange="recalculateEstCost()" class="w-full px-3 py-2 bg-slate-900 border border-slate-700 rounded-xl text-xs text-white">
+              <option value="Standard">Standard ($10 base)</option>
+              <option value="Express">Express Priority ($25 base)</option>
+              <option value="Fragile">Fragile Goods ($30 base)</option>
+              <option value="Cold Storage">Cold Storage ($45 base)</option>
+              <option value="Heavy Cargo">Heavy Cargo ($60 base)</option>
+            </select>
+          </div>
+          <div>
+            <label class="block text-[11px] font-semibold text-slate-300 mb-1">Weight (kg)</label>
+            <input type="number" step="0.1" id="cs-weight" oninput="recalculateEstCost()" value="2.5" required class="w-full px-3 py-2 bg-slate-900 border border-slate-700 rounded-xl text-xs text-white">
+          </div>
+          <div>
+            <label class="block text-[11px] font-semibold text-slate-300 mb-1">Estimated Cost</label>
+            <div id="cs-cost-display" class="w-full px-3 py-2 bg-indigo-950/80 border border-indigo-800/80 rounded-xl text-xs font-bold text-indigo-300 flex items-center justify-between">
+              <span>Cost:</span> <span id="cs-cost-val" class="text-base text-cyan-400 font-extrabold">$18.75</span>
+            </div>
+          </div>
+        </div>
+
+        <div>
+          <label class="block text-[11px] font-semibold text-slate-300 mb-1">Special Handling Instructions</label>
+          <textarea id="cs-instructions" rows="2" placeholder="e.g. Leave at door, requires signature, fragile handling..." class="w-full px-3 py-2 bg-slate-900 border border-slate-700 rounded-xl text-xs text-white"></textarea>
+        </div>
+
+        <button type="submit" class="w-full py-3 bg-gradient-to-r from-indigo-600 to-blue-600 hover:from-indigo-500 hover:to-blue-500 text-white font-bold text-sm rounded-xl shadow-lg transition">
+          <i class="fa-solid fa-paper-plane mr-2"></i>Dispatch & Generate Tracking ID
+        </button>
+      </form>
+    </div>
+  </div>
+
+  <!-- MODAL: DRIVER STATUS UPDATE -->
+  <div id="driver-update-modal" class="hidden fixed inset-0 z-50 bg-slate-950/80 backdrop-blur-sm flex items-center justify-center p-4">
+    <div class="glass-card w-full max-w-md rounded-3xl p-6 relative border border-slate-700">
+      <button onclick="closeDriverUpdateModal()" class="absolute top-5 right-5 text-slate-400 hover:text-white"><i class="fa-solid fa-xmark text-lg"></i></button>
+
+      <h3 class="text-lg font-bold text-white mb-1"><i class="fa-solid fa-location-dot text-cyan-400 mr-2"></i>Log Status Checkpoint</h3>
+      <p id="dum-tracking-display" class="text-xs text-slate-400 font-mono mb-4">Shipment: TRK-XXXX</p>
+
+      <form onsubmit="handleDriverUpdateSubmit(event)" class="space-y-4">
+        <input type="hidden" id="dum-shipment-id">
+        <div>
+          <label class="block text-xs font-semibold text-slate-300 mb-1">New Status</label>
+          <select id="dum-status" class="w-full px-3.5 py-2 bg-slate-900 border border-slate-700 rounded-xl text-xs text-white">
+            <option value="PICKED_UP">PICKED_UP — Package Collected from Sender</option>
+            <option value="IN_TRANSIT">IN_TRANSIT — In Movement between Sorting Centers</option>
+            <option value="OUT_FOR_DELIVERY">OUT_FOR_DELIVERY — Driver on Final Delivery Route</option>
+            <option value="DELIVERED">DELIVERED — Successfully Handed Over</option>
+            <option value="FAILED_ATTEMPT">FAILED_ATTEMPT — Delivery Exception / Recipient Unavailable</option>
+          </select>
+        </div>
+        <div>
+          <label class="block text-xs font-semibold text-slate-300 mb-1">Current GPS Location / Hub</label>
+          <input type="text" id="dum-location" required placeholder="e.g. Scranton Hub Van #4" class="w-full px-3.5 py-2 bg-slate-900 border border-slate-700 rounded-xl text-xs text-white">
+        </div>
+        <div>
+          <label class="block text-xs font-semibold text-slate-300 mb-1">Driver Notes / Proof Details</label>
+          <textarea id="dum-notes" rows="2" placeholder="e.g. Left with reception, signed by M. Scott..." class="w-full px-3.5 py-2 bg-slate-900 border border-slate-700 rounded-xl text-xs text-white"></textarea>
+        </div>
+        <button type="submit" class="w-full py-3 bg-cyan-600 hover:bg-cyan-500 text-white font-bold text-sm rounded-xl shadow-lg transition">
+          <i class="fa-solid fa-check-circle mr-2"></i>Post Live Status Update
+        </button>
+      </form>
+    </div>
+  </div>
+
+  <!-- MODAL: ADD DRIVER (Admin) -->
+  <div id="add-driver-modal" class="hidden fixed inset-0 z-50 bg-slate-950/80 backdrop-blur-sm flex items-center justify-center p-4">
+    <div class="glass-card w-full max-w-md rounded-3xl p-6 relative border border-slate-700">
+      <button onclick="closeAddDriverModal()" class="absolute top-5 right-5 text-slate-400 hover:text-white"><i class="fa-solid fa-xmark text-lg"></i></button>
+
+      <h3 class="text-lg font-bold text-white mb-1"><i class="fa-solid fa-user-plus text-emerald-400 mr-2"></i>Register New Driver</h3>
+      <p class="text-xs text-slate-400 mb-4">Add a new courier personnel account into the logistics network.</p>
+
+      <form onsubmit="handleAddDriverSubmit(event)" class="space-y-4">
+        <div>
+          <label class="block text-xs font-semibold text-slate-300 mb-1">Driver Name</label>
+          <input type="text" id="ad-name" required placeholder="Alex River" class="w-full px-3.5 py-2 bg-slate-900 border border-slate-700 rounded-xl text-xs text-white">
+        </div>
+        <div>
+          <label class="block text-xs font-semibold text-slate-300 mb-1">Email Address</label>
+          <input type="email" id="ad-email" required placeholder="driver@shiptrack.com" class="w-full px-3.5 py-2 bg-slate-900 border border-slate-700 rounded-xl text-xs text-white">
+        </div>
+        <div>
+          <label class="block text-xs font-semibold text-slate-300 mb-1">Password</label>
+          <input type="password" id="ad-password" required placeholder="Driver@123" class="w-full px-3.5 py-2 bg-slate-900 border border-slate-700 rounded-xl text-xs text-white">
+        </div>
+        <div>
+          <label class="block text-xs font-semibold text-slate-300 mb-1">Vehicle Assignment</label>
+          <input type="text" id="ad-vehicle" placeholder="e.g. Express Cargo Van #12" class="w-full px-3.5 py-2 bg-slate-900 border border-slate-700 rounded-xl text-xs text-white">
+        </div>
+        <button type="submit" class="w-full py-3 bg-emerald-600 hover:bg-emerald-500 text-white font-bold text-sm rounded-xl shadow-lg transition">
+          Create Driver Profile
+        </button>
+      </form>
+    </div>
+  </div>
+
+  <!-- APPLICATION LOGIC SCRIPT -->
+  <script>
+    // State Management
+    let currentUser = null;
+    let authToken = localStorage.getItem('shiptrack_token') || null;
+    let currentTab = 'tracker';
+    let currentAdminSubTab = 'shipments';
+
+    // On Load Initialization
+    window.addEventListener('DOMContentLoaded', async () => {
+      if (authToken) {
+        await fetchCurrentUser();
+      }
+      // Load initial tracker view
+      trackShipment();
+    });
+
+    // Navigation Switcher
+    function switchTab(tab) {
+      currentTab = tab;
+      ['tracker', 'customer', 'driver', 'admin'].forEach(t => {
+        const view = document.getElementById(`view-${t}`);
+        const nav = document.getElementById(`nav-${t}`);
+        if (view) view.classList.add('hidden');
+        if (nav) {
+          nav.className = 'px-4 py-2 rounded-lg text-sm font-medium transition text-slate-300 hover:text-white hover:bg-slate-800';
+        }
+      });
+
+      const activeView = document.getElementById(`view-${tab}`);
+      const activeNav = document.getElementById(`nav-${tab}`);
+      if (activeView) activeView.classList.remove('hidden');
+      if (activeNav) activeNav.className = 'px-4 py-2 rounded-lg text-sm font-medium transition text-white bg-indigo-600/90 shadow';
+
+      if (tab === 'customer') loadCustomerShipments();
+      if (tab === 'driver') loadDriverDeliveries();
+      if (tab === 'admin') loadAdminDashboard();
+    }
+
+    // Fetch Logged-in User Profile
+    async function fetchCurrentUser() {
+      try {
+        const res = await fetch('/api/auth/me', {
+          headers: { 'Authorization': `Bearer ${authToken}` }
+        });
+        if (res.ok) {
+          const data = await res.json();
+          currentUser = data.user;
+          updateUserUI();
+        } else {
+          logout();
+        }
+      } catch (e) {
+        console.error('Fetch user failed:', e);
+      }
+    }
+
+    function updateUserUI() {
+      const badge = document.getElementById('user-badge');
+      const loginBtn = document.getElementById('login-btn');
+      if (currentUser) {
+        badge.classList.remove('hidden');
+        badge.classList.add('flex');
+        loginBtn.classList.add('hidden');
+        document.getElementById('user-avatar').innerText = currentUser.name.charAt(0).toUpperCase();
+        document.getElementById('user-name').innerText = currentUser.name;
+        document.getElementById('user-role-badge').innerText = currentUser.role;
+      } else {
+        badge.classList.add('hidden');
+        badge.classList.remove('flex');
+        loginBtn.classList.remove('hidden');
+      }
+    }
+
+    function logout() {
+      currentUser = null;
+      authToken = null;
+      localStorage.removeItem('shiptrack_token');
+      updateUserUI();
+      switchTab('tracker');
+    }
+
+    // Quick Persona Login Helper
+    async function quickLogin(email, password, targetTab) {
+      try {
+        const res = await fetch('/api/auth/login', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ email, password })
+        });
+        const data = await res.json();
+        if (res.ok) {
+          authToken = data.token;
+          currentUser = data.user;
+          localStorage.setItem('shiptrack_token', authToken);
+          updateUserUI();
+          switchTab(targetTab);
+        } else {
+          alert('Quick login failed: ' + data.error);
+        }
+      } catch (e) {
+        alert('Network error during login.');
+      }
+    }
+
+    // Tracker Search Logic
+    function setAndTrack(code) {
+      document.getElementById('tracking-input').value = code;
+      trackShipment();
+    }
+
+    async function trackShipment() {
+      const trackingCode = document.getElementById('tracking-input').value.trim();
+      const resultDiv = document.getElementById('tracking-result');
+
+      if (!trackingCode) {
+        resultDiv.classList.add('hidden');
+        return;
+      }
+
+      try {
+        const res = await fetch(`/api/shipments/track/${trackingCode}`);
+        const data = await res.json();
+
+        if (!res.ok) {
+          resultDiv.classList.remove('hidden');
+          resultDiv.innerHTML = `
+            <div class="glass-card rounded-2xl p-8 text-center border-rose-500/30">
+              <i class="fa-solid fa-triangle-exclamation text-rose-400 text-4xl mb-3"></i>
+              <h3 class="text-xl font-bold text-white">Tracking Number Not Found</h3>
+              <p class="text-slate-400 text-sm mt-1">${data.error}</p>
+            </div>
+          `;
+          return;
+        }
+
+        const s = data.shipment;
+        const timeline = data.timeline;
+
+        const statuses = ['CREATED', 'PICKED_UP', 'IN_TRANSIT', 'OUT_FOR_DELIVERY', 'DELIVERED'];
+        const currentIdx = statuses.indexOf(s.status);
+
+        const estFormatted = new Date(s.estimated_delivery).toLocaleDateString('en-US', {
+          weekday: 'short', month: 'short', day: 'numeric', hour: '2-digit', minute: '2-digit'
+        });
+
+        resultDiv.classList.remove('hidden');
+        resultDiv.innerHTML = `
+          <!-- Main Shipment Status Header Card -->
+          <div class="glass-card rounded-3xl p-6 lg:p-8 space-y-6">
+            <div class="flex flex-col md:flex-row md:items-center justify-between gap-4 border-b border-slate-800 pb-6">
+              <div>
+                <div class="flex items-center space-x-3">
+                  <span class="text-2xl lg:text-3xl font-mono font-extrabold text-white tracking-wider">${s.tracking_number}</span>
+                  <span class="px-3 py-1 rounded-full text-xs font-bold uppercase tracking-wider ${
+                    s.status === 'DELIVERED' ? 'bg-emerald-500/20 text-emerald-400 border border-emerald-500/30' :
+                    s.status === 'OUT_FOR_DELIVERY' ? 'bg-cyan-500/20 text-cyan-400 border border-cyan-500/30' :
+                    'bg-indigo-500/20 text-indigo-400 border border-indigo-500/30'
+                  }">
+                    ${s.status.replace(/_/g, ' ')}
+                  </span>
+                </div>
+                <p class="text-xs text-slate-400 mt-1">From <strong class="text-slate-200">${s.sender_city}</strong> to <strong class="text-slate-200">${s.recipient_name} (${s.recipient_city})</strong></p>
+              </div>
+
+              <div class="text-right">
+                <span class="text-xs text-slate-400 block font-medium">Estimated Delivery</span>
+                <span class="text-lg font-bold text-cyan-400">${estFormatted}</span>
+              </div>
+            </div>
+
+            <!-- Visual Progress Stepper Bar -->
+            <div class="py-4">
+              <div class="relative flex items-center justify-between max-w-4xl mx-auto">
+                <!-- Line background -->
+                <div class="absolute left-0 right-0 top-1/2 -translate-y-1/2 h-1 bg-slate-800 z-0"></div>
+                <div class="absolute left-0 top-1/2 -translate-y-1/2 h-1 bg-gradient-to-r from-indigo-500 via-cyan-400 to-emerald-400 z-0 transition-all duration-500"
+                  style="width: ${(Math.max(0, currentIdx) / (statuses.length - 1)) * 100}%"></div>
+
+                <!-- Steps -->
+                ${statuses.map((st, idx) => {
+                  const isDone = idx <= currentIdx;
+                  const isCurrent = idx === currentIdx;
+                  return `
+                    <div class="relative z-10 flex flex-col items-center">
+                      <div class="w-9 h-9 rounded-full flex items-center justify-center font-bold text-xs transition ${
+                        isDone ? 'bg-indigo-600 text-white shadow-lg shadow-indigo-500/50' : 'bg-slate-900 border-2 border-slate-700 text-slate-500'
+                      } ${isCurrent ? 'ring-4 ring-indigo-500/30 scale-110' : ''}">
+                        ${isDone ? '<i class="fa-solid fa-check"></i>' : (idx + 1)}
+                      </div>
+                      <span class="mt-2 text-[10px] lg:text-xs font-semibold ${isDone ? 'text-slate-200' : 'text-slate-600'} text-center">
+                        ${st.replace(/_/g, ' ')}
+                      </span>
+                    </div>
+                  `;
+                }).join('')}
+              </div>
+            </div>
+
+            <!-- Detail Grid -->
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-4 pt-4 border-t border-slate-800 text-xs">
+              <div class="bg-slate-900/60 p-4 rounded-xl border border-slate-800">
+                <span class="text-slate-400 block font-semibold mb-1"><i class="fa-solid fa-location-dot text-indigo-400 mr-1.5"></i>Current Location</span>
+                <span class="text-white font-bold text-sm">${s.current_location}</span>
+              </div>
+              <div class="bg-slate-900/60 p-4 rounded-xl border border-slate-800">
+                <span class="text-slate-400 block font-semibold mb-1"><i class="fa-solid fa-box text-cyan-400 mr-1.5"></i>Package Specifications</span>
+                <span class="text-white font-medium block">${s.package_type} • ${s.weight_kg} kg</span>
+                <span class="text-slate-400 text-[11px] block">${s.dimensions || 'Standard parcel dimensions'}</span>
+              </div>
+              <div class="bg-slate-900/60 p-4 rounded-xl border border-slate-800">
+                <span class="text-slate-400 block font-semibold mb-1"><i class="fa-solid fa-user-shield text-emerald-400 mr-1.5"></i>Courier & Delivery Details</span>
+                <span class="text-white font-medium block">${s.driver ? s.driver.name + ' (' + s.driver.vehicle + ')' : 'Assigned Hub Personnel'}</span>
+                ${s.proof_of_delivery ? `<span class="text-emerald-400 text-[11px] block mt-1"><i class="fa-solid fa-file-signature mr-1"></i>${s.proof_of_delivery}</span>` : ''}
+              </div>
+            </div>
+          </div>
+
+          <!-- Chronological Status Timeline -->
+          <div class="glass-card rounded-3xl p-6 lg:p-8">
+            <h4 class="text-lg font-bold text-white mb-6 flex items-center">
+              <i class="fa-solid fa-clock-rotate-left text-indigo-400 mr-3"></i>Shipment Activity Audit Log
+            </h4>
+            <div class="relative border-l-2 border-slate-800 pl-6 space-y-6 ml-3">
+              ${timeline.map(t => `
+                <div class="relative">
+                  <div class="absolute -left-[31px] top-0 w-4 h-4 rounded-full bg-indigo-500 border-4 border-slate-900 shadow"></div>
+                  <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-1">
+                    <span class="text-sm font-bold text-white">${t.status.replace(/_/g, ' ')}</span>
+                    <span class="text-xs text-slate-500 font-mono">${new Date(t.timestamp).toLocaleString()}</span>
+                  </div>
+                  <p class="text-xs text-indigo-300 font-medium mt-0.5"><i class="fa-solid fa-location-arrow mr-1"></i>${t.location}</p>
+                  ${t.notes ? `<p class="text-xs text-slate-400 mt-1 bg-slate-900/40 p-2 rounded-lg border border-slate-800/80">${t.notes}</p>` : ''}
+                </div>
+              `).join('')}
+            </div>
+          </div>
+        `;
+      } catch (e) {
+        console.error('Track error:', e);
+      }
+    }
+
+    // CUSTOMER PORTAL LOGIC
+    async function loadCustomerShipments() {
+      if (!currentUser || currentUser.role !== 'customer') {
+        document.getElementById('customer-shipments-body').innerHTML = `
+          <tr><td colspan="7" class="py-8 text-center text-slate-400">Please click <button onclick="quickLogin('customer1@shiptrack.com','Customer@123','customer')" class="text-indigo-400 underline font-bold">Sign In as Customer (Jane)</button> to manage your shipments.</td></tr>
+        `;
+        return;
+      }
+
+      const search = document.getElementById('cust-search-input').value;
+      const status = document.getElementById('cust-status-filter').value;
+
+      try {
+        const res = await fetch(`/api/shipments/my-shipments?search=${encodeURIComponent(search)}&status=${encodeURIComponent(status)}`, {
+          headers: { 'Authorization': `Bearer ${authToken}` }
+        });
+        const data = await res.json();
+        const shipments = data.shipments || [];
+
+        // Stats update
+        const activeCount = shipments.filter(s => s.status !== 'DELIVERED' && s.status !== 'CANCELLED').length;
+        const deliveredCount = shipments.filter(s => s.status === 'DELIVERED').length;
+        const totalSpent = shipments.reduce((sum, s) => sum + (s.shipping_cost || 0), 0);
+
+        document.getElementById('cust-stat-active').innerText = activeCount;
+        document.getElementById('cust-stat-delivered').innerText = deliveredCount;
+        document.getElementById('cust-stat-spent').innerText = '$' + totalSpent.toFixed(2);
+
+        const tbody = document.getElementById('customer-shipments-body');
+        if (shipments.length === 0) {
+          tbody.innerHTML = `<tr><td colspan="7" class="py-8 text-center text-slate-500">No shipments found matching criteria.</td></tr>`;
+          return;
+        }
+
+        tbody.innerHTML = shipments.map(s => `
+          <tr class="border-b border-slate-800/60 hover:bg-slate-900/40 transition">
+            <td class="py-3 px-4 font-mono font-bold text-indigo-300">${s.tracking_number}</td>
+            <td class="py-3 px-4">
+              <span class="block font-medium text-white">${s.recipient_name}</span>
+              <span class="block text-xs text-slate-400">${s.recipient_city}</span>
+            </td>
+            <td class="py-3 px-4 text-xs">${s.package_type} (${s.weight_kg}kg)</td>
+            <td class="py-3 px-4 text-xs text-slate-400">${new Date(s.estimated_delivery).toLocaleDateString()}</td>
+            <td class="py-3 px-4">
+              <span class="px-2.5 py-1 rounded-full text-[10px] font-bold ${
+                s.status === 'DELIVERED' ? 'bg-emerald-500/20 text-emerald-400' : 'bg-indigo-500/20 text-indigo-400'
+              }">${s.status}</span>
+            </td>
+            <td class="py-3 px-4 font-bold text-cyan-400">$${(s.shipping_cost || 0).toFixed(2)}</td>
+            <td class="py-3 px-4 text-right">
+              <button onclick="setAndTrack('${s.tracking_number}'); switchTab('tracker')" class="px-3 py-1 rounded bg-indigo-600/80 hover:bg-indigo-600 text-white text-xs font-semibold">
+                Track
+              </button>
+            </td>
+          </tr>
+        `).join('');
+      } catch (e) {
+        console.error('Customer shipments load error:', e);
+      }
+    }
+
+    // DRIVER CONSOLE LOGIC
+    async function loadDriverDeliveries() {
+      const container = document.getElementById('driver-deliveries-list');
+      if (!currentUser || currentUser.role !== 'driver') {
+        container.innerHTML = `
+          <div class="py-8 text-center text-slate-400">
+            Please click <button onclick="quickLogin('driver1@shiptrack.com','Driver@123','driver')" class="text-cyan-400 underline font-bold">Sign In as Driver (Alex)</button> to view assigned deliveries.
+          </div>
+        `;
+        return;
+      }
+
+      document.getElementById('driver-name-display').innerText = currentUser.name;
+      document.getElementById('driver-vehicle-display').innerText = currentUser.vehicle_type || 'Delivery Vehicle';
+
+      try {
+        const res = await fetch('/api/shipments/driver-shipments', {
+          headers: { 'Authorization': `Bearer ${authToken}` }
+        });
+        const data = await res.json();
+        const shipments = data.shipments || [];
+
+        if (shipments.length === 0) {
+          container.innerHTML = `<p class="py-8 text-center text-slate-500">No active delivery assignments currently queued.</p>`;
+          return;
+        }
+
+        container.innerHTML = shipments.map(s => `
+          <div class="bg-slate-900/80 p-5 rounded-2xl border border-slate-800 flex flex-col md:flex-row md:items-center justify-between gap-4">
+            <div class="space-y-1">
+              <div class="flex items-center space-x-2">
+                <span class="font-mono font-bold text-cyan-400 text-lg">${s.tracking_number}</span>
+                <span class="px-2.5 py-0.5 rounded-full text-[10px] font-bold bg-indigo-500/20 text-indigo-300 border border-indigo-500/30">${s.status}</span>
+              </div>
+              <p class="text-xs text-slate-300"><strong>Deliver To:</strong> ${s.recipient_name} — ${s.recipient_address}, ${s.recipient_city}</p>
+              <p class="text-xs text-slate-400"><strong>Package:</strong> ${s.package_type} (${s.weight_kg} kg) | <strong>Instructions:</strong> ${s.special_instructions || 'Standard'}</p>
+            </div>
+            <button onclick="openDriverUpdateModal(${s.id}, '${s.tracking_number}', '${s.status}')" class="px-4 py-2.5 rounded-xl bg-cyan-600 hover:bg-cyan-500 text-white font-bold text-xs shadow-lg transition flex items-center justify-center">
+              <i class="fa-solid fa-pen-to-square mr-1.5"></i>Update Checkpoint
+            </button>
+          </div>
+        `).join('');
+      } catch (e) {
+        console.error('Driver deliveries load error:', e);
+      }
+    }
+
+    // ADMIN CENTER LOGIC
+    async function loadAdminDashboard() {
+      if (!currentUser || currentUser.role !== 'admin') {
+        document.getElementById('admin-subcontent').innerHTML = `
+          <div class="py-8 text-center text-slate-400">
+            Please click <button onclick="quickLogin('admin@shiptrack.com','Admin@123','admin')" class="text-emerald-400 underline font-bold">Sign In as Admin</button> to access administrative metrics.
+          </div>
+        `;
+        return;
+      }
+
+      try {
+        const resStats = await fetch('/api/admin/stats', {
+          headers: { 'Authorization': `Bearer ${authToken}` }
+        });
+        const dataStats = await resStats.json();
+        const st = dataStats.stats;
+
+        document.getElementById('admin-stat-total').innerText = st.total_shipments;
+        document.getElementById('admin-stat-unassigned').innerText = st.unassigned;
+        document.getElementById('admin-stat-drivers').innerText = st.total_drivers;
+        document.getElementById('admin-stat-revenue').innerText = '$' + st.total_revenue.toFixed(2);
+
+        switchAdminSubTab(currentAdminSubTab);
+      } catch (e) {
+        console.error('Admin dashboard error:', e);
+      }
+    }
+
+    async function switchAdminSubTab(sub) {
+      currentAdminSubTab = sub;
+      ['shipments', 'users', 'audit'].forEach(s => {
+        const btn = document.getElementById(`admin-tab-${s}`);
+        if (btn) btn.className = 'px-4 py-2 rounded-lg text-xs font-bold text-slate-400 hover:text-white hover:bg-slate-800';
+      });
+      const activeBtn = document.getElementById(`admin-tab-${sub}`);
+      if (activeBtn) activeBtn.className = 'px-4 py-2 rounded-lg text-xs font-bold bg-indigo-600 text-white';
+
+      const container = document.getElementById('admin-subcontent');
+
+      if (sub === 'shipments') {
+        const res = await fetch('/api/admin/shipments', { headers: { 'Authorization': `Bearer ${authToken}` } });
+        const data = await res.json();
+        const driversRes = await fetch('/api/admin/users?role=driver', { headers: { 'Authorization': `Bearer ${authToken}` } });
+        const driversData = await driversRes.json();
+        const drivers = driversData.users || [];
+
+        container.innerHTML = `
+          <div class="overflow-x-auto">
+            <table class="w-full text-left text-xs text-slate-300">
+              <thead class="bg-slate-900 text-slate-400 uppercase font-semibold">
+                <tr>
+                  <th class="py-3 px-3">Tracking</th>
+                  <th class="py-3 px-3">Customer</th>
+                  <th class="py-3 px-3">Recipient</th>
+                  <th class="py-3 px-3">Status</th>
+                  <th class="py-3 px-3">Assigned Driver</th>
+                  <th class="py-3 px-3 text-right">Assign Action</th>
+                </tr>
+              </thead>
+              <tbody>
+                ${data.shipments.map(s => `
+                  <tr class="border-b border-slate-800 hover:bg-slate-900/40">
+                    <td class="py-3 px-3 font-mono text-indigo-300 font-bold">${s.tracking_number}</td>
+                    <td class="py-3 px-3">${s.customer_name || 'Customer'}</td>
+                    <td class="py-3 px-3">${s.recipient_name} (${s.recipient_city})</td>
+                    <td class="py-3 px-3"><span class="px-2 py-0.5 rounded text-[10px] font-bold bg-indigo-500/20 text-indigo-300">${s.status}</span></td>
+                    <td class="py-3 px-3 font-semibold ${s.driver_name ? 'text-cyan-400' : 'text-amber-400'}">${s.driver_name || 'Unassigned'}</td>
+                    <td class="py-3 px-3 text-right">
+                      <select onchange="assignDriver(${s.id}, this.value)" class="bg-slate-900 border border-slate-700 text-xs rounded px-2 py-1 text-white">
+                        <option value="">-- Assign Driver --</option>
+                        ${drivers.map(d => `<option value="${d.id}" ${s.driver_id === d.id ? 'selected' : ''}>${d.name} (${d.vehicle_type || 'Driver'})</option>`).join('')}
+                      </select>
+                    </td>
+                  </tr>
+                `).join('')}
+              </tbody>
+            </table>
+          </div>
+        `;
+      } else if (sub === 'users') {
+        const res = await fetch('/api/admin/users', { headers: { 'Authorization': `Bearer ${authToken}` } });
+        const data = await res.json();
+        container.innerHTML = `
+          <div class="overflow-x-auto">
+            <table class="w-full text-left text-xs text-slate-300">
+              <thead class="bg-slate-900 text-slate-400 uppercase font-semibold">
+                <tr>
+                  <th class="py-3 px-3">ID</th>
+                  <th class="py-3 px-3">Name</th>
+                  <th class="py-3 px-3">Email</th>
+                  <th class="py-3 px-3">Role</th>
+                  <th class="py-3 px-3">Vehicle / Specs</th>
+                  <th class="py-3 px-3">Status</th>
+                </tr>
+              </thead>
+              <tbody>
+                ${data.users.map(u => `
+                  <tr class="border-b border-slate-800">
+                    <td class="py-2.5 px-3 font-mono">${u.id}</td>
+                    <td class="py-2.5 px-3 font-bold text-white">${u.name}</td>
+                    <td class="py-2.5 px-3 text-slate-400">${u.email}</td>
+                    <td class="py-2.5 px-3"><span class="uppercase font-bold text-[10px] px-2 py-0.5 rounded ${u.role === 'admin' ? 'bg-rose-500/20 text-rose-300' : u.role === 'driver' ? 'bg-cyan-500/20 text-cyan-300' : 'bg-indigo-500/20 text-indigo-300'}">${u.role}</span></td>
+                    <td class="py-2.5 px-3">${u.vehicle_type || 'N/A'}</td>
+                    <td class="py-2.5 px-3"><span class="text-emerald-400 font-bold">${u.status}</span></td>
+                  </tr>
+                `).join('')}
+              </tbody>
+            </table>
+          </div>
+        `;
+      } else if (sub === 'audit') {
+        const res = await fetch('/api/admin/audit-logs', { headers: { 'Authorization': `Bearer ${authToken}` } });
+        const data = await res.json();
+        container.innerHTML = `
+          <div class="space-y-2 text-xs font-mono">
+            ${data.logs.map(l => `
+              <div class="bg-slate-900/80 p-2.5 rounded-lg border border-slate-800 flex items-center justify-between">
+                <div>
+                  <span class="text-indigo-400 font-bold">[${l.action}]</span>
+                  <span class="text-slate-300 ml-2">${l.details}</span>
+                  <span class="text-slate-500 block text-[10px]">User: ${l.user_name || 'System/Public'} • IP: ${l.ip_address}</span>
+                </div>
+                <span class="text-slate-500 text-[10px]">${new Date(l.timestamp).toLocaleTimeString()}</span>
+              </div>
+            `).join('')}
+          </div>
+        `;
+      }
+    }
+
+    async function assignDriver(shipmentId, driverId) {
+      if (!driverId) return;
+      try {
+        const res = await fetch(`/api/admin/shipments/${shipmentId}/assign`, {
+          method: 'PUT',
+          headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${authToken}` },
+          body: JSON.stringify({ driver_id: parseInt(driverId) })
+        });
+        const data = await res.json();
+        if (res.ok) {
+          alert(data.message);
+          loadAdminDashboard();
+        } else {
+          alert('Assignment failed: ' + data.error);
+        }
+      } catch (e) {
+        alert('Network error during driver assignment.');
+      }
+    }
+
+    // AI ASSISTANT LOGIC
+    function toggleAIChatModal() {
+      const modal = document.getElementById('ai-chat-modal');
+      modal.classList.toggle('hidden');
+    }
+
+    function sendAIQuick(promptText) {
+      document.getElementById('ai-input').value = promptText;
+      handleAISubmit(new Event('submit'));
+    }
+
+    async function handleAISubmit(e) {
+      e.preventDefault();
+      const input = document.getElementById('ai-input');
+      const text = input.value.trim();
+      if (!text) return;
+
+      const container = document.getElementById('ai-messages');
+      container.innerHTML += `
+        <div class="bg-indigo-600 text-white p-3 rounded-2xl rounded-tr-none ml-auto max-w-[85%]">
+          ${text}
+        </div>
+      `;
+      input.value = '';
+      container.scrollTop = container.scrollHeight;
+
+      try {
+        const res = await fetch('/api/ai/chat', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+            ...(authToken ? { 'Authorization': `Bearer ${authToken}` } : {})
+          },
+          body: JSON.stringify({ message: text })
+        });
+        const data = await res.json();
+        
+        const formattedReply = data.reply.replace(/\n/g, '<br>').replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>');
+
+        container.innerHTML += `
+          <div class="bg-slate-800/90 text-slate-200 p-3 rounded-2xl rounded-tl-none border border-slate-700 max-w-[85%]">
+            ${formattedReply}
+          </div>
+        `;
+        container.scrollTop = container.scrollHeight;
+      } catch (err) {
+        container.innerHTML += `<div class="text-rose-400 text-xs">Error connecting to AI service.</div>`;
+      }
+    }
+
+    // MODAL HANDLERS
+    function openLoginModal() { document.getElementById('auth-modal').classList.remove('hidden'); }
+    function closeAuthModal() { document.getElementById('auth-modal').classList.add('hidden'); }
+    function switchAuthTab(tab) {
+      const isLogin = tab === 'login';
+      document.getElementById('login-form').classList.toggle('hidden', !isLogin);
+      document.getElementById('register-form').classList.toggle('hidden', isLogin);
+      document.getElementById('auth-tab-login').className = isLogin ? 'flex-1 pb-3 text-sm font-bold text-indigo-400 border-b-2 border-indigo-500' : 'flex-1 pb-3 text-sm font-bold text-slate-400 border-b-2 border-transparent';
+      document.getElementById('auth-tab-register').className = !isLogin ? 'flex-1 pb-3 text-sm font-bold text-indigo-400 border-b-2 border-indigo-500' : 'flex-1 pb-3 text-sm font-bold text-slate-400 border-b-2 border-transparent';
+    }
+
+    async function handleLoginSubmit(e) {
+      e.preventDefault();
+      const email = document.getElementById('login-email').value;
+      const password = document.getElementById('login-password').value;
+
+      try {
+        const res = await fetch('/api/auth/login', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ email, password })
+        });
+        const data = await res.json();
+        if (res.ok) {
+          authToken = data.token;
+          currentUser = data.user;
+          localStorage.setItem('shiptrack_token', authToken);
+          updateUserUI();
+          closeAuthModal();
+          switchTab(currentUser.role === 'admin' ? 'admin' : currentUser.role === 'driver' ? 'driver' : 'customer');
+        } else {
+          alert('Login failed: ' + data.error);
+        }
+      } catch (err) {
+        alert('Network error.');
+      }
+    }
+
+    async function handleRegisterSubmit(e) {
+      e.preventDefault();
+      const name = document.getElementById('reg-name').value;
+      const email = document.getElementById('reg-email').value;
+      const password = document.getElementById('reg-password').value;
+      const role = document.getElementById('reg-role').value;
+
+      try {
+        const res = await fetch('/api/auth/register', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ name, email, password, role })
+        });
+        const data = await res.json();
+        if (res.ok) {
+          authToken = data.token;
+          currentUser = data.user;
+          localStorage.setItem('shiptrack_token', authToken);
+          updateUserUI();
+          closeAuthModal();
+          switchTab(role === 'driver' ? 'driver' : 'customer');
+        } else {
+          alert('Registration failed: ' + data.error);
+        }
+      } catch (err) {
+        alert('Network error.');
+      }
+    }
+
+    // CREATE SHIPMENT MODAL HANDLERS
+    function openCreateShipmentModal() {
+      if (!currentUser) return openLoginModal();
+      document.getElementById('create-shipment-modal').classList.remove('hidden');
+      recalculateEstCost();
+    }
+    function closeCreateShipmentModal() { document.getElementById('create-shipment-modal').classList.add('hidden'); }
+
+    function recalculateEstCost() {
+      const type = document.getElementById('cs-package-type').value;
+      const weight = parseFloat(document.getElementById('cs-weight').value) || 1;
+      let base = 10;
+      if (type === 'Express') base = 25;
+      else if (type === 'Fragile') base = 30;
+      else if (type === 'Cold Storage') base = 45;
+      else if (type === 'Heavy Cargo') base = 60;
+      const total = base + (weight * 3.5);
+      document.getElementById('cs-cost-val').innerText = '$' + total.toFixed(2);
+    }
+
+    async function handleCreateShipmentSubmit(e) {
+      e.preventDefault();
+      const payload = {
+        sender_name: document.getElementById('cs-sender-name').value,
+        sender_phone: document.getElementById('cs-sender-phone').value,
+        sender_address: document.getElementById('cs-sender-address').value,
+        sender_city: document.getElementById('cs-sender-city').value,
+        recipient_name: document.getElementById('cs-recipient-name').value,
+        recipient_phone: document.getElementById('cs-recipient-phone').value,
+        recipient_address: document.getElementById('cs-recipient-address').value,
+        recipient_city: document.getElementById('cs-recipient-city').value,
+        package_type: document.getElementById('cs-package-type').value,
+        weight_kg: parseFloat(document.getElementById('cs-weight').value),
+        special_instructions: document.getElementById('cs-instructions').value
+      };
+
+      try {
+        const res = await fetch('/api/shipments', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${authToken}` },
+          body: JSON.stringify(payload)
+        });
+        const data = await res.json();
+        if (res.ok) {
+          alert(`Shipment created! Tracking Code: ${data.shipment.tracking_number}`);
+          closeCreateShipmentModal();
+          setAndTrack(data.shipment.tracking_number);
+          switchTab('tracker');
+        } else {
+          alert('Failed to create shipment: ' + data.error);
+        }
+      } catch (err) {
+        alert('Network error during shipment creation.');
+      }
+    }
+
+    // DRIVER UPDATE MODAL HANDLERS
+    function openDriverUpdateModal(id, tracking, currentStatus) {
+      document.getElementById('dum-shipment-id').value = id;
+      document.getElementById('dum-tracking-display').innerText = `Shipment: ${tracking}`;
+      document.getElementById('dum-status').value = currentStatus !== 'CREATED' ? currentStatus : 'PICKED_UP';
+      document.getElementById('driver-update-modal').classList.remove('hidden');
+    }
+    function closeDriverUpdateModal() { document.getElementById('driver-update-modal').classList.add('hidden'); }
+
+    async function handleDriverUpdateSubmit(e) {
+      e.preventDefault();
+      const id = document.getElementById('dum-shipment-id').value;
+      const status = document.getElementById('dum-status').value;
+      const location = document.getElementById('dum-location').value;
+      const notes = document.getElementById('dum-notes').value;
+
+      try {
+        const res = await fetch(`/api/shipments/${id}/status`, {
+          method: 'PUT',
+          headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${authToken}` },
+          body: JSON.stringify({ status, location, notes })
+        });
+        const data = await res.json();
+        if (res.ok) {
+          alert(data.message);
+          closeDriverUpdateModal();
+          loadDriverDeliveries();
+        } else {
+          alert('Update failed: ' + data.error);
+        }
+      } catch (err) {
+        alert('Network error during status update.');
+      }
+    }
+
+    // ADMIN ADD DRIVER HANDLER
+    function openAddDriverModal() { document.getElementById('add-driver-modal').classList.remove('hidden'); }
+    function closeAddDriverModal() { document.getElementById('add-driver-modal').classList.add('hidden'); }
+
+    async function handleAddDriverSubmit(e) {
+      e.preventDefault();
+      const payload = {
+        name: document.getElementById('ad-name').value,
+        email: document.getElementById('ad-email').value,
+        password: document.getElementById('ad-password').value,
+        vehicle_type: document.getElementById('ad-vehicle').value
+      };
+
+      try {
+        const res = await fetch('/api/admin/drivers', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${authToken}` },
+          body: JSON.stringify(payload)
+        });
+        const data = await res.json();
+        if (res.ok) {
+          alert(`Driver account created for ${data.driver.name}!`);
+          closeAddDriverModal();
+          loadAdminDashboard();
+        } else {
+          alert('Failed to add driver: ' + data.error);
+        }
+      } catch (err) {
+        alert('Network error.');
+      }
+    }
+  </script>
+</body>
+</html>
