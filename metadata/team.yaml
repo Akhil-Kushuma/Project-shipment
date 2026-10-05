@@ -5,7 +5,8 @@
 
 team:
   team_id: ""
-  name: "https://github.com/Akhil-Kushuma/Project-shipment.git" # URL of the newly created GitHub repository for this project
+  name: "BuildSecure"
+  repository: "https://github.com/Akhil-Kushuma/Project-shipment.git" # URL of the newly created GitHub repository for this project
 
 members:
   - name: "AKHIL"
@@ -15,4 +16,4 @@ members:
   - name: "Rithvik"
     email: "25P61A6261@vbithyd.ac.in"
   - name: "Nithin"
-    email: "25P61A6234"
+    email: "25P61A6234@vbithyd.ac.in"
