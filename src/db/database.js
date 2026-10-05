@@ -97,6 +97,24 @@ async function initializeSchema(db) {
     );
   `);
 
+  // 5. Support Tickets Table
+  await db.exec(`
+    CREATE TABLE IF NOT EXISTS support_tickets (
+      id INTEGER PRIMARY KEY AUTOINCREMENT,
+      ticket_id TEXT UNIQUE NOT NULL,
+      tracking_number TEXT,
+      customer_name TEXT NOT NULL,
+      email TEXT NOT NULL,
+      phone TEXT,
+      category TEXT NOT NULL,
+      description TEXT NOT NULL,
+      priority TEXT CHECK(priority IN ('Low', 'Standard', 'High', 'Urgent')) DEFAULT 'High',
+      status TEXT CHECK(status IN ('Open', 'In Review', 'Resolved', 'Closed')) DEFAULT 'Open',
+      created_at TEXT NOT NULL,
+      updated_at TEXT NOT NULL
+    );
+  `);
+
   await seedDefaultData(db);
 }
 
@@ -104,7 +122,7 @@ async function seedDefaultData(db) {
   const userCount = await db.get('SELECT COUNT(*) as count FROM users');
   if (userCount.count > 0) return;
 
-  console.log('[DB] Seeding Indian Logistics demo dataset...');
+  console.log('[DB] Seeding Indian Logistics demo dataset & support tickets...');
   
   const now = new Date().toISOString();
   const hashedPasswordAdmin = await bcrypt.hash('Admin@123', 10);
@@ -249,15 +267,28 @@ async function seedDefaultData(db) {
   await db.run(`INSERT INTO status_updates (shipment_id, updated_by_user_id, status, location, notes, timestamp) VALUES (?, ?, ?, ?, ?, ?)`,
     [s3.lastID, d1, 'DELIVERED', 'Connaught Place, Delhi', 'Delivered & signed by Arjun Kumar.', '2026-10-03T14:30:00.000Z']);
 
+  // Support Tickets Seed
+  await db.run(`
+    INSERT INTO support_tickets (ticket_id, tracking_number, customer_name, email, phone, category, description, priority, status, created_at, updated_at)
+    VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+  `, [
+    'SUP-2026-10482', 'TRK-2026-894120', 'Jane Doe', 'customer1@shiptrack.com', '+91 98765 44444',
+    'Late Delivery', 'Package TRK-2026-894120 status is delayed at Hyderabad sorting center.', 'High', 'Open', now, now
+  ]);
+
+  await db.run(`
+    INSERT INTO support_tickets (ticket_id, tracking_number, customer_name, email, phone, category, description, priority, status, created_at, updated_at)
+    VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+  `, [
+    'SUP-2026-22194', 'TRK-2026-302194', 'Priya Reddy', 'priya@example.com', '+91 98111 22233',
+    'Refund & Payment Issue', 'Requesting express fee refund due to delivery timing update.', 'Standard', 'In Review', now, now
+  ]);
+
   // Audit Logs Seed
   await db.run(`INSERT INTO audit_logs (user_id, action, details, ip_address, timestamp) VALUES (?, ?, ?, ?, ?)`,
-    [adminId, 'SYSTEM_INITIALIZATION', 'Seeded Indian Logistics demo dataset.', '127.0.0.1', now]);
+    [adminId, 'SYSTEM_INITIALIZATION', 'Seeded Indian Logistics demo dataset and support tickets.', '127.0.0.1', now]);
   await db.run(`INSERT INTO audit_logs (user_id, action, details, ip_address, timestamp) VALUES (?, ?, ?, ?, ?)`,
-    [c1, 'SHIPMENT_CREATED', 'Jane Doe created shipment TRK-2026-894120', '127.0.0.1', '2026-10-05T10:00:00.000Z']);
-  await db.run(`INSERT INTO audit_logs (user_id, action, details, ip_address, timestamp) VALUES (?, ?, ?, ?, ?)`,
-    [d1, 'STATUS_UPDATED', 'Alex River updated TRK-2026-894120 to IN_TRANSIT', '127.0.0.1', '2026-10-05T18:45:00.000Z']);
-  await db.run(`INSERT INTO audit_logs (user_id, action, details, ip_address, timestamp) VALUES (?, ?, ?, ?, ?)`,
-    [adminId, 'SHIPMENT_ASSIGNED', 'Admin assigned TRK-2026-894120 to Alex River', '127.0.0.1', '2026-10-05T11:00:00.000Z']);
+    [c1, 'SUPPORT_TICKET_CREATED', 'Jane Doe submitted support ticket SUP-2026-10482', '127.0.0.1', now]);
 
   console.log('[DB] Seeding completed successfully!');
 }

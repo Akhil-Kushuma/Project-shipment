@@ -7,6 +7,7 @@ const authRoutes = require('./routes/authRoutes');
 const shipmentRoutes = require('./routes/shipmentRoutes');
 const adminRoutes = require('./routes/adminRoutes');
 const aiRoutes = require('./routes/aiRoutes');
+const supportRoutes = require('./routes/supportRoutes');
 
 const app = express();
 const PORT = process.env.PORT || 5000;
@@ -47,6 +48,8 @@ app.use('/api/auth', authRoutes);
 app.use('/api/shipments', shipmentRoutes);
 app.use('/api/admin', adminRoutes);
 app.use('/api/ai', aiRoutes);
+app.use('/api/support', supportRoutes);
+
 
 // Serve static frontend files if built
 const publicPath = path.join(__dirname, 'public');
