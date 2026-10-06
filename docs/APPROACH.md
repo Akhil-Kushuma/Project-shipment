@@ -63,6 +63,9 @@ Logistics management systems require real-time visibility, role-based access, an
 └──────────────────────────────────────────────────────────────────┘
 ```
 
+
+
+
 ### 2.2 Data Flow & Component Interaction
 1. **Shipment Creation**: Customer posts payload -> Auth Middleware validates JWT -> Input Sanitizer checks fields -> Shipment record created with unique `TRK-YYYY-XXXXXX` tracking number -> Initial status log entry `CREATED` written -> Audit event logged.
 2. **Assignment & Delivery Update**: Admin assigns driver -> Driver receives update on dashboard -> Driver posts status transition (e.g., `IN_TRANSIT` with location & notes) -> Middleware checks Driver assignment authorization -> Status updated & audit log saved.
