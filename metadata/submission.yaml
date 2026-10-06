@@ -5,11 +5,7 @@ version: "1.0"
 
 submission:
   team_id: "TEAM-PS05-SHIPTRACK"
-  repository: ""
-  commit_sha: "9af98b2ea3131a6e13dec182c3338bb6158d53a8"
-  deployment_url: "http://localhost:5000"
-  submitted_at: "2026-10-06T02:50:00+05:30"
-
-
-
-
+  repository: "https://github.com/Akhil-Kushuma/Project-shipment.git"
+  commit_sha: "de6b2334fb9e8ea6fbd4b6e5e8e81ef40d4ec2b8"
+  deployment_url: "https://project-shipment-e2pt.vercel.app/"
+  submitted_at: "2026-10-06T12:10:00+05:30"

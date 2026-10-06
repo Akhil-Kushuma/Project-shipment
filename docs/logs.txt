@@ -404,6 +404,41 @@ Actions Taken:
 * Verified HTML structure and layout math with Node rendering scripts
 * Committed changes with SHA 2bf97d7
 
+================================================================================
+[2026-10-06T12:10:00+05:30] Vercel 404 Deployment Fix & Serverless Routing Configuration
+================================================================================
+User Prompt (verbatim):
+https://project-shipment-e2pt.vercel.app/ this is what i got after deploying so fi the bugs
+
+Agent Response:
+Diagnosed 404 Not Found error on Vercel deployment. Identified missing root configuration files (`package.json`, `vercel.json`, `index.html`) causing Vercel's build pipeline to fail to recognize the application. Created root `package.json` with required dependencies, root `vercel.json` and `src/vercel.json` for `@vercel/node` serverless Express routing (`/(.*)` -> `src/server.js`), copied SPA single-page application entry point to repository root `index.html`, updated `src/server.js` to export Express `app` for Vercel serverless functions, updated `src/db/database.js` to copy pre-seeded SQLite database to `/tmp/shiptrack.db` when executing under `process.env.VERCEL`, updated deployment documentation in `deployment/README.md`, updated `metadata/submission.yaml`, and pushed updated codebase to GitHub origin `main` branch.
+
+Agent Response Summary:
+Resolved Vercel 404 deployment failure. Created root package.json and vercel.json serverless configurations, enabled /tmp SQLite database copying for Vercel serverless execution, and pushed changes to GitHub origin for automatic Vercel redeployment.
+
+Commit SHA:
+de6b2334fb9e8ea6fbd4b6e5e8e81ef40d4ec2b8
+
+Files Modified / Created:
+* vercel.json (Created)
+* src/vercel.json (Created)
+* package.json (Created)
+* index.html (Created)
+* src/server.js (Modified)
+* src/db/database.js (Modified)
+* deployment/README.md (Modified)
+* metadata/submission.yaml (Modified)
+* docs/logs.txt (Modified)
+
+Actions Taken:
+* Created root package.json and root vercel.json for Vercel deployment detection
+* Created src/vercel.json for subfolder deployment fallback
+* Copied src/public/index.html to root index.html for static fallback rendering
+* Updated src/server.js to export module.exports = app for serverless function execution
+* Updated src/db/database.js to handle /tmp/shiptrack.db writable storage on Vercel
+* Updated metadata/submission.yaml with commit SHA de6b2334fb9e8ea6fbd4b6e5e8e81ef40d4ec2b8 and live Vercel URL
+* Committed and pushed all changes to GitHub origin main branch
+
 
 
 
