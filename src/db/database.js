@@ -9,7 +9,21 @@ let dbInstance = null;
 async function getDB() {
   if (dbInstance) return dbInstance;
 
-  const dbPath = path.join(__dirname, 'shiptrack.db');
+  let dbPath;
+  if (process.env.VERCEL) {
+    dbPath = path.join('/tmp', 'shiptrack.db');
+    const bundledDb = path.join(__dirname, 'shiptrack.db');
+    if (!fs.existsSync(dbPath) && fs.existsSync(bundledDb)) {
+      try {
+        fs.copyFileSync(bundledDb, dbPath);
+        console.log('[DB] Copied bundled database to /tmp/shiptrack.db for Vercel serverless.');
+      } catch (e) {
+        console.error('[DB] Failed to copy bundled database to /tmp:', e);
+      }
+    }
+  } else {
+    dbPath = path.join(__dirname, 'shiptrack.db');
+  }
 
   dbInstance = await open({
     filename: dbPath,

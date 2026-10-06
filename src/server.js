@@ -78,7 +78,7 @@ app.get('*', (req, res) => {
   }
 });
 
-// Initialize DB and start server
+// Initialize DB and start server if run directly
 async function startServer() {
   try {
     await getDB();
@@ -92,4 +92,10 @@ async function startServer() {
   }
 }
 
-startServer();
+if (require.main === module) {
+  startServer();
+} else {
+  getDB().catch(err => console.error('[DB] Serverless DB init error:', err));
+}
+
+module.exports = app;

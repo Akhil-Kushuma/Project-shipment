@@ -1,0 +1,2690 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>ShipTrack — Smart Logistics & Delivery Platform</title>
+  <!-- Tailwind CSS CDN -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  <!-- FontAwesome Icons -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <!-- Google Fonts Inter & JetBrains Mono -->
+  <link
+    href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@500;700&display=swap"
+    rel="stylesheet">
+
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          fontFamily: {
+            sans: ['Inter', 'sans-serif'],
+            mono: ['JetBrains Mono', 'monospace']
+          },
+          colors: {
+            forest: {
+              950: '#17211B',
+              900: '#222B25',
+              800: '#2B352E',
+              700: '#36423A',
+              600: '#4A554C',
+            },
+            terracotta: {
+              400: '#E28B5C',
+              500: '#D97745',
+              600: '#C76536',
+              700: '#B05327',
+            },
+            sage: {
+              300: '#B2C4AC',
+              400: '#91A889',
+              500: '#758F6C',
+            },
+            sand: {
+              300: '#F0DAB7',
+              400: '#E8C99B',
+              500: '#D1B07E',
+            },
+            moss: {
+              400: '#8AC086',
+              500: '#6FA36B',
+            },
+            amber: {
+              400: '#E4BD6A',
+              500: '#D6A84F',
+            },
+            brick: {
+              400: '#D8736A',
+              500: '#C85C52',
+            },
+            warmwhite: '#F5F1E8',
+            warmmuted: '#B8B8A9',
+          }
+        }
+      }
+    }
+  </script>
+  <style>
+    body {
+      background: #17211B;
+      color: #F5F1E8;
+      font-family: 'Inter', sans-serif;
+    }
+
+    .glass-card {
+      background: #2B352E;
+      border: 1px solid rgba(232, 201, 155, 0.12);
+      box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.25);
+      border-radius: 16px;
+      transition: transform 0.2s ease, box-shadow 0.2s ease;
+    }
+
+    .glass-card-hover:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 12px 32px 0 rgba(217, 119, 69, 0.12);
+      border-color: rgba(232, 201, 155, 0.22);
+    }
+
+    .glass-nav {
+      background: rgba(34, 43, 37, 0.95);
+      backdrop-filter: blur(16px);
+      border-bottom: 1px solid rgba(232, 201, 155, 0.12);
+    }
+
+    .pulse-dot {
+      animation: pulse 2s cubic-bezier(0.4, 0, 0.6, 1) infinite;
+    }
+
+    @keyframes pulse {
+
+      0%,
+      100% {
+        opacity: 1;
+        transform: scale(1);
+      }
+
+      50% {
+        opacity: .5;
+        transform: scale(1.25);
+      }
+    }
+
+    .route-pattern {
+      background-image: radial-gradient(rgba(145, 168, 137, 0.15) 1px, transparent 1px),
+        linear-gradient(to right, rgba(232, 201, 155, 0.03) 1px, transparent 1px);
+      background-size: 24px 24px, 48px 48px;
+    }
+
+    /* Custom Scrollbar */
+    ::-webkit-scrollbar {
+      width: 6px;
+      height: 6px;
+    }
+
+    ::-webkit-scrollbar-track {
+      background: #17211B;
+    }
+
+    ::-webkit-scrollbar-thumb {
+      background: #36423A;
+      border-radius: 4px;
+    }
+
+    ::-webkit-scrollbar-thumb:hover {
+      background: #4A554C;
+    }
+
+    /* Skeleton loader animation */
+    .skeleton {
+      background: linear-gradient(90deg, rgba(43, 53, 46, 0.5) 25%, rgba(54, 66, 58, 0.5) 50%, rgba(43, 53, 46, 0.5) 75%);
+      background-size: 200% 100%;
+      animation: skeleton-loading 1.5s infinite;
+    }
+
+    @keyframes skeleton-loading {
+      0% {
+        background-position: 200% 0;
+      }
+
+      100% {
+        background-position: -200% 0;
+      }
+    }
+  </style>
+</head>
+
+<body class="min-h-screen flex flex-col selection:bg-terracotta-500 selection:text-warmwhite">
+
+  <!-- Top Navigation Header -->
+  <header class="sticky top-0 z-40 glass-nav px-4 lg:px-8 py-3 transition-all">
+    <div class="max-w-7xl mx-auto flex items-center justify-between gap-4">
+
+      <!-- Brand Logo -->
+      <div class="flex items-center space-x-3 cursor-pointer" onclick="switchTab('tracker')">
+        <div
+          class="w-10 h-10 rounded-xl bg-terracotta-500 text-warmwhite flex items-center justify-center shadow-lg shadow-terracotta-500/20">
+          <i class="fa-solid fa-boxes-packing text-xl"></i>
+        </div>
+        <div>
+          <span class="text-xl font-extrabold tracking-tight text-warmwhite">Ship<span
+              class="text-terracotta-500">Track</span></span>
+          <span class="block text-[10px] text-sage-400 tracking-wider font-semibold uppercase">Logistics Platform</span>
+        </div>
+      </div>
+
+      <!-- Navigation Links -->
+      <nav class="hidden md:flex items-center space-x-1 bg-forest-900 p-1.5 rounded-xl border border-forest-700">
+        <button id="nav-tracker" onclick="switchTab('tracker')"
+          class="px-4 py-2 rounded-lg text-xs font-bold transition text-warmwhite bg-terracotta-500 shadow-md">
+          <i class="fa-solid fa-magnifying-glass mr-2 text-sand-400"></i>Live Track
+        </button>
+        <button id="nav-customer" onclick="switchTab('customer')"
+          class="hidden px-4 py-2 rounded-lg text-xs font-bold transition text-warmmuted hover:text-warmwhite hover:bg-forest-700">
+          <i class="fa-solid fa-box mr-2 text-terracotta-400"></i>Customer Hub
+        </button>
+        <button id="nav-driver" onclick="switchTab('driver')"
+          class="hidden px-4 py-2 rounded-lg text-xs font-bold transition text-warmmuted hover:text-warmwhite hover:bg-forest-700">
+          <i class="fa-solid fa-truck-fast mr-2 text-sand-400"></i>Driver Console
+        </button>
+        <button id="nav-admin" onclick="switchTab('admin')"
+          class="hidden px-4 py-2 rounded-lg text-xs font-bold transition text-warmmuted hover:text-warmwhite hover:bg-forest-700">
+          <i class="fa-solid fa-user-shield mr-2 text-sage-400"></i><span id="nav-admin-text">Admin Center</span>
+        </button>
+      </nav>
+
+      <!-- Right Action Items: Notifications & User Profile -->
+      <div class="flex items-center space-x-3">
+        <!-- Notification Bell Icon -->
+        <div class="relative">
+          <button onclick="toggleNotifications()" title="Notifications"
+            class="w-10 h-10 rounded-xl bg-forest-900 border border-forest-700 text-warmmuted hover:text-warmwhite hover:border-terracotta-500 flex items-center justify-center relative transition">
+            <i class="fa-solid fa-bell"></i>
+            <span id="notif-badge"
+              class="absolute -top-1 -right-1 w-5 h-5 rounded-full bg-brick-500 text-warmwhite text-[10px] font-bold flex items-center justify-center ring-2 ring-forest-950">3</span>
+          </button>
+
+          <!-- Notification Dropdown Drawer -->
+          <div id="notif-dropdown"
+            class="hidden absolute right-0 mt-3 w-80 lg:w-96 glass-card p-4 rounded-2xl z-50 border border-forest-700 shadow-2xl space-y-3">
+            <div class="flex items-center justify-between border-b border-forest-700 pb-2.5">
+              <span class="text-xs font-bold text-warmwhite flex items-center"><i
+                  class="fa-solid fa-bell text-terracotta-400 mr-2"></i>Live System Notifications</span>
+              <button onclick="clearNotifications()" class="text-[10px] text-warmmuted hover:text-terracotta-400">Clear
+                All</button>
+            </div>
+            <div id="notif-list" class="space-y-2 max-h-72 overflow-y-auto text-xs">
+              <!-- Dynamically rendered -->
+            </div>
+          </div>
+        </div>
+
+        <!-- Role-Aware User Badge & Dropdown -->
+        <div id="user-badge" class="hidden relative">
+          <button onclick="toggleUserDropdown()"
+            class="flex items-center space-x-2.5 bg-forest-900 px-3.5 py-1.5 rounded-xl border border-forest-700 hover:border-terracotta-500 transition">
+            <div id="user-avatar"
+              class="w-7 h-7 rounded-lg bg-terracotta-500 text-warmwhite font-extrabold text-xs flex items-center justify-center shadow">
+              U</div>
+            <div class="text-left hidden sm:block">
+              <span id="user-name" class="block text-xs font-bold text-warmwhite leading-tight">User Name</span>
+              <span id="user-role-badge"
+                class="block text-[10px] text-terracotta-400 uppercase font-semibold">Role</span>
+            </div>
+            <i class="fa-solid fa-chevron-down text-warmmuted text-[10px]"></i>
+          </button>
+
+          <!-- User Menu Dropdown -->
+          <div id="user-dropdown"
+            class="hidden absolute right-0 mt-2 w-48 glass-card p-2 rounded-2xl z-50 border border-forest-700 shadow-2xl text-xs space-y-1">
+            <div class="px-3 py-2 border-b border-forest-700">
+              <span class="block font-bold text-warmwhite" id="dropdown-user-name">User Name</span>
+              <span class="block text-[10px] text-terracotta-400 font-semibold uppercase"
+                id="dropdown-user-role">Role</span>
+            </div>
+            <button onclick="toggleNotifications(); toggleUserDropdown()"
+              class="w-full text-left px-3 py-2 rounded-lg hover:bg-forest-700 text-warmwhite flex items-center">
+              <i class="fa-solid fa-bell mr-2 text-terracotta-400"></i>Notifications
+            </button>
+            <button onclick="logout()"
+              class="w-full text-left px-3 py-2 rounded-lg hover:bg-forest-700 text-brick-400 font-bold flex items-center">
+              <i class="fa-solid fa-arrow-right-from-bracket mr-2"></i>Sign Out
+            </button>
+          </div>
+        </div>
+
+        <!-- Sign In Button (Shown when unauthenticated) -->
+        <button id="login-btn" onclick="openLoginModal()"
+          class="px-4 py-2.5 rounded-xl text-xs font-bold bg-terracotta-500 hover:bg-terracotta-600 text-warmwhite shadow-lg transition">
+          <i class="fa-solid fa-user-lock mr-1.5"></i>Sign In
+        </button>
+
+        <!-- Mobile Menu Toggle -->
+        <button onclick="toggleMobileMenu()"
+          class="md:hidden w-10 h-10 rounded-xl bg-forest-900 border border-forest-700 text-warmwhite flex items-center justify-center">
+          <i class="fa-solid fa-bars text-lg"></i>
+        </button>
+      </div>
+    </div>
+
+    <!-- Mobile Dropdown Nav Menu -->
+    <div id="mobile-menu"
+      class="hidden md:hidden mt-3 p-3 bg-forest-900/95 rounded-2xl border border-forest-700 space-y-2">
+      <button id="mob-nav-tracker" onclick="switchTab('tracker'); toggleMobileMenu()"
+        class="w-full text-left px-4 py-2.5 rounded-xl text-xs font-bold text-warmwhite bg-terracotta-500">
+        <i class="fa-solid fa-magnifying-glass mr-2"></i>Live Track
+      </button>
+      <button id="mob-nav-customer" onclick="switchTab('customer'); toggleMobileMenu()"
+        class="hidden w-full text-left px-4 py-2.5 rounded-xl text-xs font-bold text-warmmuted hover:bg-forest-700">
+        <i class="fa-solid fa-box mr-2 text-terracotta-400"></i>Customer Hub
+      </button>
+      <button id="mob-nav-driver" onclick="switchTab('driver'); toggleMobileMenu()"
+        class="hidden w-full text-left px-4 py-2.5 rounded-xl text-xs font-bold text-warmmuted hover:bg-forest-700">
+        <i class="fa-solid fa-truck-fast mr-2 text-sand-400"></i>Driver Console
+      </button>
+      <button id="mob-nav-admin" onclick="switchTab('admin'); toggleMobileMenu()"
+        class="hidden w-full text-left px-4 py-2.5 rounded-xl text-xs font-bold text-warmmuted hover:bg-forest-700">
+        <i class="fa-solid fa-user-shield mr-2 text-sage-400"></i>Admin Center
+      </button>
+    </div>
+  </header>
+
+  <!-- Quick Demo Persona Switcher Header Bar -->
+  <div class="bg-forest-900/90 border-b border-forest-700 py-2 px-4 text-center text-xs">
+    <div class="max-w-7xl mx-auto flex flex-wrap items-center justify-center gap-2">
+      <span class="text-warmmuted font-semibold mr-1"><i class="fa-solid fa-bolt text-amber-500 mr-1.5"></i>Quick Demo
+        Authenticated Personas:</span>
+      <button onclick="quickLogin('customer1@shiptrack.com', 'Customer@123', 'customer')"
+        class="bg-forest-800 hover:bg-forest-700 text-warmwhite px-3 py-1 rounded-lg border border-forest-700 font-semibold transition flex items-center hover:border-terracotta-500">
+        <i class="fa-solid fa-user-check text-terracotta-400 mr-1.5"></i>Customer (Jane Doe)
+      </button>
+      <button onclick="quickLogin('driver1@shiptrack.com', 'Driver@123', 'driver')"
+        class="bg-forest-800 hover:bg-forest-700 text-warmwhite px-3 py-1 rounded-lg border border-forest-700 font-semibold transition flex items-center hover:border-terracotta-500">
+        <i class="fa-solid fa-truck text-sand-400 mr-1.5"></i>Driver (Alex River)
+      </button>
+      <button onclick="quickLogin('admin@shiptrack.demo', 'Admin@123', 'admin')"
+        class="bg-forest-800 hover:bg-forest-700 text-warmwhite px-3 py-1 rounded-lg border border-forest-700 font-semibold transition flex items-center hover:border-terracotta-500">
+        <i class="fa-solid fa-user-shield text-sage-400 mr-1.5"></i>Admin (System Admin)
+      </button>
+    </div>
+  </div>
+
+  <!-- Main View Container -->
+  <main class="flex-1 max-w-7xl w-full mx-auto p-4 lg:p-8">
+
+    <!-- VIEW 1: PUBLIC HOME PAGE -->
+    <section id="view-tracker" class="space-y-12">
+
+      <!-- HERO / TRACK MY ORDER SECTION -->
+      <div
+        class="relative overflow-hidden rounded-3xl glass-card route-pattern p-8 lg:p-12 text-center border border-sand-400/15">
+        <div
+          class="absolute -top-24 -right-24 w-96 h-96 bg-terracotta-500/10 rounded-full blur-3xl pointer-events-none">
+        </div>
+        <div class="absolute -bottom-24 -left-24 w-96 h-96 bg-sage-400/10 rounded-full blur-3xl pointer-events-none">
+        </div>
+
+        <span
+          class="inline-flex items-center px-3.5 py-1 rounded-full text-xs font-bold bg-terracotta-500/10 text-terracotta-400 border border-terracotta-500/20 mb-4">
+          <span class="w-2 h-2 rounded-full bg-moss-500 mr-2 pulse-dot"></span> Next-Gen Real-Time Logistics Tracking
+          Engine
+        </span>
+
+        <h1 class="text-3xl lg:text-5xl font-extrabold text-warmwhite tracking-tight max-w-3xl mx-auto leading-tight">
+          Track Any Shipment Across <span class="text-terracotta-500">Indian Logistics Routes</span>
+        </h1>
+        <p class="text-warmmuted text-sm lg:text-base max-w-2xl mx-auto mt-3">
+          Enter your tracking number to see the latest shipment status, delivery estimate, route, and delivery
+          information.
+        </p>
+
+        <!-- Search Bar Input -->
+        <div class="mt-8 max-w-2xl mx-auto flex flex-col sm:flex-row gap-3">
+          <div class="relative flex-1">
+            <i class="fa-solid fa-barcode text-warmmuted absolute left-4 top-1/2 -translate-y-1/2 text-lg"></i>
+            <input type="text" id="tracking-input" placeholder="e.g. TRK-2026-894120" value="TRK-2026-894120"
+              onkeypress="if(event.key==='Enter') trackShipment()"
+              class="w-full pl-12 pr-4 py-4 rounded-2xl bg-forest-900 border border-forest-700 text-warmwhite placeholder-warmmuted focus:outline-none focus:border-terracotta-500 text-base tracking-wider uppercase font-mono font-bold">
+          </div>
+          <button onclick="trackShipment()"
+            class="px-8 py-4 rounded-2xl bg-terracotta-500 hover:bg-terracotta-600 text-warmwhite font-bold text-base shadow-xl shadow-terracotta-500/20 transition transform active:scale-95 flex items-center justify-center">
+            <i class="fa-solid fa-magnifying-glass mr-2"></i> Track My Order
+          </button>
+        </div>
+
+        <!-- Sample Search Chips -->
+        <div class="mt-5 flex flex-wrap items-center justify-center gap-2 text-xs text-warmmuted">
+          <span class="font-semibold text-warmwhite">Try Demo Tracking Codes:</span>
+          <button onclick="setAndTrack('TRK-2026-894120')"
+            class="px-3 py-1.5 bg-forest-900 hover:bg-forest-700 text-sand-400 rounded-lg font-mono border border-forest-700 transition">TRK-2026-894120</button>
+          <button onclick="setAndTrack('TRK-2026-302194')"
+            class="px-3 py-1.5 bg-forest-900 hover:bg-forest-700 text-sand-400 rounded-lg font-mono border border-forest-700 transition">TRK-2026-302194</button>
+          <button onclick="setAndTrack('TRK-2026-110482')"
+            class="px-3 py-1.5 bg-forest-900 hover:bg-forest-700 text-sand-400 rounded-lg font-mono border border-forest-700 transition">TRK-2026-110482</button>
+        </div>
+      </div>
+
+      <!-- Tracking Results Section -->
+      <div id="tracking-result" class="hidden space-y-6">
+        <!-- Rendered dynamically -->
+      </div>
+
+      <!-- HELP DESK PUBLIC SECTION -->
+      <div id="public-help-desk" class="space-y-6 pt-4 border-t border-forest-700">
+        <div class="text-center max-w-2xl mx-auto space-y-2">
+          <span
+            class="px-3.5 py-1 rounded-full text-xs font-bold bg-sage-400/10 text-sage-400 border border-sage-400/20 inline-block">
+            <i class="fa-solid fa-headset mr-1.5"></i>Support Center
+          </span>
+          <h2 class="text-3xl font-extrabold text-warmwhite">HELP DESK</h2>
+          <p class="text-warmmuted text-sm">Need help with your shipment? Choose an issue below.</p>
+        </div>
+
+        <!-- 6 Support Categories Grid -->
+        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5">
+          <!-- 1. Late Delivery -->
+          <div
+            class="glass-card glass-card-hover p-6 rounded-2xl flex flex-col justify-between border border-forest-700 space-y-4">
+            <div class="space-y-3">
+              <div
+                class="w-12 h-12 rounded-xl bg-amber-500/10 text-amber-500 border border-amber-500/20 flex items-center justify-center text-xl">
+                <i class="fa-solid fa-clock"></i>
+              </div>
+              <h3 class="text-lg font-bold text-warmwhite">Late Delivery</h3>
+              <p class="text-xs text-warmmuted leading-relaxed">Your shipment hasn't arrived within the expected
+                delivery time frame.</p>
+            </div>
+            <button onclick="openSupportModal('Late Delivery')"
+              class="w-full py-2.5 bg-forest-900 hover:bg-terracotta-500 text-warmwhite font-bold text-xs rounded-xl border border-forest-700 hover:border-terracotta-500 transition flex items-center justify-center">
+              <i class="fa-solid fa-circle-question mr-2 text-amber-400"></i>Get Help
+            </button>
+          </div>
+
+          <!-- 2. Refund & Payment -->
+          <div
+            class="glass-card glass-card-hover p-6 rounded-2xl flex flex-col justify-between border border-forest-700 space-y-4">
+            <div class="space-y-3">
+              <div
+                class="w-12 h-12 rounded-xl bg-sage-400/10 text-sage-400 border border-sage-400/20 flex items-center justify-center text-xl">
+                <i class="fa-solid fa-wallet"></i>
+              </div>
+              <h3 class="text-lg font-bold text-warmwhite">Refund & Payment</h3>
+              <p class="text-xs text-warmmuted leading-relaxed">Get help with refunds, overcharges, or payment billing
+                disputes.</p>
+            </div>
+            <button onclick="openSupportModal('Refund & Payment')"
+              class="w-full py-2.5 bg-forest-900 hover:bg-terracotta-500 text-warmwhite font-bold text-xs rounded-xl border border-forest-700 hover:border-terracotta-500 transition flex items-center justify-center">
+              <i class="fa-solid fa-circle-question mr-2 text-sage-300"></i>Get Help
+            </button>
+          </div>
+
+          <!-- 3. Order Cancellation -->
+          <div
+            class="glass-card glass-card-hover p-6 rounded-2xl flex flex-col justify-between border border-forest-700 space-y-4">
+            <div class="space-y-3">
+              <div
+                class="w-12 h-12 rounded-xl bg-brick-500/10 text-brick-500 border border-brick-500/20 flex items-center justify-center text-xl">
+                <i class="fa-solid fa-circle-xmark"></i>
+              </div>
+              <h3 class="text-lg font-bold text-warmwhite">Order Cancellation</h3>
+              <p class="text-xs text-warmmuted leading-relaxed">Request cancellation of a package dispatch before final
+                delivery.</p>
+            </div>
+            <button onclick="openSupportModal('Order Cancellation')"
+              class="w-full py-2.5 bg-forest-900 hover:bg-terracotta-500 text-warmwhite font-bold text-xs rounded-xl border border-forest-700 hover:border-terracotta-500 transition flex items-center justify-center">
+              <i class="fa-solid fa-circle-question mr-2 text-brick-400"></i>Get Help
+            </button>
+          </div>
+
+          <!-- 4. Damaged Package -->
+          <div
+            class="glass-card glass-card-hover p-6 rounded-2xl flex flex-col justify-between border border-forest-700 space-y-4">
+            <div class="space-y-3">
+              <div
+                class="w-12 h-12 rounded-xl bg-terracotta-500/10 text-terracotta-500 border border-terracotta-500/20 flex items-center justify-center text-xl">
+                <i class="fa-solid fa-box-open"></i>
+              </div>
+              <h3 class="text-lg font-bold text-warmwhite">Damaged Package</h3>
+              <p class="text-xs text-warmmuted leading-relaxed">Report a package that arrived damaged, crushed, or
+                compromised.</p>
+            </div>
+            <button onclick="openSupportModal('Damaged Package')"
+              class="w-full py-2.5 bg-forest-900 hover:bg-terracotta-500 text-warmwhite font-bold text-xs rounded-xl border border-forest-700 hover:border-terracotta-500 transition flex items-center justify-center">
+              <i class="fa-solid fa-circle-question mr-2 text-terracotta-400"></i>Get Help
+            </button>
+          </div>
+
+          <!-- 5. Missing / Incorrect Item -->
+          <div
+            class="glass-card glass-card-hover p-6 rounded-2xl flex flex-col justify-between border border-forest-700 space-y-4">
+            <div class="space-y-3">
+              <div
+                class="w-12 h-12 rounded-xl bg-sand-400/10 text-sand-400 border border-sand-400/20 flex items-center justify-center text-xl">
+                <i class="fa-solid fa-magnifying-glass-box"></i>
+              </div>
+              <h3 class="text-lg font-bold text-warmwhite">Missing / Incorrect Item</h3>
+              <p class="text-xs text-warmmuted leading-relaxed">Report missing items or contents that do not match your
+                order.</p>
+            </div>
+            <button onclick="openSupportModal('Missing / Incorrect Item')"
+              class="w-full py-2.5 bg-forest-900 hover:bg-terracotta-500 text-warmwhite font-bold text-xs rounded-xl border border-forest-700 hover:border-terracotta-500 transition flex items-center justify-center">
+              <i class="fa-solid fa-circle-question mr-2 text-sand-300"></i>Get Help
+            </button>
+          </div>
+
+          <!-- 6. Tracking Problem -->
+          <div
+            class="glass-card glass-card-hover p-6 rounded-2xl flex flex-col justify-between border border-forest-700 space-y-4">
+            <div class="space-y-3">
+              <div
+                class="w-12 h-12 rounded-xl bg-sage-400/10 text-sage-400 border border-sage-400/20 flex items-center justify-center text-xl">
+                <i class="fa-solid fa-location-crosshairs"></i>
+              </div>
+              <h3 class="text-lg font-bold text-warmwhite">Tracking Problem</h3>
+              <p class="text-xs text-warmmuted leading-relaxed">Your tracking information is stuck, missing, or
+                displaying invalid states.</p>
+            </div>
+            <button onclick="openSupportModal('Tracking Problem')"
+              class="w-full py-2.5 bg-forest-900 hover:bg-terracotta-500 text-warmwhite font-bold text-xs rounded-xl border border-forest-700 hover:border-terracotta-500 transition flex items-center justify-center">
+              <i class="fa-solid fa-circle-question mr-2 text-sage-300"></i>Get Help
+            </button>
+          </div>
+        </div>
+      </div>
+
+      <!-- QUICK LINKS FOOTER SECTION -->
+      <div class="glass-card p-6 rounded-3xl border border-forest-700 text-xs">
+        <div class="flex flex-col sm:flex-row items-center justify-between gap-4">
+          <div class="flex items-center space-x-3">
+            <div class="w-8 h-8 rounded-lg bg-terracotta-500 text-warmwhite flex items-center justify-center font-bold">
+              <i class="fa-solid fa-boxes-packing"></i>
+            </div>
+            <span class="font-bold text-warmwhite">ShipTrack Platform Quick Links:</span>
+          </div>
+          <div class="flex flex-wrap items-center gap-4 text-warmmuted">
+            <button
+              onclick="window.scrollTo({top: 0, behavior: 'smooth'}); document.getElementById('tracking-input').focus()"
+              class="hover:text-terracotta-400 transition flex items-center">
+              <i class="fa-solid fa-magnifying-glass mr-1.5 text-sand-400"></i>Track My Order
+            </button>
+            <button onclick="openSupportModal('General Support')"
+              class="hover:text-terracotta-400 transition flex items-center">
+              <i class="fa-solid fa-headset mr-1.5 text-terracotta-400"></i>Contact Support
+            </button>
+            <button
+              onclick="alert('ShipTrack FAQs:\n\n1. How do I track my order? Enter your tracking number (e.g. TRK-2026-894120) above.\n2. Do I need to log in to track? No, order tracking is free and public.\n3. How to report a problem? Click Get Help under any category in the Help Desk section.')"
+              class="hover:text-terracotta-400 transition flex items-center">
+              <i class="fa-solid fa-circle-question mr-1.5 text-sage-400"></i>FAQs
+            </button>
+          </div>
+        </div>
+      </div>
+
+    </section>
+
+    <!-- VIEW 2: CUSTOMER HUB PAGE -->
+    <section id="view-customer" class="hidden space-y-6">
+      <div id="customer-view-container">
+        <!-- Rendered dynamically in loadCustomerShipments() -->
+      </div>
+    </section>
+
+    <!-- VIEW 3: DRIVER CONSOLE PAGE -->
+    <section id="view-driver" class="hidden space-y-6">
+      <div id="driver-view-container">
+        <!-- Rendered dynamically in loadDriverDeliveries() -->
+      </div>
+    </section>
+
+    <!-- VIEW 4: ADMIN CENTER PAGE -->
+    <section id="view-admin" class="hidden space-y-6">
+      <div id="admin-view-container">
+        <!-- Rendered dynamically in renderAdminView() -->
+      </div>
+    </section>
+
+  </main>
+
+  <!-- Floating AI Assistant Button -->
+  <div class="fixed bottom-6 right-6 z-50">
+    <button onclick="toggleAIChatModal()"
+      class="w-14 h-14 rounded-full bg-terracotta-500 hover:bg-terracotta-600 text-warmwhite shadow-2xl shadow-terracotta-500/30 flex items-center justify-center text-2xl hover:scale-105 transition transform active:scale-95">
+      <i class="fa-solid fa-robot"></i>
+    </button>
+  </div>
+
+  <!-- AI Assistant Chat Modal Drawer -->
+  <div id="ai-chat-modal"
+    class="hidden fixed bottom-24 right-6 w-96 max-w-[calc(100vw-3rem)] h-[540px] z-50 glass-card rounded-3xl flex flex-col overflow-hidden shadow-2xl border border-sand-400/15">
+    <!-- Header -->
+    <div class="bg-forest-950 p-4 border-b border-forest-700 flex items-center justify-between">
+      <div class="flex items-center space-x-3">
+        <div
+          class="w-9 h-9 rounded-xl bg-terracotta-500 text-warmwhite flex items-center justify-center text-lg shadow">
+          <i class="fa-solid fa-robot"></i>
+        </div>
+        <div>
+          <h4 class="text-xs font-bold text-warmwhite">ShipBot AI Logistics Assistant</h4>
+          <span class="block text-[10px] text-moss-400 font-semibold"><span
+              class="w-1.5 h-1.5 rounded-full bg-moss-400 inline-block mr-1"></span>Connected to Live DB</span>
+        </div>
+      </div>
+      <button onclick="toggleAIChatModal()" class="text-warmmuted hover:text-warmwhite text-lg"><i
+          class="fa-solid fa-xmark"></i></button>
+    </div>
+
+    <!-- Messages List -->
+    <div id="ai-messages" class="flex-1 p-4 overflow-y-auto space-y-3 text-xs">
+      <div
+        class="bg-forest-900 text-warmwhite p-3 rounded-2xl rounded-tl-none border border-forest-700 max-w-[88%] leading-relaxed">
+        Hello! I'm <strong>ShipBot AI</strong>. Ask me to track any parcel (e.g. <code>TRK-2026-894120</code>),
+        calculate shipping rates, or check delivery estimates!
+      </div>
+    </div>
+
+    <!-- Quick Prompt Chips -->
+    <div class="px-3 py-2 bg-forest-950 border-t border-forest-700 flex gap-1.5 overflow-x-auto text-[11px]">
+      <button onclick="sendAIQuick('Where is TRK-2026-894120?')"
+        class="whitespace-nowrap px-2.5 py-1 bg-forest-900 text-sand-300 rounded-lg hover:bg-forest-800 border border-forest-700 transition">Where
+        is TRK-894120?</button>
+      <button onclick="sendAIQuick('How much does shipping cost?')"
+        class="whitespace-nowrap px-2.5 py-1 bg-forest-900 text-sand-300 rounded-lg hover:bg-forest-800 border border-forest-700 transition">Shipping
+        Rates</button>
+    </div>
+
+    <!-- Input Form -->
+    <form onsubmit="handleAISubmit(event)" class="p-3 bg-forest-950 border-t border-forest-700 flex gap-2">
+      <input type="text" id="ai-input" placeholder="Ask ShipBot anything..."
+        class="flex-1 px-3.5 py-2.5 bg-forest-900 border border-forest-700 rounded-xl text-xs text-warmwhite placeholder-warmmuted focus:outline-none focus:border-terracotta-500">
+      <button type="submit"
+        class="px-3.5 py-2.5 bg-terracotta-500 hover:bg-terracotta-600 text-warmwhite rounded-xl text-xs font-bold transition">
+        <i class="fa-solid fa-paper-plane"></i>
+      </button>
+    </form>
+  </div>
+
+  <!-- MODAL: LOGIN / REGISTER -->
+  <div id="auth-modal"
+    class="hidden fixed inset-0 z-50 bg-forest-950/80 backdrop-blur-sm flex items-center justify-center p-4">
+    <div class="glass-card w-full max-w-md rounded-3xl p-6 relative border border-sand-400/15">
+      <button onclick="closeAuthModal()" class="absolute top-5 right-5 text-warmmuted hover:text-warmwhite"><i
+          class="fa-solid fa-xmark text-lg"></i></button>
+
+      <div class="flex border-b border-forest-700 mb-6">
+        <button id="auth-tab-login" onclick="switchAuthTab('login')"
+          class="flex-1 pb-3 text-xs font-bold text-terracotta-400 border-b-2 border-terracotta-500">Sign In</button>
+        <button id="auth-tab-register" onclick="switchAuthTab('register')"
+          class="flex-1 pb-3 text-xs font-bold text-warmmuted border-b-2 border-transparent">Register</button>
+      </div>
+
+      <!-- Login Form -->
+      <form id="login-form" onsubmit="handleLoginSubmit(event)" class="space-y-4">
+        <div>
+          <label class="block text-xs font-semibold text-warmwhite mb-1">Email Address</label>
+          <input type="email" id="login-email" required placeholder="name@domain.com"
+            class="w-full px-3.5 py-2.5 bg-forest-950 border border-forest-700 rounded-xl text-xs text-warmwhite placeholder-warmmuted focus:outline-none focus:border-terracotta-500">
+        </div>
+        <div>
+          <label class="block text-xs font-semibold text-warmwhite mb-1">Password</label>
+          <input type="password" id="login-password" required placeholder="••••••••"
+            class="w-full px-3.5 py-2.5 bg-forest-950 border border-forest-700 rounded-xl text-xs text-warmwhite focus:outline-none focus:border-terracotta-500">
+        </div>
+        <button type="submit"
+          class="w-full py-3 bg-terracotta-500 hover:bg-terracotta-600 text-warmwhite font-bold text-xs rounded-xl transition shadow-lg shadow-terracotta-500/20">Sign
+          In</button>
+      </form>
+
+      <!-- Register Form -->
+      <form id="register-form" onsubmit="handleRegisterSubmit(event)" class="hidden space-y-4">
+        <div>
+          <label class="block text-xs font-semibold text-warmwhite mb-1">Full Name</label>
+          <input type="text" id="reg-name" required placeholder="Jane Doe"
+            class="w-full px-3.5 py-2.5 bg-forest-950 border border-forest-700 rounded-xl text-xs text-warmwhite placeholder-warmmuted focus:outline-none focus:border-terracotta-500">
+        </div>
+        <div>
+          <label class="block text-xs font-semibold text-warmwhite mb-1">Email Address</label>
+          <input type="email" id="reg-email" required placeholder="jane@example.com"
+            class="w-full px-3.5 py-2.5 bg-forest-950 border border-forest-700 rounded-xl text-xs text-warmwhite placeholder-warmmuted focus:outline-none focus:border-terracotta-500">
+        </div>
+        <div>
+          <label class="block text-xs font-semibold text-warmwhite mb-1">Password</label>
+          <input type="password" id="reg-password" required placeholder="Min 6 characters"
+            class="w-full px-3.5 py-2.5 bg-forest-950 border border-forest-700 rounded-xl text-xs text-warmwhite placeholder-warmmuted focus:outline-none focus:border-terracotta-500">
+        </div>
+        <div>
+          <label class="block text-xs font-semibold text-warmwhite mb-1">Account Role</label>
+          <select id="reg-role"
+            class="w-full px-3.5 py-2.5 bg-forest-950 border border-forest-700 rounded-xl text-xs text-warmwhite focus:outline-none focus:border-terracotta-500">
+            <option value="customer">Customer (Shipment Sender)</option>
+            <option value="driver">Delivery Driver</option>
+          </select>
+        </div>
+        <button type="submit"
+          class="w-full py-3 bg-terracotta-500 hover:bg-terracotta-600 text-warmwhite font-bold text-xs rounded-xl transition shadow-lg shadow-terracotta-500/20">Create
+          Account</button>
+      </form>
+    </div>
+  </div>
+
+  <!-- MODAL: SUPPORT TICKET SUBMISSION -->
+  <div id="support-ticket-modal"
+    class="hidden fixed inset-0 z-50 bg-forest-950/80 backdrop-blur-sm flex items-center justify-center p-4">
+    <div class="glass-card w-full max-w-lg rounded-3xl p-6 relative border border-sand-400/15">
+      <button onclick="closeSupportModal()" class="absolute top-5 right-5 text-warmmuted hover:text-warmwhite"><i
+          class="fa-solid fa-xmark text-lg"></i></button>
+
+      <h3 id="stm-category-title" class="text-xl font-bold text-warmwhite mb-1">Report a Delivery Issue</h3>
+      <p class="text-xs text-warmmuted mb-4">Enter your tracking code and issue details to create a priority support
+        ticket.</p>
+
+      <form onsubmit="handleSupportSubmit(event)" class="space-y-4">
+        <input type="hidden" id="stm-category-value">
+
+        <div>
+          <label class="block text-xs font-semibold text-warmwhite mb-1">Tracking Number (Validated)</label>
+          <input type="text" id="stm-tracking" oninput="validateSupportTracking()" placeholder="e.g. TRK-2026-894120"
+            class="w-full px-3.5 py-2.5 bg-forest-950 border border-forest-700 rounded-xl text-xs text-warmwhite uppercase font-mono font-bold placeholder-warmmuted focus:outline-none focus:border-terracotta-500">
+          <div id="stm-tracking-feedback" class="mt-1.5 text-[11px] hidden"></div>
+        </div>
+
+        <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
+          <div>
+            <label class="block text-xs font-semibold text-warmwhite mb-1">Your Full Name</label>
+            <input type="text" id="stm-name" required placeholder="Jane Doe"
+              class="w-full px-3 py-2 bg-forest-950 border border-forest-700 rounded-xl text-xs text-warmwhite">
+          </div>
+          <div>
+            <label class="block text-xs font-semibold text-warmwhite mb-1">Email Address</label>
+            <input type="email" id="stm-email" required placeholder="jane@example.com"
+              class="w-full px-3 py-2 bg-forest-950 border border-forest-700 rounded-xl text-xs text-warmwhite">
+          </div>
+        </div>
+
+        <div>
+          <label class="block text-xs font-semibold text-warmwhite mb-1">Issue Description & Details</label>
+          <textarea id="stm-description" rows="3" required placeholder="Provide specific details about the issue..."
+            class="w-full px-3.5 py-2 bg-forest-950 border border-forest-700 rounded-xl text-xs text-warmwhite focus:outline-none focus:border-terracotta-500"></textarea>
+        </div>
+
+        <div class="flex justify-end space-x-2 pt-2">
+          <button type="button" onclick="closeSupportModal()"
+            class="px-4 py-2.5 bg-forest-900 hover:bg-forest-800 text-warmmuted rounded-xl text-xs font-semibold">Cancel</button>
+          <button type="submit"
+            class="px-6 py-2.5 bg-terracotta-500 hover:bg-terracotta-600 text-warmwhite font-bold text-xs rounded-xl shadow-lg transition">Submit
+            Request</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- MODAL: CREATE SHIPMENT -->
+  <div id="create-shipment-modal"
+    class="hidden fixed inset-0 z-50 bg-forest-950/80 backdrop-blur-sm flex items-center justify-center p-4">
+    <div
+      class="glass-card w-full max-w-2xl rounded-3xl p-6 relative border border-sand-400/15 max-h-[90vh] overflow-y-auto">
+      <button onclick="closeCreateShipmentModal()" class="absolute top-5 right-5 text-warmmuted hover:text-warmwhite"><i
+          class="fa-solid fa-xmark text-lg"></i></button>
+
+      <h3 class="text-xl font-bold text-warmwhite mb-1"><i
+          class="fa-solid fa-box-open text-terracotta-400 mr-2"></i>Create New Shipment</h3>
+      <p class="text-xs text-warmmuted mb-6">Enter sender, recipient, package weight, and delivery priority details.</p>
+
+      <form onsubmit="handleCreateShipmentSubmit(event)" class="space-y-4">
+        <!-- Sender & Recipient Grid -->
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-4 bg-forest-950/80 p-4 rounded-2xl border border-forest-700">
+          <div>
+            <h4 class="text-xs font-bold text-terracotta-400 uppercase mb-2">Sender Details</h4>
+            <div class="space-y-2">
+              <input type="text" id="cs-sender-name" required placeholder="Sender Full Name"
+                class="w-full px-3 py-2 bg-forest-900 border border-forest-700 rounded-lg text-xs text-warmwhite">
+              <input type="text" id="cs-sender-address" required placeholder="Street Address"
+                class="w-full px-3 py-2 bg-forest-900 border border-forest-700 rounded-lg text-xs text-warmwhite">
+              <input type="text" id="cs-sender-city" required placeholder="Origin City (e.g. Hyderabad)"
+                class="w-full px-3 py-2 bg-forest-900 border border-forest-700 rounded-lg text-xs text-warmwhite">
+            </div>
+          </div>
+          <div>
+            <h4 class="text-xs font-bold text-sand-400 uppercase mb-2">Recipient Details</h4>
+            <div class="space-y-2">
+              <input type="text" id="cs-recipient-name" required placeholder="Recipient Full Name"
+                class="w-full px-3 py-2 bg-forest-900 border border-forest-700 rounded-lg text-xs text-warmwhite">
+              <input type="text" id="cs-recipient-address" required placeholder="Destination Address"
+                class="w-full px-3 py-2 bg-forest-900 border border-forest-700 rounded-lg text-xs text-warmwhite">
+              <input type="text" id="cs-recipient-city" required placeholder="Destination City (e.g. Bengaluru)"
+                class="w-full px-3 py-2 bg-forest-900 border border-forest-700 rounded-lg text-xs text-warmwhite">
+            </div>
+          </div>
+        </div>
+
+        <!-- Package Specifications & Priority -->
+        <div class="grid grid-cols-1 sm:grid-cols-3 gap-3">
+          <div>
+            <label class="block text-[11px] font-semibold text-warmwhite mb-1">Package Type</label>
+            <select id="cs-package-type" onchange="recalculateEstCost()"
+              class="w-full px-3 py-2 bg-forest-950 border border-forest-700 rounded-xl text-xs text-warmwhite">
+              <option value="Standard">Standard Electronics</option>
+              <option value="Documents">Legal Documents</option>
+              <option value="Clothing">Apparel & Textiles</option>
+              <option value="Fragile">Fragile Goods</option>
+              <option value="Cold Storage">Cold Storage Pharma</option>
+              <option value="Heavy Cargo">Heavy Cargo</option>
+            </select>
+          </div>
+          <div>
+            <label class="block text-[11px] font-semibold text-warmwhite mb-1">Package Weight (kg)</label>
+            <input type="number" step="0.1" id="cs-weight" oninput="recalculateEstCost()" value="2.5" required
+              class="w-full px-3 py-2 bg-forest-950 border border-forest-700 rounded-xl text-xs text-warmwhite">
+          </div>
+          <div>
+            <label class="block text-[11px] font-semibold text-warmwhite mb-1">Estimated Cost (₹)</label>
+            <div id="cs-cost-display"
+              class="w-full px-3 py-2 bg-forest-950 border border-terracotta-500/40 rounded-xl text-xs font-bold text-terracotta-400 flex items-center justify-between">
+              <span>Cost:</span> <span id="cs-cost-val"
+                class="text-sm text-sand-300 font-mono font-extrabold">₹650</span>
+            </div>
+          </div>
+        </div>
+
+        <div>
+          <label class="block text-[11px] font-semibold text-warmwhite mb-1">Special Delivery Instructions</label>
+          <textarea id="cs-instructions" rows="2" placeholder="e.g. Handle with care, requires recipient signature..."
+            class="w-full px-3 py-2 bg-forest-950 border border-forest-700 rounded-xl text-xs text-warmwhite"></textarea>
+        </div>
+
+        <div class="flex justify-end space-x-2 pt-2">
+          <button type="button" onclick="closeCreateShipmentModal()"
+            class="px-4 py-2.5 bg-forest-900 hover:bg-forest-800 text-warmmuted rounded-xl text-xs font-semibold">Cancel</button>
+          <button type="submit"
+            class="px-6 py-2.5 bg-terracotta-500 hover:bg-terracotta-600 text-warmwhite font-bold text-xs rounded-xl shadow-lg transition">Create
+            Shipment</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- MODAL: DRIVER CHECKPOINT UPDATE -->
+  <div id="driver-update-modal"
+    class="hidden fixed inset-0 z-50 bg-forest-950/80 backdrop-blur-sm flex items-center justify-center p-4">
+    <div class="glass-card w-full max-w-md rounded-3xl p-6 relative border border-sand-400/15">
+      <button onclick="closeDriverUpdateModal()" class="absolute top-5 right-5 text-warmmuted hover:text-warmwhite"><i
+          class="fa-solid fa-xmark text-lg"></i></button>
+
+      <h3 class="text-lg font-bold text-warmwhite mb-1"><i
+          class="fa-solid fa-location-dot text-terracotta-400 mr-2"></i>Log Status Checkpoint</h3>
+      <p id="dum-tracking-display" class="text-xs text-warmmuted font-mono mb-4">Shipment: TRK-XXXX</p>
+
+      <form onsubmit="handleDriverUpdateSubmit(event)" class="space-y-4">
+        <input type="hidden" id="dum-shipment-id">
+        <div>
+          <label class="block text-xs font-semibold text-warmwhite mb-1">New Delivery Status</label>
+          <select id="dum-status"
+            class="w-full px-3.5 py-2.5 bg-forest-950 border border-forest-700 rounded-xl text-xs text-warmwhite">
+            <option value="PICKED_UP">PICKED_UP — Package Received from Sender</option>
+            <option value="IN_TRANSIT">IN_TRANSIT — In Movement between Sorting Centers</option>
+            <option value="OUT_FOR_DELIVERY">OUT_FOR_DELIVERY — Driver on Delivery Route</option>
+            <option value="DELIVERED">DELIVERED — Delivered & Proof Collected</option>
+            <option value="FAILED_ATTEMPT">FAILED_ATTEMPT — Recipient Unavailable</option>
+          </select>
+        </div>
+        <div>
+          <label class="block text-xs font-semibold text-warmwhite mb-1">Current GPS Hub / City</label>
+          <input type="text" id="dum-location" required placeholder="e.g. Hyderabad Central Hub"
+            class="w-full px-3.5 py-2.5 bg-forest-950 border border-forest-700 rounded-xl text-xs text-warmwhite">
+        </div>
+        <div>
+          <label class="block text-xs font-semibold text-warmwhite mb-1">Notes / Proof Details</label>
+          <textarea id="dum-notes" rows="2" placeholder="e.g. Delivered to reception, signed by Rahul Sharma..."
+            class="w-full px-3.5 py-2.5 bg-forest-950 border border-forest-700 rounded-xl text-xs text-warmwhite"></textarea>
+        </div>
+        <button type="submit"
+          class="w-full py-3 bg-terracotta-500 hover:bg-terracotta-600 text-warmwhite font-bold text-xs rounded-xl shadow-lg transition">
+          Post Status Update
+        </button>
+      </form>
+    </div>
+  </div>
+
+  <!-- MODAL: ADD DRIVER (Admin) -->
+  <div id="add-driver-modal"
+    class="hidden fixed inset-0 z-50 bg-forest-950/80 backdrop-blur-sm flex items-center justify-center p-4">
+    <div class="glass-card w-full max-w-md rounded-3xl p-6 relative border border-sand-400/15">
+      <button onclick="closeAddDriverModal()" class="absolute top-5 right-5 text-warmmuted hover:text-warmwhite"><i
+          class="fa-solid fa-xmark text-lg"></i></button>
+
+      <h3 class="text-lg font-bold text-warmwhite mb-1"><i class="fa-solid fa-user-plus text-sage-400 mr-2"></i>Register
+        New Driver</h3>
+      <p class="text-xs text-warmmuted mb-4">Add a new courier personnel account into the logistics network.</p>
+
+      <form onsubmit="handleAddDriverSubmit(event)" class="space-y-4">
+        <div>
+          <label class="block text-xs font-semibold text-warmwhite mb-1">Driver Name</label>
+          <input type="text" id="ad-name" required placeholder="Ravi Kumar"
+            class="w-full px-3.5 py-2.5 bg-forest-950 border border-forest-700 rounded-xl text-xs text-warmwhite">
+        </div>
+        <div>
+          <label class="block text-xs font-semibold text-warmwhite mb-1">Email Address</label>
+          <input type="email" id="ad-email" required placeholder="ravi@shiptrack.com"
+            class="w-full px-3.5 py-2.5 bg-forest-950 border border-forest-700 rounded-xl text-xs text-warmwhite">
+        </div>
+        <div>
+          <label class="block text-xs font-semibold text-warmwhite mb-1">Password</label>
+          <input type="password" id="ad-password" required placeholder="Driver@123"
+            class="w-full px-3.5 py-2.5 bg-forest-950 border border-forest-700 rounded-xl text-xs text-warmwhite">
+        </div>
+        <div>
+          <label class="block text-xs font-semibold text-warmwhite mb-1">Vehicle Assignment</label>
+          <input type="text" id="ad-vehicle" placeholder="Cargo Truck"
+            class="w-full px-3.5 py-2.5 bg-forest-950 border border-forest-700 rounded-xl text-xs text-warmwhite">
+        </div>
+        <button type="submit"
+          class="w-full py-3 bg-terracotta-500 hover:bg-terracotta-600 text-warmwhite font-bold text-xs rounded-xl shadow-lg transition">
+          Create Driver Profile
+        </button>
+      </form>
+    </div>
+  </div>
+
+  <!-- APPLICATION LOGIC SCRIPT -->
+  <script>
+    // System State & Centralized Cache
+    let currentUser = null;
+    let authToken = localStorage.getItem('shiptrack_token') || null;
+    let currentTab = 'tracker';
+    let currentAdminSubTab = 'shipments';
+    let notifications = [
+      { id: 1, title: 'Shipment TRK-2026-894120 updated', message: 'Status changed to IN_TRANSIT at Hyderabad Hub', time: '10 mins ago', type: 'info' },
+      { id: 2, title: 'Shipment TRK-2026-302194 out for delivery', message: 'Driver Ravi Kumar is on route to Bengaluru destination', time: '25 mins ago', type: 'success' },
+      { id: 3, title: 'New Delivery Assigned', message: 'Courier Alex River assigned to TRK-2026-894120', time: '1 hour ago', type: 'warning' }
+    ];
+
+    // Initialization
+    window.addEventListener('DOMContentLoaded', async () => {
+      renderNotifications();
+      if (authToken) {
+        await fetchCurrentUser();
+      } else {
+        updateUserUI();
+      }
+      trackShipment();
+    });
+
+    // Mobile Menu Toggle
+    function toggleMobileMenu() {
+      const menu = document.getElementById('mobile-menu');
+      menu.classList.toggle('hidden');
+    }
+
+    // Navigation Tab Switcher
+    function switchTab(tab) {
+      currentTab = tab;
+      ['tracker', 'customer', 'driver', 'admin'].forEach(t => {
+        const view = document.getElementById(`view-${t}`);
+        const nav = document.getElementById(`nav-${t}`);
+        if (view) view.classList.add('hidden');
+        if (nav) {
+          nav.classList.remove('bg-terracotta-500', 'text-warmwhite', 'shadow-md');
+          nav.classList.add('text-warmmuted', 'hover:text-warmwhite', 'hover:bg-forest-900');
+        }
+      });
+
+      const activeView = document.getElementById(`view-${tab}`);
+      const activeNav = document.getElementById(`nav-${tab}`);
+      if (activeView) activeView.classList.remove('hidden');
+      if (activeNav) {
+        activeNav.classList.remove('text-warmmuted', 'hover:bg-forest-900');
+        activeNav.classList.add('text-warmwhite', 'bg-terracotta-500', 'shadow-md');
+      }
+
+      if (tab === 'customer') loadCustomerShipments();
+      if (tab === 'driver') loadDriverDeliveries();
+      if (tab === 'admin') renderAdminView();
+
+      updateUserUI();
+    }
+
+    // Fetch Current User
+    async function fetchCurrentUser() {
+      try {
+        const res = await fetch('/api/auth/me', {
+          headers: { 'Authorization': `Bearer ${authToken}` }
+        });
+        if (res.ok) {
+          const data = await res.json();
+          currentUser = data.user;
+          updateUserUI();
+        } else {
+          logout();
+        }
+      } catch (e) {
+        console.error('Fetch user failed:', e);
+      }
+    }
+
+    function updateUserUI() {
+      const badge = document.getElementById('user-badge');
+      const loginBtn = document.getElementById('login-btn');
+
+      const navCustomer = document.getElementById('nav-customer');
+      const navDriver = document.getElementById('nav-driver');
+      const navAdmin = document.getElementById('nav-admin');
+
+      const mobCustomer = document.getElementById('mob-nav-customer');
+      const mobDriver = document.getElementById('mob-nav-driver');
+      const mobAdmin = document.getElementById('mob-nav-admin');
+
+      if (currentUser) {
+        badge.classList.remove('hidden');
+        loginBtn.classList.add('hidden');
+        document.getElementById('user-avatar').innerText = currentUser.name.charAt(0).toUpperCase();
+        document.getElementById('user-name').innerText = currentUser.name;
+        document.getElementById('user-role-badge').innerText = currentUser.role;
+        document.getElementById('dropdown-user-name').innerText = currentUser.name;
+        document.getElementById('dropdown-user-role').innerText = currentUser.role;
+
+        const isCustomer = currentUser.role === 'customer';
+        const isDriver = currentUser.role === 'driver';
+        const isAdmin = currentUser.role === 'admin';
+
+        if (navCustomer) navCustomer.classList.toggle('hidden', !isCustomer && !isAdmin);
+        if (navDriver) navDriver.classList.toggle('hidden', !isDriver && !isAdmin);
+        if (navAdmin) navAdmin.classList.toggle('hidden', !isAdmin);
+
+        if (mobCustomer) mobCustomer.classList.toggle('hidden', !isCustomer && !isAdmin);
+        if (mobDriver) mobDriver.classList.toggle('hidden', !isDriver && !isAdmin);
+        if (mobAdmin) mobAdmin.classList.toggle('hidden', !isAdmin);
+      } else {
+        badge.classList.add('hidden');
+        loginBtn.classList.remove('hidden');
+
+        if (navCustomer) navCustomer.classList.add('hidden');
+        if (navDriver) navDriver.classList.add('hidden');
+        if (navAdmin) navAdmin.classList.add('hidden');
+
+        if (mobCustomer) mobCustomer.classList.add('hidden');
+        if (mobDriver) mobDriver.classList.add('hidden');
+        if (mobAdmin) mobAdmin.classList.add('hidden');
+      }
+    }
+
+    function toggleUserDropdown() {
+      document.getElementById('user-dropdown').classList.toggle('hidden');
+    }
+
+    function logout() {
+      currentUser = null;
+      authToken = null;
+      localStorage.removeItem('shiptrack_token');
+      document.getElementById('user-dropdown').classList.add('hidden');
+      updateUserUI();
+      switchTab('tracker');
+    }
+
+    function fallbackDemoLogin(email, targetTab) {
+      if (email === 'admin@shiptrack.demo' || email === 'admin@shiptrack.com') {
+        currentUser = { id: 1, name: 'System Admin', email: 'admin@shiptrack.demo', role: 'admin', phone: '+91 98765 43210' };
+        authToken = 'demo-admin-token';
+      } else if (email === 'driver1@shiptrack.com') {
+        currentUser = { id: 2, name: 'Alex River', email: 'driver1@shiptrack.com', role: 'driver', vehicle_type: 'Express Van', phone: '+91 98765 11111' };
+        authToken = 'demo-driver-token';
+      } else {
+        currentUser = { id: 5, name: 'Jane Doe', email: 'customer1@shiptrack.com', role: 'customer', phone: '+91 98765 44444' };
+        authToken = 'demo-customer-token';
+      }
+      localStorage.setItem('shiptrack_token', authToken);
+      updateUserUI();
+      switchTab(targetTab || (currentUser.role === 'admin' ? 'admin' : currentUser.role === 'driver' ? 'driver' : 'customer'));
+    }
+
+    // Quick Demo Login
+    async function quickLogin(email, password, targetTab) {
+      try {
+        const res = await fetch('/api/auth/login', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ email, password })
+        });
+        const data = await res.json();
+        if (res.ok) {
+          authToken = data.token;
+          currentUser = data.user;
+          localStorage.setItem('shiptrack_token', authToken);
+          updateUserUI();
+          switchTab(targetTab || (currentUser.role === 'admin' ? 'admin' : currentUser.role === 'driver' ? 'driver' : 'customer'));
+        } else {
+          fallbackDemoLogin(email, targetTab);
+        }
+      } catch (e) {
+        console.error('Quick login error, using fallback:', e);
+        fallbackDemoLogin(email, targetTab);
+      }
+    }
+
+    // Notifications Handler
+    function toggleNotifications() {
+      document.getElementById('notif-dropdown').classList.toggle('hidden');
+    }
+    function clearNotifications() {
+      notifications = [];
+      renderNotifications();
+    }
+    function renderNotifications() {
+      const badge = document.getElementById('notif-badge');
+      const list = document.getElementById('notif-list');
+      if (notifications.length === 0) {
+        badge.classList.add('hidden');
+        list.innerHTML = `<p class="text-warmmuted py-4 text-center">No new notifications.</p>`;
+        return;
+      }
+      badge.classList.remove('hidden');
+      badge.innerText = notifications.length;
+      list.innerHTML = notifications.map(n => `
+        <div class="bg-forest-900 p-2.5 rounded-xl border border-forest-700 space-y-0.5">
+          <span class="font-bold text-warmwhite block">${n.title}</span>
+          <p class="text-[11px] text-warmmuted">${n.message}</p>
+          <span class="text-[9px] text-sand-400 font-mono">${n.time}</span>
+        </div>
+      `).join('');
+    }
+
+    function pushNotification(title, message) {
+      notifications.unshift({
+        id: Date.now(),
+        title,
+        message,
+        time: 'Just now',
+        type: 'info'
+      });
+      renderNotifications();
+    }
+
+    // Centralized Single Source of Truth for Shipments
+    let centralizedShipments = [
+      {
+        id: 1,
+        tracking_number: "TRK-2026-894120",
+        status: "IN_TRANSIT",
+        sender_city: "Hyderabad",
+        recipient_name: "Bengaluru Hub",
+        recipient_city: "Bengaluru",
+        current_location: "Hyderabad Distribution Center",
+        driver_id: 2,
+        driver: { name: "Alex River", phone: "+91 98765 11111", vehicle: "Express Van" },
+        driver_name: "Alex River",
+        driver_vehicle: "Express Van",
+        estimated_delivery: "October 7, 2026",
+        distance_remaining: "420 km",
+        package_type: "Standard Express",
+        weight_kg: 4.5,
+        shipping_cost: 450,
+        special_instructions: "Fragile electronic cargo",
+        created_at: "2026-10-04T09:00:00Z",
+        timeline: [
+          { status: "CREATED", location: "Hyderabad Hub", timestamp: "2026-10-04T09:00:00Z", notes: "Order created" },
+          { status: "PICKED_UP", location: "Hyderabad Facility", timestamp: "2026-10-04T14:30:00Z", notes: "Picked up by Alex River" },
+          { status: "IN_TRANSIT", location: "Hyderabad Distribution Center", timestamp: "2026-10-05T08:15:00Z", notes: "In transit to Bengaluru" }
+        ]
+      },
+      {
+        id: 2,
+        tracking_number: "TRK-2026-302194",
+        status: "OUT_FOR_DELIVERY",
+        sender_city: "Hyderabad",
+        recipient_name: "Bengaluru Hub",
+        recipient_city: "Bengaluru",
+        current_location: "Bengaluru Delivery Hub",
+        driver_id: 3,
+        driver: { name: "Ravi Kumar", phone: "+91 98765 22222", vehicle: "Delivery Van" },
+        driver_name: "Ravi Kumar",
+        driver_vehicle: "Delivery Van",
+        estimated_delivery: "Today",
+        distance_remaining: "18 km",
+        package_type: "Priority Cargo",
+        weight_kg: 2.1,
+        shipping_cost: 620,
+        special_instructions: "Call recipient prior to arrival",
+        created_at: "2026-10-03T10:00:00Z",
+        timeline: [
+          { status: "CREATED", location: "Hyderabad Hub", timestamp: "2026-10-03T10:00:00Z", notes: "Order created" },
+          { status: "PICKED_UP", location: "Hyderabad Facility", timestamp: "2026-10-03T16:00:00Z", notes: "Picked up by Ravi Kumar" },
+          { status: "IN_TRANSIT", location: "NH44 Highway", timestamp: "2026-10-04T11:00:00Z", notes: "En route to Bengaluru" },
+          { status: "OUT_FOR_DELIVERY", location: "Bengaluru Delivery Hub", timestamp: "2026-10-05T07:30:00Z", notes: "Out for final delivery" }
+        ]
+      },
+      {
+        id: 3,
+        tracking_number: "TRK-2026-110482",
+        status: "DELIVERED",
+        sender_city: "Pune",
+        recipient_name: "Mumbai Recipient",
+        recipient_city: "Mumbai",
+        current_location: "Mumbai",
+        driver_id: 4,
+        driver: { name: "Priya Singh", phone: "+91 98765 33333", vehicle: "Cargo Van" },
+        driver_name: "Priya Singh",
+        driver_vehicle: "Cargo Van",
+        estimated_delivery: "Delivered",
+        distance_remaining: "0 km",
+        package_type: "Fragile",
+        weight_kg: 1.8,
+        shipping_cost: 380,
+        proof_of_delivery: "Signed by Recipient (OTP Verified)",
+        special_instructions: "Delivered securely",
+        created_at: "2026-10-01T08:00:00Z",
+        timeline: [
+          { status: "CREATED", location: "Pune Depot", timestamp: "2026-10-01T08:00:00Z", notes: "Order created" },
+          { status: "PICKED_UP", location: "Pune Facility", timestamp: "2026-10-01T12:00:00Z", notes: "Picked up by Priya Singh" },
+          { status: "IN_TRANSIT", location: "Mumbai Expressway", timestamp: "2026-10-02T09:00:00Z", notes: "In transit" },
+          { status: "OUT_FOR_DELIVERY", location: "Mumbai Hub", timestamp: "2026-10-02T14:00:00Z", notes: "Out for delivery" },
+          { status: "DELIVERED", location: "Mumbai", timestamp: "2026-10-02T17:45:00Z", notes: "Successfully delivered" }
+        ]
+      }
+    ];
+
+    let supportRequests = [
+      {
+        id: 1,
+        ticket_id: "SUP-2026-10482",
+        category: "Late Delivery",
+        tracking_number: "TRK-2026-894120",
+        customer_name: "Jane Doe",
+        email: "jane@example.com",
+        created_at: "2026-10-05T14:30:00Z",
+        priority: "High",
+        status: "Open",
+        description: "Shipment was expected yesterday at 5 PM but is still in transit."
+      },
+      {
+        id: 2,
+        ticket_id: "SUP-2026-30912",
+        category: "Refund & Payment",
+        tracking_number: "TRK-2026-302194",
+        customer_name: "Rahul Sharma",
+        email: "rahul@example.com",
+        created_at: "2026-10-04T11:15:00Z",
+        priority: "Medium",
+        status: "In Review",
+        description: "Duplicate billing on priority delivery fee."
+      }
+    ];
+
+    async function findShipment(trackingCode) {
+      const code = trackingCode.trim().toUpperCase();
+      let shipment = centralizedShipments.find(s => s.tracking_number.toUpperCase() === code);
+
+      try {
+        const res = await fetch(`/api/shipments/track/${encodeURIComponent(code)}`);
+        if (res.ok) {
+          const data = await res.json();
+          if (data && data.shipment) {
+            const apiShipment = {
+              ...data.shipment,
+              timeline: data.timeline || []
+            };
+            const idx = centralizedShipments.findIndex(s => s.tracking_number.toUpperCase() === code);
+            if (idx !== -1) {
+              centralizedShipments[idx] = { ...centralizedShipments[idx], ...apiShipment };
+              shipment = centralizedShipments[idx];
+            } else {
+              centralizedShipments.push(apiShipment);
+              shipment = apiShipment;
+            }
+          }
+        }
+      } catch (e) {
+        // Backend API offline or file:// access - seamlessly use centralizedShipments store
+      }
+
+      return shipment || null;
+    }
+
+    // TRACKER LOGIC & MAP SIMULATION
+    function setAndTrack(code) {
+      document.getElementById('tracking-input').value = code;
+      trackShipment();
+    }
+
+    async function trackShipment() {
+      const trackingInput = document.getElementById('tracking-input');
+      const trackingCode = trackingInput.value.trim().toUpperCase();
+      const resultDiv = document.getElementById('tracking-result');
+
+      // Normalize input value in field
+      trackingInput.value = trackingCode;
+
+      if (!trackingCode) {
+        resultDiv.classList.remove('hidden');
+        resultDiv.innerHTML = `
+          <div class="glass-card rounded-3xl p-8 text-center border-amber-500/30">
+            <i class="fa-solid fa-circle-exclamation text-amber-400 text-4xl mb-3"></i>
+            <h3 class="text-xl font-bold text-warmwhite">Please Enter a Tracking Number</h3>
+            <p class="text-warmmuted text-xs mt-1">Enter a valid tracking ID (e.g. TRK-2026-894120) to view real-time shipment status.</p>
+          </div>
+        `;
+        return;
+      }
+
+
+      resultDiv.classList.remove('hidden');
+      resultDiv.innerHTML = `
+        <div class="glass-card rounded-3xl p-8 space-y-4">
+          <div class="h-8 skeleton rounded-xl w-1/3"></div>
+          <div class="h-4 skeleton rounded-lg w-1/2"></div>
+          <div class="h-24 skeleton rounded-2xl w-full"></div>
+        </div>
+      `;
+
+      try {
+        const s = await findShipment(trackingCode);
+
+        if (!s) {
+          resultDiv.innerHTML = `
+            <div class="glass-card rounded-3xl p-8 text-center border-brick-500/30 space-y-4">
+              <div class="w-16 h-16 rounded-2xl bg-brick-500/10 border border-brick-500/20 text-brick-400 flex items-center justify-center text-3xl mx-auto">
+                <i class="fa-solid fa-box-open"></i>
+              </div>
+              <div>
+                <h3 class="text-xl font-bold text-warmwhite">Shipment Not Found</h3>
+                <p class="text-warmmuted text-xs mt-2">We couldn't find a shipment with tracking number:</p>
+                <div class="inline-block mt-2 px-4 py-1.5 rounded-xl bg-forest-950 border border-forest-700 text-terracotta-400 font-mono font-bold text-base tracking-wider">
+                  ${trackingCode}
+                </div>
+              </div>
+              <p class="text-warmmuted text-xs max-w-md mx-auto">Please check the tracking number and try again, or select one of the demo tracking numbers below.</p>
+              <div class="flex flex-wrap items-center justify-center gap-3 pt-2">
+                <button onclick="document.getElementById('tracking-input').focus()" class="px-5 py-2.5 rounded-xl bg-forest-900 border border-forest-700 hover:bg-forest-800 text-warmwhite font-bold text-xs shadow transition">
+                  <i class="fa-solid fa-pen mr-1.5"></i>Try Again
+                </button>
+                <button onclick="setAndTrack('TRK-2026-894120')" class="px-5 py-2.5 rounded-xl bg-terracotta-500 hover:bg-terracotta-600 text-warmwhite font-bold text-xs shadow-lg shadow-terracotta-500/20 transition">
+                  <i class="fa-solid fa-bolt mr-1.5 text-sand-300"></i>Track Demo TRK-2026-894120
+                </button>
+              </div>
+            </div>
+          `;
+          return;
+        }
+
+        const timeline = s.timeline || [];
+
+        const stages = [
+          { key: 'CREATED', label: 'Order Created' },
+          { key: 'PICKED_UP', label: 'Picked Up' },
+          { key: 'IN_TRANSIT', label: 'In Transit' },
+          { key: 'OUT_FOR_DELIVERY', label: 'Out for Delivery' },
+          { key: 'DELIVERED', label: 'Delivered' }
+        ];
+
+        const stageKeys = stages.map(st => st.key);
+        const currentIdx = stageKeys.indexOf(s.status);
+
+        // Calculate progress percentage for route simulation map
+        let routePercent = 55;
+        if (s.status === 'CREATED') routePercent = 0;
+        else if (s.status === 'PICKED_UP') routePercent = 25;
+        else if (s.status === 'IN_TRANSIT') routePercent = 55;
+        else if (s.status === 'OUT_FOR_DELIVERY') routePercent = 85;
+        else if (s.status === 'DELIVERED') routePercent = 100;
+
+        // Distance remaining logic matching demo data spec
+        let distanceRemaining = s.distance_remaining || "420 km";
+        if (s.status === 'DELIVERED') distanceRemaining = "0 km";
+        else if (s.status === 'OUT_FOR_DELIVERY') distanceRemaining = "18 km";
+        else if (s.status === 'IN_TRANSIT') distanceRemaining = "420 km";
+        else if (s.status === 'PICKED_UP') distanceRemaining = "780 km";
+        else if (s.status === 'CREATED') distanceRemaining = "1,250 km";
+
+        const estFormatted = s.estimated_delivery.includes(',') || s.estimated_delivery === 'Today' || s.estimated_delivery === 'Delivered' ? s.estimated_delivery : new Date(s.estimated_delivery).toLocaleDateString('en-IN', {
+          weekday: 'short', month: 'short', day: 'numeric', year: 'numeric'
+        });
+
+        const driverObj = s.driver || {};
+        const driverName = driverObj.name || s.driver_name || 'Alex River';
+        const driverVehicle = driverObj.vehicle || s.driver_vehicle || 'Express Van';
+
+        const statusBadgeClass = s.status === 'DELIVERED' ? 'bg-moss-500/20 text-moss-400 border border-moss-500/30' :
+          s.status === 'OUT_FOR_DELIVERY' ? 'bg-sand-500/20 text-sand-300 border border-sand-500/30' :
+            s.status === 'IN_TRANSIT' ? 'bg-terracotta-500/20 text-terracotta-400 border border-terracotta-500/30' :
+              s.status === 'DELAYED' ? 'bg-amber-500/20 text-amber-400 border border-amber-500/30' :
+                s.status === 'CANCELLED' ? 'bg-brick-500/20 text-brick-400 border border-brick-500/30' :
+                  'bg-sage-500/20 text-sage-300 border border-sage-500/30';
+
+        const statusDotClass = s.status === 'DELIVERED' ? 'bg-moss-400' :
+          s.status === 'OUT_FOR_DELIVERY' ? 'bg-sand-400 pulse-dot' :
+            s.status === 'IN_TRANSIT' ? 'bg-terracotta-400 pulse-dot' :
+              s.status === 'DELAYED' ? 'bg-amber-400 pulse-dot' :
+                s.status === 'CANCELLED' ? 'bg-brick-400' :
+                  'bg-sage-400';
+
+        resultDiv.innerHTML = `
+          <!-- Main Shipment Tracking Panel -->
+          <div class="glass-card p-6 lg:p-8 space-y-8">
+            <div class="flex flex-col md:flex-row md:items-center justify-between gap-4 border-b border-forest-700 pb-6">
+              <div>
+                <span class="text-xs font-bold text-terracotta-400 uppercase tracking-widest block mb-1">Shipment Tracking</span>
+                <div class="flex flex-wrap items-center gap-3">
+                  <span class="text-2xl lg:text-3xl font-mono font-extrabold text-warmwhite tracking-wider">${s.tracking_number}</span>
+                  <span class="px-3.5 py-1 rounded-full text-xs font-bold uppercase flex items-center ${statusBadgeClass}">
+                    <span class="w-2 h-2 rounded-full mr-2 ${statusDotClass}"></span>
+                    ${s.status.replace(/_/g, ' ')}
+                  </span>
+                </div>
+                <p class="text-xs text-warmmuted mt-2">Route: <strong class="text-warmwhite">${s.sender_city}</strong> → <strong class="text-warmwhite">${s.recipient_name} (${s.recipient_city})</strong></p>
+              </div>
+
+              <div class="text-left md:text-right">
+                <span class="text-xs text-warmmuted block font-medium">Estimated Delivery</span>
+                <span class="text-lg lg:text-xl font-extrabold text-sand-300">${estFormatted}</span>
+              </div>
+            </div>
+
+            <!-- Shipment Progress Timeline (5-Column Shared Grid Layout) -->
+            <div class="py-2">
+              <h4 class="text-xs font-bold text-warmmuted uppercase tracking-wider mb-6">Shipment Progress</h4>
+              <div class="overflow-x-auto pb-4">
+                <div class="min-w-[640px] relative px-4">
+                  <!-- Horizontal Progress Line -->
+                  <div class="absolute left-[calc(10%+1rem)] right-[calc(10%+1rem)] top-6 -translate-y-1/2 h-1 bg-forest-950 rounded-full z-0 pointer-events-none">
+                    <div class="h-full bg-gradient-to-r from-moss-500 via-terracotta-500 to-sand-400 rounded-full transition-all duration-500"
+                      style="width: ${Math.min(100, (Math.max(0, currentIdx) / (stages.length - 1)) * 100)}%"></div>
+                  </div>
+
+                  <!-- 5 Equal Milestone Columns -->
+                  <div class="grid grid-cols-5 relative z-10">
+                    ${stages.map((st, idx) => {
+          const isDone = idx < currentIdx;
+          const isCurrent = idx === currentIdx;
+          return `
+                        <div class="flex flex-col items-center text-center px-1">
+                          <div class="w-12 h-12 rounded-full flex items-center justify-center font-extrabold text-sm transition-all duration-300 ${isDone ? 'bg-moss-600 text-warmwhite shadow-lg shadow-moss-600/30 ring-2 ring-moss-500/30' :
+              isCurrent ? 'bg-terracotta-500 text-warmwhite shadow-xl shadow-terracotta-500/40 ring-4 ring-terracotta-500/30 scale-110' :
+                'bg-forest-950 border-2 border-forest-700 text-warmmuted'
+            }">
+                            ${isDone ? '<i class="fa-solid fa-check"></i>' : isCurrent ? '●' : '○'}
+                          </div>
+
+                          <div class="mt-3 min-h-[44px] flex flex-col items-center justify-start w-full">
+                            <span class="text-xs font-semibold leading-tight text-center ${isCurrent ? 'text-terracotta-400 font-bold' : isDone ? 'text-warmwhite' : 'text-warmmuted'}">
+                              ${st.label}
+                            </span>
+                            ${isCurrent ? '<span class="inline-flex items-center text-[9px] font-extrabold text-terracotta-400 uppercase tracking-wider mt-1"><span class="w-1.5 h-1.5 rounded-full bg-terracotta-500 mr-1 pulse-dot"></span>● CURRENT</span>' : ''}
+                          </div>
+                        </div>
+                      `;
+        }).join('')}
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <!-- Live Route Simulation Map (Earth & Route palette) -->
+            <div class="bg-forest-950 p-6 rounded-2xl border border-forest-700 space-y-4">
+              <div class="flex items-center justify-between">
+                <span class="text-xs font-bold text-warmwhite flex items-center">
+                  <i class="fa-solid fa-route text-terracotta-400 mr-2"></i>Live Route Simulation Map
+                </span>
+                <span class="text-[10px] font-mono text-sand-300 flex items-center">
+                  <span class="w-1.5 h-1.5 rounded-full bg-sand-400 mr-1.5 pulse-dot"></span>GPS Active
+                </span>
+              </div>
+              
+              <div class="relative min-h-[140px] w-full bg-forest-900/60 rounded-xl border border-forest-700 p-6 flex flex-col justify-center overflow-hidden">
+                <!-- Route Dot Overlay -->
+                <div class="absolute inset-0 opacity-15 bg-[radial-gradient(#91a889_1px,transparent_1px)] [background-size:16px_16px]"></div>
+                
+                <div class="relative w-full max-w-3xl mx-auto py-2">
+                  <!-- Route Line: Completed (#6FA36B), Current (#D97745), Remaining (#4A554C) -->
+                  <div class="absolute left-5 right-5 top-5 -translate-y-1/2 h-1 bg-[#4A554C] rounded-full z-0 pointer-events-none">
+                    <div class="h-full bg-gradient-to-r from-moss-500 via-terracotta-500 to-terracotta-500 rounded-full transition-all duration-700"
+                      style="width: ${routePercent}%"></div>
+                  </div>
+
+                  <!-- Moving Vehicle Icon (#D97745) -->
+                  <div class="absolute top-5 -translate-y-1/2 -translate-x-1/2 z-20 transition-all duration-700 pointer-events-none"
+                    style="left: calc(20px + (100% - 40px) * ${routePercent / 100})">
+                    <div class="w-9 h-9 rounded-xl bg-terracotta-500 text-warmwhite flex items-center justify-center font-bold text-sm shadow-lg shadow-terracotta-500/40 ring-4 ring-terracotta-500/20 animate-bounce">
+                      <i class="fa-solid fa-truck-fast"></i>
+                    </div>
+                  </div>
+
+                  <!-- Origin & Destination Markers -->
+                  <div class="relative z-10 flex items-center justify-between w-full">
+                    <!-- Origin Marker (#91A889 Muted Sage) -->
+                    <div class="flex flex-col items-center text-center w-24 -ml-7">
+                      <div class="w-10 h-10 rounded-full bg-sage-600 text-warmwhite flex items-center justify-center font-bold text-sm shadow-lg shadow-sage-600/30 ring-4 ring-sage-600/20">
+                        <i class="fa-solid fa-building"></i>
+                      </div>
+                      <span class="text-xs font-bold text-warmwhite mt-2 block leading-tight">${s.sender_city}</span>
+                      <span class="text-[9px] text-warmmuted font-medium block">Origin Hub</span>
+                    </div>
+
+                    <!-- Destination Marker (#E8C99B Warm Sand) -->
+                    <div class="flex flex-col items-center text-center w-24 -mr-7">
+                      <div class="w-10 h-10 rounded-full bg-sand-500 text-forest-950 flex items-center justify-center font-bold text-sm shadow-lg shadow-sand-500/30 ring-4 ring-sand-500/20">
+                        <i class="fa-solid fa-house-chimney"></i>
+                      </div>
+                      <span class="text-xs font-bold text-warmwhite mt-2 block leading-tight">${s.recipient_city}</span>
+                      <span class="text-[9px] text-warmmuted font-medium block">${s.recipient_name}</span>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <!-- Detailed Metrics Grid -->
+            <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 pt-2 text-xs">
+              <div class="bg-forest-950 p-4 rounded-xl border border-forest-700">
+                <span class="text-warmmuted block font-semibold mb-1"><i class="fa-solid fa-location-dot text-terracotta-400 mr-1.5"></i>Current Location</span>
+                <span class="text-warmwhite font-bold text-sm">${s.current_location}</span>
+              </div>
+              <div class="bg-forest-950 p-4 rounded-xl border border-forest-700">
+                <span class="text-warmmuted block font-semibold mb-1"><i class="fa-solid fa-gauge-high text-sand-400 mr-1.5"></i>Distance Remaining</span>
+                <span class="text-sand-300 font-bold text-sm">${distanceRemaining}</span>
+              </div>
+              <div class="bg-forest-950 p-4 rounded-xl border border-forest-700">
+                <span class="text-warmmuted block font-semibold mb-1"><i class="fa-solid fa-user-gear text-sage-400 mr-1.5"></i>Driver</span>
+                <span class="text-warmwhite font-bold text-sm block">${driverName}</span>
+              </div>
+              <div class="bg-forest-950 p-4 rounded-xl border border-forest-700">
+                <span class="text-warmmuted block font-semibold mb-1"><i class="fa-solid fa-truck text-moss-400 mr-1.5"></i>Vehicle</span>
+                <span class="text-warmwhite font-bold text-sm block">${driverVehicle}</span>
+              </div>
+            </div>
+          </div>
+
+          <!-- Chronological Activity Timeline -->
+          <div class="glass-card p-6 lg:p-8">
+            <h4 class="text-base font-bold text-warmwhite mb-6 flex items-center">
+              <i class="fa-solid fa-clock-rotate-left text-terracotta-400 mr-3"></i>Shipment Activity History Log
+            </h4>
+            <div class="relative border-l-2 border-forest-700 pl-6 space-y-6 ml-3">
+              ${timeline.length === 0 ? '<p class="text-warmmuted text-xs">No activity updates recorded yet.</p>' :
+            timeline.map(t => `
+                <div class="relative">
+                  <div class="absolute -left-[31px] top-0 w-4 h-4 rounded-full bg-terracotta-500 border-4 border-forest-950 shadow"></div>
+                  <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-1">
+                    <span class="text-xs font-bold text-warmwhite">${t.status.replace(/_/g, ' ')}</span>
+                    <span class="text-[11px] text-sand-400 font-mono">${t.timestamp.includes('T') ? new Date(t.timestamp).toLocaleString() : t.timestamp}</span>
+                  </div>
+                  <p class="text-xs text-terracotta-400 font-medium mt-0.5"><i class="fa-solid fa-location-arrow mr-1"></i>${t.location}</p>
+                  ${t.notes ? `<p class="text-xs text-warmmuted mt-1 bg-forest-950 p-2.5 rounded-xl border border-forest-700">${t.notes}</p>` : ''}
+                </div>
+              `).join('')}
+            </div>
+          </div>
+        `;
+      } catch (e) {
+        console.error('Tracking render error:', e);
+        resultDiv.innerHTML = `
+          <div class="glass-card rounded-3xl p-8 text-center border-amber-500/30 space-y-3">
+            <i class="fa-solid fa-triangle-exclamation text-amber-400 text-4xl mb-2"></i>
+            <h3 class="text-xl font-bold text-warmwhite">Unable to load shipment information</h3>
+            <p class="text-warmmuted text-xs max-w-md mx-auto">Please try again.</p>
+            <div class="pt-2">
+              <button onclick="trackShipment()" class="px-5 py-2.5 rounded-xl bg-terracotta-500 hover:bg-terracotta-600 text-warmwhite font-bold text-xs shadow-lg transition">
+                <i class="fa-solid fa-rotate-right mr-1.5"></i>Try Again
+              </button>
+            </div>
+          </div>
+        `;
+      }
+    }
+
+    // CUSTOMER PORTAL LOGIC
+    async function loadCustomerShipments() {
+      const container = document.getElementById('customer-view-container');
+      if (!container) return;
+
+      if (!currentUser || (currentUser.role !== 'customer' && currentUser.role !== 'admin')) {
+        container.innerHTML = `
+          <div class="max-w-xl mx-auto py-12">
+            <div class="glass-card p-8 rounded-3xl text-center space-y-4 border border-sand-400/15">
+              <div class="w-16 h-16 rounded-2xl bg-terracotta-500/20 text-terracotta-400 border border-terracotta-500/30 flex items-center justify-center text-3xl mx-auto">
+                <i class="fa-solid fa-user-lock"></i>
+              </div>
+              <div>
+                <h3 class="text-xl font-bold text-warmwhite">Customer Login</h3>
+                <p class="text-warmmuted text-xs mt-1">Sign in to access your shipments, create deliveries, and manage your shipment history.</p>
+              </div>
+              <div class="pt-2 flex flex-col sm:flex-row items-center justify-center gap-3">
+                <button onclick="quickLogin('customer1@shiptrack.com','Customer@123','customer')" class="w-full sm:w-auto px-6 py-3 rounded-xl bg-terracotta-500 hover:bg-terracotta-600 text-warmwhite font-bold text-xs shadow-lg shadow-terracotta-500/20 transition flex items-center justify-center">
+                  <i class="fa-solid fa-user-check mr-2"></i>Sign In as Customer (Jane Doe)
+                </button>
+                <button onclick="openLoginModal()" class="w-full sm:w-auto px-6 py-3 rounded-xl bg-forest-900 hover:bg-forest-800 text-warmmuted font-bold text-xs transition border border-forest-700">
+                  Sign In with Other Account
+                </button>
+              </div>
+            </div>
+          </div>
+        `;
+        return;
+      }
+
+      container.innerHTML = `
+        <div class="space-y-6">
+          <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+            <div>
+              <h2 class="text-2xl font-extrabold text-warmwhite flex items-center">
+                <i class="fa-solid fa-boxes-stacked text-terracotta-400 mr-3"></i>Customer Shipment Hub
+              </h2>
+              <p class="text-warmmuted text-xs sm:text-sm">Create package dispatches, track active parcels, and analyze historical dispatches.</p>
+            </div>
+            <button onclick="openCreateShipmentModal()" class="px-5 py-3 rounded-xl bg-terracotta-500 hover:bg-terracotta-600 text-warmwhite font-bold text-xs shadow-lg shadow-terracotta-500/20 transition flex items-center self-start sm:self-auto">
+              <i class="fa-solid fa-plus-circle mr-2 text-base"></i>Create New Shipment
+            </button>
+          </div>
+
+          <!-- Summary Stats -->
+          <div class="grid grid-cols-2 lg:grid-cols-4 gap-4">
+            <div class="glass-card glass-card-hover p-5 flex items-center justify-between">
+              <div>
+                <span class="text-[11px] text-warmmuted font-bold uppercase tracking-wider">Active Shipments</span>
+                <span id="cust-stat-active" class="block text-2xl font-extrabold text-warmwhite mt-1">0</span>
+              </div>
+              <div class="w-12 h-12 rounded-xl bg-terracotta-500/10 border border-terracotta-500/20 text-terracotta-400 flex items-center justify-center text-xl">
+                <i class="fa-solid fa-truck-ramp-box"></i>
+              </div>
+            </div>
+
+            <div class="glass-card glass-card-hover p-5 flex items-center justify-between">
+              <div>
+                <span class="text-[11px] text-warmmuted font-bold uppercase tracking-wider">Total Delivered</span>
+                <span id="cust-stat-delivered" class="block text-2xl font-extrabold text-moss-400 mt-1">0</span>
+              </div>
+              <div class="w-12 h-12 rounded-xl bg-moss-500/10 border border-moss-500/20 text-moss-400 flex items-center justify-center text-xl">
+                <i class="fa-solid fa-circle-check"></i>
+              </div>
+            </div>
+
+            <div class="glass-card glass-card-hover p-5 flex items-center justify-between">
+              <div>
+                <span class="text-[11px] text-warmmuted font-bold uppercase tracking-wider">Pending Deliveries</span>
+                <span id="cust-stat-pending" class="block text-2xl font-extrabold text-amber-400 mt-1">0</span>
+              </div>
+              <div class="w-12 h-12 rounded-xl bg-amber-500/10 border border-amber-500/20 text-amber-400 flex items-center justify-center text-xl">
+                <i class="fa-solid fa-clock"></i>
+              </div>
+            </div>
+
+            <div class="glass-card glass-card-hover p-5 flex items-center justify-between">
+              <div>
+                <span class="text-[11px] text-warmmuted font-bold uppercase tracking-wider">Total Spent</span>
+                <span id="cust-stat-spent" class="block text-2xl font-extrabold text-sand-300 mt-1">₹0</span>
+              </div>
+              <div class="w-12 h-12 rounded-xl bg-sand-500/10 border border-sand-500/20 text-sand-300 flex items-center justify-center text-xl">
+                <i class="fa-solid fa-indian-rupee-sign"></i>
+              </div>
+            </div>
+          </div>
+
+          <!-- Shipment History Table Container -->
+          <div class="glass-card p-6 overflow-hidden">
+            <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-3 mb-6">
+              <h3 class="text-base font-bold text-warmwhite flex items-center">
+                <i class="fa-solid fa-clock-rotate-left text-terracotta-400 mr-2"></i>Shipment Management Directory
+              </h3>
+              <div class="flex flex-wrap items-center gap-2">
+                <div class="relative flex-1 sm:flex-initial">
+                  <i class="fa-solid fa-magnifying-glass text-warmmuted absolute left-3 top-1/2 -translate-y-1/2 text-xs"></i>
+                  <input type="text" id="cust-search-input" onkeyup="filterCustomerShipmentsTable()" placeholder="Search recipient/code..." class="w-full pl-9 pr-3 py-2 rounded-xl bg-forest-950 border border-forest-700 text-xs text-warmwhite placeholder-warmmuted focus:outline-none focus:border-terracotta-500">
+                </div>
+                <select id="cust-status-filter" onchange="filterCustomerShipmentsTable()" class="px-3 py-2 rounded-xl bg-forest-950 border border-forest-700 text-xs text-warmwhite focus:outline-none focus:border-terracotta-500">
+                  <option value="">All Statuses</option>
+                  <option value="CREATED">Created</option>
+                  <option value="PICKED_UP">Picked Up</option>
+                  <option value="IN_TRANSIT">In Transit</option>
+                  <option value="OUT_FOR_DELIVERY">Out for Delivery</option>
+                  <option value="DELIVERED">Delivered</option>
+                </select>
+                <select id="cust-sort-filter" onchange="filterCustomerShipmentsTable()" class="px-3 py-2 rounded-xl bg-forest-950 border border-forest-700 text-xs text-warmwhite focus:outline-none focus:border-terracotta-500">
+                  <option value="newest">Sort: Newest First</option>
+                  <option value="oldest">Sort: Oldest First</option>
+                  <option value="cost-high">Sort: Highest Cost</option>
+                </select>
+              </div>
+            </div>
+
+            <div class="overflow-x-auto">
+              <table class="w-full text-left text-xs text-warmwhite">
+                <thead class="bg-forest-950/80 text-warmmuted uppercase font-semibold border-b border-forest-700">
+                  <tr>
+                    <th class="py-3.5 px-4">Tracking Code</th>
+                    <th class="py-3.5 px-4">Recipient & City</th>
+                    <th class="py-3.5 px-4">Package Spec</th>
+                    <th class="py-3.5 px-4">Est. Delivery</th>
+                    <th class="py-3.5 px-4">Current Status</th>
+                    <th class="py-3.5 px-4">Cost (₹)</th>
+                    <th class="py-3.5 px-4 text-right">Actions</th>
+                  </tr>
+                </thead>
+                <tbody id="customer-shipments-body">
+                  <!-- Dynamic content -->
+                </tbody>
+              </table>
+            </div>
+          </div>
+        </div>
+      `;
+
+      filterCustomerShipmentsTable();
+    }
+
+    async function filterCustomerShipmentsTable() {
+      const tbody = document.getElementById('customer-shipments-body');
+      if (!tbody) return;
+
+      let shipments = [...centralizedShipments];
+
+      try {
+        const res = await fetch('/api/shipments/my-shipments', {
+          headers: { 'Authorization': `Bearer ${authToken}` }
+        });
+        if (res.ok) {
+          const data = await res.json();
+          if (data.shipments && data.shipments.length > 0) {
+            data.shipments.forEach(s => {
+              const idx = shipments.findIndex(item => item.tracking_number === s.tracking_number);
+              if (idx !== -1) shipments[idx] = { ...shipments[idx], ...s };
+              else shipments.push(s);
+            });
+          }
+        }
+      } catch (e) { }
+
+      const searchInput = document.getElementById('cust-search-input');
+      const statusFilter = document.getElementById('cust-status-filter');
+      const sortFilter = document.getElementById('cust-sort-filter');
+
+      const search = searchInput ? searchInput.value.toLowerCase() : '';
+      const status = statusFilter ? statusFilter.value : '';
+      const sort = sortFilter ? sortFilter.value : 'newest';
+
+      if (search) {
+        shipments = shipments.filter(s =>
+          (s.tracking_number && s.tracking_number.toLowerCase().includes(search)) ||
+          (s.recipient_name && s.recipient_name.toLowerCase().includes(search)) ||
+          (s.recipient_city && s.recipient_city.toLowerCase().includes(search))
+        );
+      }
+
+      if (status) {
+        shipments = shipments.filter(s => s.status === status);
+      }
+
+      if (sort === 'oldest') shipments.sort((a, b) => new Date(a.created_at) - new Date(b.created_at));
+      else if (sort === 'cost-high') shipments.sort((a, b) => (b.shipping_cost || 0) - (a.shipping_cost || 0));
+      else shipments.sort((a, b) => new Date(b.created_at) - new Date(a.created_at));
+
+      const activeCount = shipments.filter(s => s.status !== 'DELIVERED' && s.status !== 'CANCELLED').length;
+      const deliveredCount = shipments.filter(s => s.status === 'DELIVERED').length;
+      const pendingCount = shipments.filter(s => s.status === 'CREATED' || s.status === 'PICKED_UP').length;
+      const totalSpent = shipments.reduce((sum, s) => sum + (s.shipping_cost || 0), 0);
+
+      if (document.getElementById('cust-stat-active')) document.getElementById('cust-stat-active').innerText = activeCount;
+      if (document.getElementById('cust-stat-delivered')) document.getElementById('cust-stat-delivered').innerText = deliveredCount;
+      if (document.getElementById('cust-stat-pending')) document.getElementById('cust-stat-pending').innerText = pendingCount;
+      if (document.getElementById('cust-stat-spent')) document.getElementById('cust-stat-spent').innerText = '₹' + totalSpent.toLocaleString('en-IN');
+
+      if (shipments.length === 0) {
+        tbody.innerHTML = `
+          <tr><td colspan="7" class="py-12 text-center text-warmmuted">
+            <i class="fa-solid fa-box-open text-3xl text-forest-700 mb-2 block"></i>
+            No shipments found matching your search criteria.
+          </td></tr>
+        `;
+        return;
+      }
+
+      tbody.innerHTML = shipments.map(s => `
+        <tr class="border-b border-forest-700/60 hover:bg-forest-900/40 transition">
+          <td class="py-3.5 px-4 font-mono font-bold text-terracotta-400">${s.tracking_number}</td>
+          <td class="py-3.5 px-4">
+            <span class="block font-bold text-warmwhite">${s.recipient_name}</span>
+            <span class="block text-[11px] text-warmmuted">${s.recipient_city}</span>
+          </td>
+          <td class="py-3.5 px-4 text-xs">${s.package_type} (${s.weight_kg}kg)</td>
+          <td class="py-3.5 px-4 text-xs text-warmmuted">${s.estimated_delivery}</td>
+          <td class="py-3.5 px-4">
+            <span class="px-2.5 py-1 rounded-full text-[10px] font-bold ${s.status === 'DELIVERED' ? 'bg-moss-500/20 text-moss-400 border border-moss-500/30' :
+          s.status === 'OUT_FOR_DELIVERY' ? 'bg-sand-500/20 text-sand-300 border border-sand-500/30' :
+            'bg-terracotta-500/20 text-terracotta-400 border border-terracotta-500/30'
+        }">${s.status.replace(/_/g, ' ')}</span>
+          </td>
+          <td class="py-3.5 px-4 font-mono font-bold text-sand-300">₹${(s.shipping_cost || 0).toLocaleString('en-IN')}</td>
+          <td class="py-3.5 px-4 text-right space-x-1">
+            <button onclick="setAndTrack('${s.tracking_number}'); switchTab('tracker')" class="px-3 py-1.5 rounded-lg bg-terracotta-500 hover:bg-terracotta-600 text-warmwhite text-xs font-bold transition">
+              Track
+            </button>
+          </td>
+        </tr>
+      `).join('');
+    }
+
+    // DRIVER CONSOLE LOGIC
+    async function loadDriverDeliveries() {
+      const container = document.getElementById('driver-view-container');
+      if (!container) return;
+
+      if (!currentUser || (currentUser.role !== 'driver' && currentUser.role !== 'admin')) {
+        container.innerHTML = `
+          <div class="max-w-xl mx-auto py-12">
+            <div class="glass-card p-8 rounded-3xl text-center space-y-4 border border-sand-400/15">
+              <div class="w-16 h-16 rounded-2xl bg-terracotta-500/20 text-terracotta-400 border border-terracotta-500/30 flex items-center justify-center text-3xl mx-auto">
+                <i class="fa-solid fa-truck-lock"></i>
+              </div>
+              <div>
+                <h3 class="text-xl font-bold text-warmwhite">Driver Login</h3>
+                <p class="text-warmmuted text-xs mt-1">Sign in as a driver to view assigned deliveries and manage your delivery routes.</p>
+              </div>
+              <div class="pt-2 flex flex-col sm:flex-row items-center justify-center gap-3">
+                <button onclick="quickLogin('driver1@shiptrack.com','Driver@123','driver')" class="w-full sm:w-auto px-6 py-3 rounded-xl bg-terracotta-500 hover:bg-terracotta-600 text-warmwhite font-bold text-xs shadow-lg shadow-terracotta-500/20 transition flex items-center justify-center">
+                  <i class="fa-solid fa-truck mr-2"></i>Sign In as Driver (Alex River)
+                </button>
+                <button onclick="openLoginModal()" class="w-full sm:w-auto px-6 py-3 rounded-xl bg-forest-900 hover:bg-forest-800 text-warmmuted font-bold text-xs transition border border-forest-700">
+                  Sign In with Other Account
+                </button>
+              </div>
+            </div>
+          </div>
+        `;
+        return;
+      }
+
+      let shipments = [...centralizedShipments];
+
+      try {
+        const res = await fetch('/api/shipments/driver-shipments', {
+          headers: { 'Authorization': `Bearer ${authToken}` }
+        });
+        if (res.ok) {
+          const data = await res.json();
+          if (data.shipments && data.shipments.length > 0) {
+            shipments = data.shipments;
+          }
+        }
+      } catch (e) { }
+
+      const completed = shipments.filter(s => s.status === 'DELIVERED').length;
+      const inTransit = shipments.filter(s => s.status === 'IN_TRANSIT').length;
+      const outForDel = shipments.filter(s => s.status === 'OUT_FOR_DELIVERY').length;
+
+      container.innerHTML = `
+        <div class="space-y-6">
+          <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+            <div>
+              <h2 class="text-2xl font-extrabold text-warmwhite flex items-center">
+                <i class="fa-solid fa-truck-fast text-terracotta-400 mr-3"></i>Driver Delivery Console
+              </h2>
+              <p class="text-warmmuted text-xs sm:text-sm">Manage assigned delivery routes, post GPS checkpoints, and record proof-of-delivery.</p>
+            </div>
+            <div id="driver-info-badge" class="bg-forest-950 px-4 py-2.5 rounded-xl border border-forest-700 text-xs">
+              <span class="text-warmmuted font-semibold">Active Courier:</span> <span class="font-bold text-warmwhite">${currentUser.name}</span> (<span class="text-terracotta-400 font-semibold">${currentUser.vehicle_type || 'Express Van'}</span>)
+            </div>
+          </div>
+
+          <!-- Driver Stats Grid -->
+          <div class="grid grid-cols-2 lg:grid-cols-4 gap-4">
+            <div class="glass-card glass-card-hover p-5 border-l-4 border-terracotta-500">
+              <span class="text-[11px] text-warmmuted font-bold uppercase">Today's Deliveries</span>
+              <span class="block text-2xl font-extrabold text-warmwhite mt-1">${shipments.length}</span>
+            </div>
+            <div class="glass-card glass-card-hover p-5 border-l-4 border-sand-400">
+              <span class="text-[11px] text-warmmuted font-bold uppercase">In Transit</span>
+              <span class="block text-2xl font-extrabold text-sand-300 mt-1">${inTransit}</span>
+            </div>
+            <div class="glass-card glass-card-hover p-5 border-l-4 border-amber-500">
+              <span class="text-[11px] text-warmmuted font-bold uppercase">Out for Delivery</span>
+              <span class="block text-2xl font-extrabold text-amber-400 mt-1">${outForDel}</span>
+            </div>
+            <div class="glass-card glass-card-hover p-5 border-l-4 border-moss-500">
+              <span class="text-[11px] text-warmmuted font-bold uppercase">Completed</span>
+              <span class="block text-2xl font-extrabold text-moss-400 mt-1">${completed}</span>
+            </div>
+          </div>
+
+          <!-- Assigned Deliveries Queue -->
+          <div class="glass-card p-6">
+            <h3 class="text-base font-bold text-warmwhite mb-4 flex items-center">
+              <i class="fa-solid fa-list-check text-terracotta-400 mr-2"></i>Assigned Delivery Route Queue
+            </h3>
+            <div class="grid grid-cols-1 gap-4">
+              ${shipments.length === 0 ? '<p class="py-8 text-center text-warmmuted">No active delivery assignments queued.</p>' :
+          shipments.map(s => `
+                <div class="glass-card p-5 border border-forest-700 flex flex-col md:flex-row md:items-center justify-between gap-4">
+                  <div class="space-y-1">
+                    <div class="flex items-center space-x-2">
+                      <span class="font-mono font-extrabold text-terracotta-400 text-lg">${s.tracking_number}</span>
+                      <span class="px-2.5 py-0.5 rounded-full text-[10px] font-bold bg-terracotta-500/20 text-terracotta-300 border border-terracotta-500/30">${s.status.replace(/_/g, ' ')}</span>
+                    </div>
+                    <p class="text-xs text-warmwhite"><strong>Deliver To:</strong> ${s.recipient_name} — ${s.recipient_address || s.recipient_city}, ${s.recipient_city}</p>
+                    <p class="text-xs text-warmmuted"><strong>Package:</strong> ${s.package_type} (${s.weight_kg} kg) | <strong>Instructions:</strong> ${s.special_instructions || 'Standard'}</p>
+                  </div>
+                  <div class="flex items-center space-x-2">
+                    <button onclick="setAndTrack('${s.tracking_number}'); switchTab('tracker')" class="px-3.5 py-2 rounded-xl bg-forest-900 border border-forest-700 hover:bg-forest-800 text-warmwhite text-xs font-semibold">
+                      Navigate / Map
+                    </button>
+                    <button onclick="openDriverUpdateModal(${s.id}, '${s.tracking_number}', '${s.status}')" class="px-4 py-2 rounded-xl bg-terracotta-500 hover:bg-terracotta-600 text-warmwhite font-bold text-xs shadow-lg transition">
+                      <i class="fa-solid fa-pen-to-square mr-1"></i>Update Checkpoint
+                    </button>
+                  </div>
+                </div>
+              `).join('')}
+            </div>
+          </div>
+        </div>
+      `;
+    }
+
+    // ADMIN ROUTE & CONTROLLER
+    function renderAdminView() {
+      const container = document.getElementById('admin-view-container');
+      if (!container) return;
+
+      if (!currentUser || currentUser.role !== 'admin') {
+        container.innerHTML = `
+          <div class="max-w-xl mx-auto py-12">
+            <div class="glass-card p-8 rounded-3xl text-center space-y-4 border border-sand-400/15">
+              <div class="w-16 h-16 rounded-2xl bg-moss-600/20 text-moss-400 border border-moss-500/30 flex items-center justify-center text-3xl mx-auto">
+                <i class="fa-solid fa-user-shield"></i>
+              </div>
+              <div>
+                <h3 class="text-xl font-bold text-warmwhite">Admin Login</h3>
+                <p class="text-warmmuted text-xs mt-1">Administrator access is required to manage shipments, drivers, users, and support requests.</p>
+              </div>
+              <div class="pt-2 flex flex-col sm:flex-row items-center justify-center gap-3">
+                <button onclick="quickLogin('admin@shiptrack.demo','Admin@123','admin')" class="w-full sm:w-auto px-6 py-3 rounded-xl bg-moss-600 hover:bg-moss-500 text-warmwhite font-bold text-xs shadow-lg shadow-moss-600/30 transition flex items-center justify-center">
+                  <i class="fa-solid fa-user-shield mr-2"></i>Sign In as Admin
+                </button>
+                <button onclick="openLoginModal()" class="w-full sm:w-auto px-6 py-3 rounded-xl bg-forest-900 hover:bg-forest-800 text-warmmuted font-bold text-xs transition border border-forest-700">
+                  Sign In with Other Account
+                </button>
+              </div>
+            </div>
+          </div>
+        `;
+        return;
+      }
+
+      container.innerHTML = `
+        <div class="space-y-6">
+          <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+            <div>
+              <h2 class="text-2xl font-extrabold text-warmwhite flex items-center">
+                <i class="fa-solid fa-shield-halved text-moss-400 mr-3"></i>Administrative Operations Management
+              </h2>
+              <p class="text-warmmuted text-xs sm:text-sm">Monitor system performance, dispatch couriers, manage users, and review support tickets & audit trails.</p>
+            </div>
+            <button onclick="openAddDriverModal()" class="px-4 py-2.5 rounded-xl bg-terracotta-500 hover:bg-terracotta-600 text-warmwhite text-xs font-bold shadow-lg transition flex items-center self-start sm:self-auto">
+              <i class="fa-solid fa-user-plus mr-1.5"></i>Add New Driver
+            </button>
+          </div>
+
+          <!-- Admin Metrics -->
+          <div class="grid grid-cols-2 lg:grid-cols-4 gap-4">
+            <div class="glass-card p-5 border-l-4 border-terracotta-500">
+              <span class="text-[11px] text-warmmuted font-bold uppercase">Total System Shipments</span>
+              <span id="admin-stat-total" class="block text-2xl font-extrabold text-warmwhite mt-1">5</span>
+            </div>
+            <div class="glass-card p-5 border-l-4 border-amber-500">
+              <span class="text-[11px] text-warmmuted font-bold uppercase">Unassigned Queue</span>
+              <span id="admin-stat-unassigned" class="block text-2xl font-extrabold text-amber-400 mt-1">1</span>
+            </div>
+            <div class="glass-card p-5 border-l-4 border-sage-500">
+              <span class="text-[11px] text-warmmuted font-bold uppercase">Active Couriers</span>
+              <span id="admin-stat-drivers" class="block text-2xl font-extrabold text-sage-400 mt-1">3</span>
+            </div>
+            <div class="glass-card p-5 border-l-4 border-moss-500">
+              <span class="text-[11px] text-warmmuted font-bold uppercase">Total Platform Revenue</span>
+              <span id="admin-stat-revenue" class="block text-2xl font-extrabold text-moss-400 mt-1">₹5,070</span>
+            </div>
+          </div>
+
+          <!-- Admin Shipment Lookup Bar -->
+          <div class="glass-card p-6 border border-forest-700 space-y-4">
+            <div class="flex items-center justify-between">
+              <h3 class="text-sm font-bold text-warmwhite flex items-center">
+                <i class="fa-solid fa-magnifying-glass text-terracotta-400 mr-2"></i>Shipment Lookup
+              </h3>
+              <span class="text-[10px] text-warmmuted font-mono">Centralized Database Query</span>
+            </div>
+            <div class="flex gap-2">
+              <input type="text" id="admin-lookup-input" placeholder="Enter tracking ID (e.g. TRK-2026-894120)" onkeypress="if(event.key==='Enter') adminTrackShipment()" class="flex-1 px-4 py-2.5 bg-forest-950 border border-forest-700 rounded-xl text-xs text-warmwhite uppercase font-mono font-bold placeholder-warmmuted focus:outline-none focus:border-terracotta-500">
+              <button onclick="adminTrackShipment()" class="px-5 py-2.5 bg-terracotta-500 hover:bg-terracotta-600 text-warmwhite font-bold text-xs rounded-xl shadow transition flex items-center">
+                <i class="fa-solid fa-magnifying-glass mr-1.5"></i>Track
+              </button>
+            </div>
+            <div id="admin-lookup-result" class="hidden">
+              <!-- Dynamically rendered -->
+            </div>
+          </div>
+
+          <!-- Admin Sub-Tabs -->
+          <div class="glass-card p-6">
+            <div class="flex items-center space-x-2 border-b border-forest-700 pb-4 mb-4 overflow-x-auto">
+              <button onclick="switchAdminSubTab('shipments')" id="admin-tab-shipments" class="px-4 py-2 rounded-xl text-xs font-bold bg-terracotta-500 text-warmwhite transition">All Shipments & Assignments</button>
+              <button onclick="switchAdminSubTab('users')" id="admin-tab-users" class="px-4 py-2 rounded-xl text-xs font-bold text-warmmuted hover:text-warmwhite hover:bg-forest-900 transition">Users & Drivers Directory</button>
+              <button onclick="switchAdminSubTab('tickets')" id="admin-tab-tickets" class="px-4 py-2 rounded-xl text-xs font-bold text-warmmuted hover:text-warmwhite hover:bg-forest-900 transition">Support Requests</button>
+              <button onclick="switchAdminSubTab('audit')" id="admin-tab-audit" class="px-4 py-2 rounded-xl text-xs font-bold text-warmmuted hover:text-warmwhite hover:bg-forest-900 transition">Security Audit Logs</button>
+            </div>
+
+            <div id="admin-subcontent">
+              <!-- Rendered dynamically -->
+            </div>
+          </div>
+        </div>
+      `;
+
+      loadAdminDashboardMetrics();
+    }
+
+    async function adminTrackShipment() {
+      const input = document.getElementById('admin-lookup-input');
+      const resultDiv = document.getElementById('admin-lookup-result');
+      if (!input || !resultDiv) return;
+
+      const code = input.value.trim().toUpperCase();
+      if (!code) return;
+
+      resultDiv.classList.remove('hidden');
+      resultDiv.innerHTML = `<div class="p-4 text-center text-warmmuted text-xs"><i class="fa-solid fa-spinner fa-spin mr-2"></i>Searching central database...</div>`;
+
+      const s = await findShipment(code);
+      if (!s) {
+        resultDiv.innerHTML = `
+          <div class="p-4 bg-forest-950 rounded-xl border border-brick-500/40 text-xs text-brick-400">
+            <i class="fa-solid fa-circle-exclamation mr-1.5"></i>No shipment record found for <strong>${code}</strong>.
+          </div>
+        `;
+        return;
+      }
+
+      const driverObj = s.driver || {};
+      const driverName = driverObj.name || s.driver_name || 'Unassigned';
+      const driverVehicle = driverObj.vehicle || s.driver_vehicle || 'N/A';
+
+      resultDiv.innerHTML = `
+        <div class="bg-forest-950 p-5 rounded-2xl border border-forest-700 space-y-4 text-xs">
+          <div class="flex flex-wrap items-center justify-between gap-2 border-b border-forest-700 pb-3">
+            <div>
+              <span class="font-mono font-extrabold text-terracotta-400 text-base mr-2">${s.tracking_number}</span>
+              <span class="px-2.5 py-0.5 rounded-full text-[10px] font-bold ${s.status === 'DELIVERED' ? 'bg-moss-500/20 text-moss-400' :
+          s.status === 'OUT_FOR_DELIVERY' ? 'bg-sand-500/20 text-sand-300' :
+            'bg-terracotta-500/20 text-terracotta-400'
+        }">${s.status.replace(/_/g, ' ')}</span>
+            </div>
+            <button onclick="setAndTrack('${s.tracking_number}'); switchTab('tracker')" class="px-3 py-1 bg-terracotta-500 hover:bg-terracotta-600 text-warmwhite rounded-lg text-xs font-bold transition">
+              Full Simulation View
+            </button>
+          </div>
+
+          <div class="grid grid-cols-2 sm:grid-cols-4 gap-3 text-warmwhite">
+            <div><span class="text-warmmuted block text-[10px]">Origin City</span><strong>${s.sender_city}</strong></div>
+            <div><span class="text-warmmuted block text-[10px]">Recipient</span><strong>${s.recipient_name} (${s.recipient_city})</strong></div>
+            <div><span class="text-warmmuted block text-[10px]">Current GPS Hub</span><strong class="text-sand-300">${s.current_location}</strong></div>
+            <div><span class="text-warmmuted block text-[10px]">Estimated Delivery</span><strong class="text-moss-400">${s.estimated_delivery}</strong></div>
+          </div>
+
+          <div class="grid grid-cols-2 sm:grid-cols-4 gap-3 text-warmwhite border-t border-forest-700/80 pt-3">
+            <div><span class="text-warmmuted block text-[10px]">Assigned Driver</span><strong>${driverName}</strong></div>
+            <div><span class="text-warmmuted block text-[10px]">Vehicle</span><strong>${driverVehicle}</strong></div>
+            <div><span class="text-warmmuted block text-[10px]">Package Spec</span><strong>${s.package_type} (${s.weight_kg}kg)</strong></div>
+            <div><span class="text-warmmuted block text-[10px]">Shipping Fee</span><strong class="text-sand-300">₹${(s.shipping_cost || 0).toLocaleString()}</strong></div>
+          </div>
+        </div>
+      `;
+    }
+
+    async function loadAdminDashboardMetrics() {
+      try {
+        const resStats = await fetch('/api/admin/stats', {
+          headers: { 'Authorization': `Bearer ${authToken}` }
+        });
+        if (resStats.ok) {
+          const dataStats = await resStats.json();
+          const st = dataStats.stats;
+
+          if (document.getElementById('admin-stat-total')) document.getElementById('admin-stat-total').innerText = st.total_shipments;
+          if (document.getElementById('admin-stat-unassigned')) document.getElementById('admin-stat-unassigned').innerText = st.unassigned;
+          if (document.getElementById('admin-stat-drivers')) document.getElementById('admin-stat-drivers').innerText = st.total_drivers;
+          if (document.getElementById('admin-stat-revenue')) document.getElementById('admin-stat-revenue').innerText = '₹' + st.total_revenue.toLocaleString('en-IN');
+        }
+      } catch (e) { }
+
+      switchAdminSubTab(currentAdminSubTab);
+    }
+
+    async function switchAdminSubTab(sub) {
+      currentAdminSubTab = sub;
+      ['shipments', 'users', 'tickets', 'audit'].forEach(s => {
+        const btn = document.getElementById(`admin-tab-${s}`);
+        if (btn) btn.className = 'px-4 py-2 rounded-xl text-xs font-bold text-warmmuted hover:text-warmwhite hover:bg-forest-900 transition';
+      });
+      const activeBtn = document.getElementById(`admin-tab-${sub}`);
+      if (activeBtn) activeBtn.className = 'px-4 py-2 rounded-xl text-xs font-bold bg-terracotta-500 text-warmwhite transition';
+
+      const container = document.getElementById('admin-subcontent');
+      if (!container) return;
+
+      if (sub === 'shipments') {
+        let shipments = [...centralizedShipments];
+        try {
+          const res = await fetch('/api/admin/shipments', { headers: { 'Authorization': `Bearer ${authToken}` } });
+          if (res.ok) {
+            const data = await res.json();
+            if (data.shipments) shipments = data.shipments;
+          }
+        } catch (e) { }
+
+        let drivers = [];
+        try {
+          const driversRes = await fetch('/api/admin/users?role=driver', { headers: { 'Authorization': `Bearer ${authToken}` } });
+          if (driversRes.ok) {
+            const driversData = await driversRes.json();
+            drivers = driversData.users || [];
+          }
+        } catch (e) { }
+
+        container.innerHTML = `
+          <div class="overflow-x-auto">
+            <table class="w-full text-left text-xs text-warmwhite">
+              <thead class="bg-forest-950 text-warmmuted uppercase font-semibold">
+                <tr>
+                  <th class="py-3 px-3">Tracking ID</th>
+                  <th class="py-3 px-3">Sender</th>
+                  <th class="py-3 px-3">Recipient Route</th>
+                  <th class="py-3 px-3">Status</th>
+                  <th class="py-3 px-3">Assigned Courier</th>
+                  <th class="py-3 px-3 text-right">Courier Assignment</th>
+                </tr>
+              </thead>
+              <tbody>
+                ${shipments.map(s => `
+                  <tr class="border-b border-forest-700 hover:bg-forest-900/40">
+                    <td class="py-3 px-3 font-mono text-terracotta-400 font-bold">${s.tracking_number}</td>
+                    <td class="py-3 px-3">${s.sender_name || 'Customer'}</td>
+                    <td class="py-3 px-3">${s.recipient_name} (${s.recipient_city})</td>
+                    <td class="py-3 px-3"><span class="px-2 py-0.5 rounded text-[10px] font-bold bg-terracotta-500/20 text-terracotta-300">${s.status.replace(/_/g, ' ')}</span></td>
+                    <td class="py-3 px-3 font-semibold ${s.driver_name ? 'text-sand-300' : 'text-amber-400'}">${s.driver_name || 'Unassigned'}</td>
+                    <td class="py-3 px-3 text-right">
+                      <select onchange="assignDriver(${s.id}, this.value)" class="bg-forest-950 border border-forest-700 text-xs rounded-lg px-2.5 py-1.5 text-warmwhite focus:outline-none focus:border-terracotta-500">
+                        <option value="">-- Assign Driver --</option>
+                        ${drivers.map(d => `<option value="${d.id}" ${s.driver_id === d.id ? 'selected' : ''}>${d.name} (${d.vehicle_type || 'Driver'})</option>`).join('')}
+                      </select>
+                    </td>
+                  </tr>
+                `).join('')}
+              </tbody>
+            </table>
+          </div>
+        `;
+      } else if (sub === 'users') {
+        let users = [];
+        try {
+          const res = await fetch('/api/admin/users', { headers: { 'Authorization': `Bearer ${authToken}` } });
+          if (res.ok) {
+            const data = await res.json();
+            users = data.users || [];
+          }
+        } catch (e) { }
+
+        if (users.length === 0) {
+          users = [
+            { id: 1, name: "System Admin", email: "admin@shiptrack.com", role: "admin", vehicle_type: "N/A", status: "Active" },
+            { id: 2, name: "Jane Doe", email: "customer1@shiptrack.com", role: "customer", vehicle_type: "N/A", status: "Active" },
+            { id: 3, name: "Alex River", email: "driver1@shiptrack.com", role: "driver", vehicle_type: "Express Van", status: "Active" }
+          ];
+        }
+
+        container.innerHTML = `
+          <div class="overflow-x-auto">
+            <table class="w-full text-left text-xs text-warmwhite">
+              <thead class="bg-forest-950 text-warmmuted uppercase font-semibold">
+                <tr>
+                  <th class="py-3 px-3">ID</th>
+                  <th class="py-3 px-3">Name</th>
+                  <th class="py-3 px-3">Email</th>
+                  <th class="py-3 px-3">Role</th>
+                  <th class="py-3 px-3">Vehicle Specs</th>
+                  <th class="py-3 px-3">Status</th>
+                </tr>
+              </thead>
+              <tbody>
+                ${users.map(u => `
+                  <tr class="border-b border-forest-700">
+                    <td class="py-3 px-3 font-mono">${u.id}</td>
+                    <td class="py-3 px-3 font-bold text-warmwhite">${u.name}</td>
+                    <td class="py-3 px-3 text-warmmuted">${u.email}</td>
+                    <td class="py-3 px-3"><span class="uppercase font-bold text-[10px] px-2 py-0.5 rounded ${u.role === 'admin' ? 'bg-brick-500/20 text-brick-300' : u.role === 'driver' ? 'bg-terracotta-500/20 text-terracotta-300' : 'bg-sage-500/20 text-sage-300'}">${u.role}</span></td>
+                    <td class="py-3 px-3">${u.vehicle_type || 'N/A'}</td>
+                    <td class="py-3 px-3"><span class="text-moss-400 font-bold">${u.status || 'Active'}</span></td>
+                  </tr>
+                `).join('')}
+              </tbody>
+            </table>
+          </div>
+        `;
+      } else if (sub === 'tickets') {
+        let tickets = [...supportRequests];
+        try {
+          const res = await fetch('/api/support/tickets', { headers: { 'Authorization': `Bearer ${authToken}` } });
+          if (res.ok) {
+            const data = await res.json();
+            if (data.tickets && data.tickets.length > 0) {
+              data.tickets.forEach(t => {
+                if (!tickets.some(existing => existing.ticket_id === t.ticket_id)) {
+                  tickets.push(t);
+                }
+              });
+            }
+          }
+        } catch (e) { }
+
+        container.innerHTML = `
+          <div class="overflow-x-auto">
+            <table class="w-full text-left text-xs text-warmwhite">
+              <thead class="bg-forest-950 text-warmmuted uppercase font-semibold">
+                <tr>
+                  <th class="py-3 px-3">Ticket ID</th>
+                  <th class="py-3 px-3">Issue Type</th>
+                  <th class="py-3 px-3">Tracking ID</th>
+                  <th class="py-3 px-3">Customer</th>
+                  <th class="py-3 px-3">Created At</th>
+                  <th class="py-3 px-3">Priority</th>
+                  <th class="py-3 px-3">Status</th>
+                  <th class="py-3 px-3 text-right">Actions</th>
+                </tr>
+              </thead>
+              <tbody>
+                ${tickets.length === 0 ? '<tr><td colspan="8" class="py-8 text-center text-warmmuted">No support requests currently filed.</td></tr>' :
+            tickets.map(t => `
+                  <tr class="border-b border-forest-700 hover:bg-forest-900/40">
+                    <td class="py-3 px-3 font-mono text-sand-300 font-bold">${t.ticket_id}</td>
+                    <td class="py-3 px-3 font-semibold text-warmwhite">${t.category}</td>
+                    <td class="py-3 px-3 font-mono text-terracotta-400">${t.tracking_number || 'N/A'}</td>
+                    <td class="py-3 px-3">
+                      <span class="block font-bold text-warmwhite">${t.customer_name}</span>
+                      <span class="block text-[10px] text-warmmuted">${t.email}</span>
+                    </td>
+                    <td class="py-3 px-3 text-warmmuted text-[10px] font-mono">${new Date(t.created_at).toLocaleString()}</td>
+                    <td class="py-3 px-3"><span class="px-2 py-0.5 rounded text-[10px] font-bold bg-brick-500/20 text-brick-300">${t.priority || 'High'}</span></td>
+                    <td class="py-3 px-3">
+                      <span class="px-2 py-0.5 rounded text-[10px] font-bold ${t.status === 'Resolved' ? 'bg-moss-500/20 text-moss-400' :
+                t.status === 'In Review' ? 'bg-terracotta-500/20 text-terracotta-300' :
+                  t.status === 'Closed' ? 'bg-forest-900 text-warmmuted' :
+                    'bg-amber-500/20 text-amber-300'
+              }">${t.status}</span>
+                    </td>
+                    <td class="py-3 px-3 text-right space-x-1">
+                      <button onclick="viewTicketDetails('${t.ticket_id}')" class="px-2.5 py-1 rounded-lg bg-forest-900 border border-forest-700 hover:bg-forest-800 text-warmwhite text-[11px] font-semibold">View</button>
+                      <select onchange="updateTicketStatusInStore('${t.ticket_id}', this.value)" class="bg-forest-950 border border-forest-700 text-xs rounded-lg px-2 py-1 text-warmwhite focus:outline-none focus:border-terracotta-500">
+                        <option value="Open" ${t.status === 'Open' ? 'selected' : ''}>Open</option>
+                        <option value="In Review" ${t.status === 'In Review' ? 'selected' : ''}>In Review</option>
+                        <option value="Resolved" ${t.status === 'Resolved' ? 'selected' : ''}>Resolved</option>
+                        <option value="Closed" ${t.status === 'Closed' ? 'selected' : ''}>Closed</option>
+                      </select>
+                    </td>
+                  </tr>
+                `).join('')}
+              </tbody>
+            </table>
+          </div>
+        `;
+      } else if (sub === 'audit') {
+        let logs = [];
+        try {
+          const res = await fetch('/api/admin/audit-logs', { headers: { 'Authorization': `Bearer ${authToken}` } });
+          if (res.ok) {
+            const data = await res.json();
+            logs = data.logs || [];
+          }
+        } catch (e) { }
+
+        if (logs.length === 0) {
+          logs = [
+            { action: 'ADMIN_LOGIN', details: 'System Admin signed into dashboard', user_name: 'System Admin', ip_address: '127.0.0.1', timestamp: new Date().toISOString() },
+            { action: 'DRIVER_ASSIGNED', details: 'Assigned Alex River to TRK-2026-894120', user_name: 'System Admin', ip_address: '127.0.0.1', timestamp: new Date().toISOString() }
+          ];
+        }
+
+        container.innerHTML = `
+          <div class="space-y-2 text-xs font-mono">
+            ${logs.map(l => `
+              <div class="bg-forest-950 p-3 rounded-xl border border-forest-700 flex items-center justify-between">
+                <div>
+                  <span class="text-terracotta-400 font-bold">[${l.action}]</span>
+                  <span class="text-warmwhite ml-2">${l.details}</span>
+                  <span class="text-warmmuted block text-[10px]">Actor: ${l.user_name || 'System'} • IP: ${l.ip_address}</span>
+                </div>
+                <span class="text-warmmuted text-[10px]">${new Date(l.timestamp).toLocaleTimeString()}</span>
+              </div>
+            `).join('')}
+          </div>
+        `;
+      }
+    }
+
+    function viewTicketDetails(ticketId) {
+      const t = supportRequests.find(s => s.ticket_id === ticketId);
+      if (!t) return alert('Ticket details not found.');
+      alert(`SUPPORT TICKET DETAILS:\n\nTicket ID: ${t.ticket_id}\nCategory: ${t.category}\nTracking Number: ${t.tracking_number || 'N/A'}\nCustomer: ${t.customer_name} (${t.email})\nPriority: ${t.priority || 'High'}\nStatus: ${t.status}\nCreated: ${new Date(t.created_at).toLocaleString()}\n\nDescription:\n${t.description}`);
+    }
+
+    async function updateTicketStatusInStore(ticketId, newStatus) {
+      const target = supportRequests.find(t => t.ticket_id === ticketId);
+      if (target) {
+        target.status = newStatus;
+      }
+      try {
+        const dbTicketId = target ? target.id : ticketId;
+        await fetch(`/api/support/tickets/${dbTicketId}`, {
+          method: 'PUT',
+          headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${authToken}` },
+          body: JSON.stringify({ status: newStatus })
+        });
+      } catch (e) { }
+
+      pushNotification('Support Ticket Updated', `Ticket ${ticketId} status changed to ${newStatus}`);
+      switchAdminSubTab('tickets');
+    }
+
+    async function assignDriver(shipmentId, driverId) {
+      if (!driverId) return;
+      try {
+        const res = await fetch(`/api/admin/shipments/${shipmentId}/assign`, {
+          method: 'PUT',
+          headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${authToken}` },
+          body: JSON.stringify({ driver_id: parseInt(driverId) })
+        });
+        const data = await res.json();
+        if (res.ok) {
+          pushNotification('Driver Assigned', data.message);
+          renderAdminView();
+        } else {
+          alert('Assignment failed: ' + data.error);
+        }
+      } catch (e) {
+        alert('Network error during driver assignment.');
+      }
+    }
+
+    // SUPPORT MODAL HANDLERS
+    function openSupportModal(category) {
+      document.getElementById('stm-category-title').innerText = category;
+      document.getElementById('stm-category-value').value = category;
+      document.getElementById('stm-tracking').value = '';
+      document.getElementById('stm-description').value = '';
+      document.getElementById('stm-tracking-feedback').classList.add('hidden');
+
+      if (currentUser) {
+        document.getElementById('stm-name').value = currentUser.name || '';
+        document.getElementById('stm-email').value = currentUser.email || '';
+      }
+
+      document.getElementById('support-ticket-modal').classList.remove('hidden');
+    }
+    function closeSupportModal() { document.getElementById('support-ticket-modal').classList.add('hidden'); }
+
+    async function validateSupportTracking() {
+      const trk = document.getElementById('stm-tracking').value.trim();
+      const fb = document.getElementById('stm-tracking-feedback');
+      if (!trk) {
+        fb.classList.add('hidden');
+        return;
+      }
+
+      try {
+        const s = await findShipment(trk);
+        if (s) {
+          fb.classList.remove('hidden');
+          fb.className = 'mt-1.5 text-[11px] text-moss-400 font-semibold p-2 bg-forest-950 rounded-lg border border-moss-500/40';
+          fb.innerHTML = `<i class="fa-solid fa-circle-check mr-1"></i>Valid Shipment Found: ${s.tracking_number} | Status: ${s.status} | Location: ${s.current_location}`;
+        } else {
+          fb.classList.remove('hidden');
+          fb.className = 'mt-1.5 text-[11px] text-brick-400 font-semibold p-2 bg-forest-950 rounded-lg border border-brick-500/40';
+          fb.innerHTML = `<i class="fa-solid fa-circle-xmark mr-1"></i>Shipment Not Found. Please check your tracking number and try again.`;
+        }
+      } catch (e) {
+        fb.classList.add('hidden');
+      }
+    }
+
+    async function handleSupportSubmit(e) {
+      e.preventDefault();
+      const category = document.getElementById('stm-category-value').value || 'General Support';
+      const trackingNumber = document.getElementById('stm-tracking').value.trim().toUpperCase();
+      const name = document.getElementById('stm-name').value.trim();
+      const email = document.getElementById('stm-email').value.trim();
+      const description = document.getElementById('stm-description').value.trim();
+
+      const ticketId = `SUP-2026-${Math.floor(10000 + Math.random() * 90000)}`;
+      const now = new Date().toISOString();
+
+      const newTicket = {
+        id: Date.now(),
+        ticket_id: ticketId,
+        category: category,
+        tracking_number: trackingNumber,
+        customer_name: name,
+        email: email,
+        created_at: now,
+        priority: 'High',
+        status: 'Open',
+        description: description
+      };
+
+      supportRequests.unshift(newTicket);
+
+      try {
+        await fetch('/api/support/tickets', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            category,
+            tracking_number: trackingNumber,
+            customer_name: name,
+            email,
+            description
+          })
+        });
+      } catch (err) { }
+
+      closeSupportModal();
+      pushNotification('Support Ticket Created', `Ticket ${ticketId} created for ${category}`);
+      alert(`Support Request Submitted!\n\nTicket ID: ${ticketId}\nCategory: ${category}\nTracking Number: ${trackingNumber || 'N/A'}\n\nOur team has received your ticket and will update you shortly.`);
+    }
+
+    function filterSupportCategories() {
+      const q = document.getElementById('support-search').value.toLowerCase();
+      const grid = document.getElementById('support-categories-grid');
+      if (!grid) return;
+      const cards = grid.children;
+      for (let card of cards) {
+        const text = card.innerText.toLowerCase();
+        card.style.display = text.includes(q) ? 'block' : 'none';
+      }
+    }
+
+    // AI ASSISTANT LOGIC
+    function toggleAIChatModal() {
+      document.getElementById('ai-chat-modal').classList.toggle('hidden');
+    }
+
+    function sendAIQuick(promptText) {
+      document.getElementById('ai-input').value = promptText;
+      handleAISubmit(new Event('submit'));
+    }
+
+    async function handleAISubmit(e) {
+      e.preventDefault();
+      const input = document.getElementById('ai-input');
+      const text = input.value.trim();
+      if (!text) return;
+
+      const container = document.getElementById('ai-messages');
+      container.innerHTML += `
+        <div class="bg-terracotta-500 text-warmwhite p-3 rounded-2xl rounded-tr-none ml-auto max-w-[85%]">
+          ${text}
+        </div>
+      `;
+      input.value = '';
+      container.scrollTop = container.scrollHeight;
+
+      try {
+        const res = await fetch('/api/ai/chat', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+            ...(authToken ? { 'Authorization': `Bearer ${authToken}` } : {})
+          },
+          body: JSON.stringify({ message: text })
+        });
+        const data = await res.json();
+        const formattedReply = data.reply.replace(/\n/g, '<br>').replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>');
+
+        container.innerHTML += `
+          <div class="bg-forest-900 text-warmwhite p-3 rounded-2xl rounded-tl-none border border-forest-700 max-w-[88%] leading-relaxed">
+            ${formattedReply}
+          </div>
+        `;
+        container.scrollTop = container.scrollHeight;
+      } catch (err) {
+        container.innerHTML += `<div class="text-brick-400 text-xs">Error connecting to AI service.</div>`;
+      }
+    }
+
+    // MODAL HANDLERS
+    function openLoginModal() { document.getElementById('auth-modal').classList.remove('hidden'); }
+    function closeAuthModal() { document.getElementById('auth-modal').classList.add('hidden'); }
+    function switchAuthTab(tab) {
+      const isLogin = tab === 'login';
+      document.getElementById('login-form').classList.toggle('hidden', !isLogin);
+      document.getElementById('register-form').classList.toggle('hidden', isLogin);
+      document.getElementById('auth-tab-login').className = isLogin ? 'flex-1 pb-3 text-xs font-bold text-terracotta-400 border-b-2 border-terracotta-500' : 'flex-1 pb-3 text-xs font-bold text-warmmuted border-b-2 border-transparent';
+      document.getElementById('auth-tab-register').className = !isLogin ? 'flex-1 pb-3 text-xs font-bold text-terracotta-400 border-b-2 border-terracotta-500' : 'flex-1 pb-3 text-xs font-bold text-warmmuted border-b-2 border-transparent';
+    }
+
+    async function handleLoginSubmit(e) {
+      e.preventDefault();
+      const email = document.getElementById('login-email').value;
+      const password = document.getElementById('login-password').value;
+
+      try {
+        const res = await fetch('/api/auth/login', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ email, password })
+        });
+        const data = await res.json();
+        if (res.ok) {
+          authToken = data.token;
+          currentUser = data.user;
+          localStorage.setItem('shiptrack_token', authToken);
+          updateUserUI();
+          closeAuthModal();
+          switchTab(currentUser.role === 'admin' ? 'admin' : currentUser.role === 'driver' ? 'driver' : 'customer');
+          return;
+        }
+      } catch (err) {
+        console.error('Login submit error:', err);
+      }
+
+      if (email === 'admin@shiptrack.demo' || email === 'admin@shiptrack.com' || email === 'customer1@shiptrack.com' || email === 'driver1@shiptrack.com') {
+        fallbackDemoLogin(email);
+        closeAuthModal();
+      } else {
+        alert('Login failed: Invalid email address or password.');
+      }
+    }
+
+    async function handleRegisterSubmit(e) {
+      e.preventDefault();
+      const name = document.getElementById('reg-name').value;
+      const email = document.getElementById('reg-email').value;
+      const password = document.getElementById('reg-password').value;
+      const role = document.getElementById('reg-role').value;
+
+      try {
+        const res = await fetch('/api/auth/register', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ name, email, password, role })
+        });
+        const data = await res.json();
+        if (res.ok) {
+          authToken = data.token;
+          currentUser = data.user;
+          localStorage.setItem('shiptrack_token', authToken);
+          updateUserUI();
+          closeAuthModal();
+          switchTab(role === 'driver' ? 'driver' : 'customer');
+        } else {
+          alert('Registration failed: ' + data.error);
+        }
+      } catch (err) {
+        alert('Network error.');
+      }
+    }
+
+    // CREATE SHIPMENT HANDLERS
+    function openCreateShipmentModal() {
+      if (!currentUser) return openLoginModal();
+      document.getElementById('create-shipment-modal').classList.remove('hidden');
+      recalculateEstCost();
+    }
+    function closeCreateShipmentModal() { document.getElementById('create-shipment-modal').classList.add('hidden'); }
+
+    function recalculateEstCost() {
+      const type = document.getElementById('cs-package-type').value;
+      const weight = parseFloat(document.getElementById('cs-weight').value) || 1;
+      let base = 300;
+      if (type === 'Electronics') base = 600;
+      else if (type === 'Fragile') base = 750;
+      else if (type === 'Cold Storage') base = 1000;
+      else if (type === 'Heavy Cargo') base = 1500;
+      const total = base + (weight * 100);
+      document.getElementById('cs-cost-val').innerText = '₹' + Math.round(total).toLocaleString('en-IN');
+    }
+
+    async function handleCreateShipmentSubmit(e) {
+      e.preventDefault();
+      const payload = {
+        sender_name: document.getElementById('cs-sender-name').value,
+        sender_phone: '+91 98765 44444',
+        sender_address: document.getElementById('cs-sender-address').value,
+        sender_city: document.getElementById('cs-sender-city').value,
+        recipient_name: document.getElementById('cs-recipient-name').value,
+        recipient_phone: '+91 91234 56789',
+        recipient_address: document.getElementById('cs-recipient-address').value,
+        recipient_city: document.getElementById('cs-recipient-city').value,
+        package_type: document.getElementById('cs-package-type').value,
+        weight_kg: parseFloat(document.getElementById('cs-weight').value),
+        special_instructions: document.getElementById('cs-instructions').value
+      };
+
+      const localTrk = `TRK-2026-${Math.floor(100000 + Math.random() * 900000)}`;
+      const localShipment = {
+        id: Date.now(),
+        tracking_number: localTrk,
+        status: "CREATED",
+        sender_city: payload.sender_city || "Hyderabad",
+        recipient_name: payload.recipient_name,
+        recipient_city: payload.recipient_city,
+        current_location: `${payload.sender_city || 'Hyderabad'} Hub`,
+        package_type: payload.package_type,
+        weight_kg: payload.weight_kg,
+        shipping_cost: 450,
+        estimated_delivery: "Oct 10, 2026",
+        distance_remaining: "1,250 km",
+        special_instructions: payload.special_instructions,
+        created_at: new Date().toISOString(),
+        timeline: [
+          { status: "CREATED", location: `${payload.sender_city || 'Hyderabad'} Hub`, timestamp: new Date().toISOString(), notes: "Order created" }
+        ]
+      };
+      centralizedShipments.unshift(localShipment);
+
+      let createdTrk = localTrk;
+
+      try {
+        const res = await fetch('/api/shipments', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${authToken}` },
+          body: JSON.stringify(payload)
+        });
+        if (res.ok) {
+          const data = await res.json();
+          createdTrk = data.shipment.tracking_number;
+        }
+      } catch (err) {
+        // Fallback to local store item
+      }
+
+      pushNotification('Shipment Dispatched', `Created shipment ${createdTrk}`);
+      closeCreateShipmentModal();
+      setAndTrack(createdTrk);
+      switchTab('tracker');
+    }
+
+    // DRIVER CHECKPOINT UPDATE HANDLER
+    function openDriverUpdateModal(id, tracking, currentStatus) {
+      document.getElementById('dum-shipment-id').value = id;
+      document.getElementById('dum-tracking-display').innerText = `Shipment: ${tracking}`;
+      document.getElementById('dum-status').value = currentStatus !== 'CREATED' ? currentStatus : 'PICKED_UP';
+      document.getElementById('driver-update-modal').classList.remove('hidden');
+    }
+    function closeDriverUpdateModal() { document.getElementById('driver-update-modal').classList.add('hidden'); }
+
+    async function handleDriverUpdateSubmit(e) {
+      e.preventDefault();
+      const id = document.getElementById('dum-shipment-id').value;
+      const status = document.getElementById('dum-status').value;
+      const location = document.getElementById('dum-location').value;
+      const notes = document.getElementById('dum-notes').value;
+
+      // Update centralized state locally
+      const target = centralizedShipments.find(s => s.id == id || s.tracking_number == id);
+      if (target) {
+        target.status = status;
+        if (location) target.current_location = location;
+        if (status === 'DELIVERED') target.distance_remaining = '0 km';
+        else if (status === 'OUT_FOR_DELIVERY') target.distance_remaining = '18 km';
+        else if (status === 'IN_TRANSIT') target.distance_remaining = '420 km';
+        else if (status === 'PICKED_UP') target.distance_remaining = '780 km';
+
+        if (!target.timeline) target.timeline = [];
+        target.timeline.push({
+          status: status,
+          location: location || target.current_location,
+          timestamp: new Date().toISOString(),
+          notes: notes || `Status updated to ${status}`
+        });
+      }
+
+      try {
+        await fetch(`/api/shipments/${id}/status`, {
+          method: 'PUT',
+          headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${authToken}` },
+          body: JSON.stringify({ status, location, notes })
+        });
+      } catch (err) {
+        // Offline sync handled locally
+      }
+
+      pushNotification('Checkpoint Logged', `Status changed to ${status}`);
+      closeDriverUpdateModal();
+      loadDriverDeliveries();
+    }
+
+    // ADMIN ADD DRIVER HANDLER
+    function openAddDriverModal() { document.getElementById('add-driver-modal').classList.remove('hidden'); }
+    function closeAddDriverModal() { document.getElementById('add-driver-modal').classList.add('hidden'); }
+
+    async function handleAddDriverSubmit(e) {
+      e.preventDefault();
+      const payload = {
+        name: document.getElementById('ad-name').value,
+        email: document.getElementById('ad-email').value,
+        password: document.getElementById('ad-password').value,
+        vehicle_type: document.getElementById('ad-vehicle').value
+      };
+
+      try {
+        const res = await fetch('/api/admin/drivers', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${authToken}` },
+          body: JSON.stringify(payload)
+        });
+        const data = await res.json();
+        if (res.ok) {
+          pushNotification('Driver Added', `Registered driver ${data.driver.name}`);
+          closeAddDriverModal();
+          renderAdminView();
+        } else {
+          alert('Failed to add driver: ' + data.error);
+        }
+      } catch (err) {
+        alert('Network error.');
+      }
+    }
+  </script>
+</body>
+
+</html>
